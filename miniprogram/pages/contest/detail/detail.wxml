@@ -9,6 +9,8 @@
         <view class="level level--{{detail.level}}">{{detail.level}}类</view>
         <text wx:if="{{categoryText}}" class="hero__meta">{{categoryText}}</text>
         <text wx:if="{{detail.isFocus}}" class="hero__meta">★ 院内重点</text>
+        <view class="detail__fav pressable {{fav ? 'detail__fav--on' : ''}}" hover-class="pressing" bindtap="toggleFav">{{fav ? '★ 已收藏' : '☆ 收藏'}}</view>
+
       </view>
     </view>
 
