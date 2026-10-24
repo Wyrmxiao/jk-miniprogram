@@ -1,0 +1,39 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="state">正在加载…</view>
+
+  <view wx:elif="{{detail}}" class="article">
+    <view class="article__badges">
+      <text class="tag {{detail.type === 'contest' ? 'tag-warning' : 'tag-primary'}}">
+        {{detail.type === 'contest' ? '赛事公告' : '通知'}}
+      </text>
+      <text wx:if="{{detail.top}}" class="tag tag-danger">置顶</text>
+    </view>
+
+    <view class="article__title">{{detail.title}}</view>
+
+    <view class="article__meta">
+      <text>{{detail.publisherName || (detail.publisher && detail.publisher.realName) || '老师'}}</text>
+      <text>{{timeText}}</text>
+      <text wx:if="{{detail.viewCount}}">{{detail.viewCount}} 次浏览</text>
+    </view>
+
+    <view class="article__content">{{detail.content}}</view>
+
+    <view wx:if="{{detail.competition}}" class="link-card">
+      <view class="link-card__label">关联竞赛</view>
+      <view class="link-card__name">{{detail.competition.name}}</view>
+      <view wx:if="{{detail.competition.regEnd || detail.competition.contestDate}}" class="link-card__time">
+        <text wx:if="{{detail.competition.regEnd}}">报名截止 {{detail.competition.regEnd}}</text>
+        <text wx:elif="{{detail.competition.contestDate}}">开赛 {{detail.competition.contestDate}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view wx:else class="empty">
+    <text class="empty__emoji">📭</text>公告不存在或已删除
+  </view>
+
+  <view wx:if="{{canDelete}}" class="footer">
+    <view class="del pressable" hover-class="pressing" bindtap="removeItem">删除该公告</view>
+  </view>
+</view>

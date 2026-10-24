@@ -1,0 +1,26 @@
+/* 全局样式入口 */
+@import "./styles/variables.wxss";
+@import "./styles/mixins.wxss";
+
+page {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
+  font-size: var(--font-body);
+  color: var(--text-primary);
+  background: var(--bg-page);
+  box-sizing: border-box;
+}
+
+view, text, image, button, input, textarea {
+  box-sizing: border-box;
+}
+
+button {
+  background: initial;
+  padding: 0;
+  line-height: normal;
+  font-size: var(--font-body);
+}
+button::after { border: none; }
+
+/* 隐藏滚动条 */
+::-webkit-scrollbar { width: 0; height: 0; color: transparent; }

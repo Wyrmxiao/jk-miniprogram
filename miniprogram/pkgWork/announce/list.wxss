@@ -1,0 +1,39 @@
+/* pkgWork/announce/list.wxss */
+.page { min-height: 100vh; background: var(--bg-page); padding-bottom: 60rpx; }
+
+.state { text-align: center; color: var(--text-secondary); font-size: var(--font-caption); padding: 40rpx 0; }
+.state--end { color: var(--text-tertiary); }
+
+.list { margin: var(--space-sm) var(--space-lg) var(--space-lg); }
+
+.item {
+  display: flex;
+  align-items: center;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-md) var(--space-lg);
+  margin-bottom: var(--space-md);
+}
+.item__main { flex: 1; min-width: 0; }
+.item__badges { flex-direction: row; align-items: center; margin-bottom: 12rpx; }
+.item__dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background: var(--color-danger);
+  margin-left: 12rpx;
+}
+.item__title {
+  font-size: var(--font-body);
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+.item__meta { margin-top: 10rpx; font-size: var(--font-caption); color: var(--text-secondary); }
+.item__del {
+  margin-left: var(--space-sm);
+  font-size: var(--font-caption);
+  color: var(--color-danger);
+  padding: 16rpx;
+}

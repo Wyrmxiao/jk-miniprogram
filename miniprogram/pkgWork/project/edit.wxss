@@ -1,0 +1,57 @@
+/* pkgWork/project/edit.wxss —— 项目编辑（学生端 · 成长绿） */
+.page { min-height: 100vh; background: var(--bg-page); padding: 0 0 180rpx; }
+
+/* 角色条 */
+.rolebar {
+  padding: var(--space-md) var(--space-lg);
+  color: #fff;
+  margin-bottom: var(--space-md);
+}
+.rolebar--student { background: linear-gradient(135deg, #93ab89 0%, #7f9a75 100%); }
+.rolebar__label { font-size: var(--font-body); font-weight: 600; }
+.rolebar__desc { margin-top: 4rpx; font-size: var(--font-micro); opacity: 0.9; }
+
+.block {
+  background: var(--bg-card);
+  margin: 0 var(--space-lg) var(--space-md);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-card);
+}
+.block__title { font-size: var(--font-headline); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-md); }
+.block__label { margin: var(--space-md) 0 var(--space-sm); font-size: var(--font-caption); color: var(--text-secondary); }
+
+.opts { display: flex; flex-wrap: wrap; gap: var(--space-sm); }
+.opt {
+  padding: 12rpx 28rpx; border-radius: 999rpx;
+  background: var(--bg-page); color: var(--text-secondary);
+  font-size: var(--font-caption);
+  transition: all 0.2s ease;
+}
+.opt--on { background: var(--color-success); color: #fff; font-weight: 500; }
+
+.picker {
+  padding: 24rpx 28rpx;
+  border-radius: var(--radius-md);
+  background: var(--bg-page);
+  color: var(--text-tertiary);
+  font-size: var(--font-caption);
+}
+.picker--on { color: var(--text-primary); }
+
+/* 底部保存条 */
+.footer {
+  position: fixed; left: 0; right: 0; bottom: 0;
+  padding: var(--space-md) var(--space-lg) calc(var(--space-md) + env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20rpx);
+  border-top: 2rpx solid var(--border-light);
+}
+.submit {
+  height: 96rpx; border-radius: 999rpx;
+  background: var(--color-success); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: var(--font-body); font-weight: 600;
+  box-shadow: 0 8rpx 24rpx rgba(127, 154, 117, 0.35);
+}
+.submit--disabled { opacity: 0.5; }

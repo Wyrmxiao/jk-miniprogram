@@ -1,0 +1,77 @@
+/* 设计变量：莫兰迪色板（低饱和灰蒙色）+ 字阶 + 间距 + 圆角 + 阴影
+   页面禁止硬编码颜色，一律引用此处变量。
+   莫兰迪原则：所有色都「掺了灰」——雾蓝/鼠尾草绿/焦糖杏/干燥玫瑰/燕麦白，
+   饱和度压低、明度居中，视觉柔和安静；白字可读性靠「深一档」的同色系保证。 */
+page {
+  /* ===== 品牌色（莫兰迪雾蓝） ===== */
+  --color-primary: #6b8ca3;
+  --color-primary-light: rgba(107, 140, 163, 0.12);
+  --color-primary-dark: #55748a;
+
+  /* ===== 语义色（莫兰迪） ===== */
+  --color-success: #7f9a75;
+  --color-success-light: rgba(127, 154, 117, 0.14);
+  --color-warning: #c08a55;
+  --color-warning-light: rgba(192, 138, 85, 0.16);
+  --color-danger: #b9807f;
+  --color-danger-light: rgba(185, 128, 127, 0.14);
+  --color-info: #8d84ab;
+  --color-info-light: rgba(141, 132, 171, 0.14);
+
+  /* ===== 角色色：学生成长绿 / 教师职能蓝 ===== */
+  --color-student: #7f9a75;
+  --color-student-deep: #637c5a;
+  --color-teacher: #6b8ca3;
+  --color-teacher-deep: #55748a;
+
+  /* ===== 竞赛级别色（莫兰迪） ===== */
+  --level-a: #b9807f;
+  --level-b: #c08a55;
+  --level-c: #6b8ca3;
+  --level-d: #9d988e;
+
+  /* ===== 文字（暖灰系，非纯黑） ===== */
+  --text-primary: #4a4640;
+  --text-secondary: rgba(74, 70, 64, 0.62);
+  --text-tertiary: rgba(74, 70, 64, 0.38);
+  --text-inverse: #ffffff;
+
+  /* ===== 背景与分割（燕麦白/暖白） ===== */
+  --bg-page: #f4f1ec;
+  --bg-card: #fffdf9;
+  --bg-block: rgba(120, 112, 100, 0.08);
+  --bg-elevated: #fffdf9;
+  --border-color: rgba(120, 112, 100, 0.14);
+  --border-light: rgba(120, 112, 100, 0.07);
+
+  /* ===== 间距（8 的倍数） ===== */
+  --space-xs: 8rpx;
+  --space-sm: 16rpx;
+  --space-md: 24rpx;
+  --space-lg: 32rpx;
+  --space-xl: 48rpx;
+
+  /* ===== 字阶 ===== */
+  --font-micro: 22rpx;
+  --font-caption: 24rpx;
+  --font-body: 28rpx;
+  --font-headline: 32rpx;
+  --font-title: 40rpx;
+  --font-large: 48rpx;
+
+  /* ===== 圆角 ===== */
+  --radius-sm: 8rpx;
+  --radius-md: 16rpx;
+  --radius-lg: 24rpx;
+  --radius-sheet: 28rpx;
+  --radius-pill: 999rpx;
+
+  /* ===== 阴影（暖调，单层柔和） ===== */
+  --shadow-card: 0 8rpx 24rpx rgba(90, 82, 70, 0.07);
+  --shadow-float: 0 16rpx 48rpx rgba(90, 82, 70, 0.14);
+
+  /* ===== 动效 ===== */
+  --ease-press: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  /* 年轻化俏皮回弹（按压/入场用） */
+  --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+}

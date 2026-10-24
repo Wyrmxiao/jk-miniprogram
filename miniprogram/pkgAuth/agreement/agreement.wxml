@@ -1,0 +1,50 @@
+<view class="page doc">
+  <view class="doc__title">用户隐私保护指引</view>
+  <view class="doc__meta">更新日期 {{updatedAt}}</view>
+
+  <view class="doc__section">
+    <view class="doc__h">一、我们收集哪些信息</view>
+    <view class="doc__p">
+      为完成校内身份核验，在您主动提交时收集学号、姓名、年级与专业；
+      为记录学习过程，收集您主动填写的学习日志、成果与图片。
+    </view>
+  </view>
+
+  <view class="doc__section">
+    <view class="doc__h">二、我们如何使用信息</view>
+    <view class="doc__p">
+      仅用于身份核验、学习路线制定、成长记录归档与竞赛指导，
+      不会用于商业营销，也不会向第三方出售。
+    </view>
+  </view>
+
+  <view class="doc__section">
+    <view class="doc__h">三、信息的存储与保护</view>
+    <view class="doc__p">
+      数据存储于微信云开发环境，通过云函数访问并做权限校验，
+      仅本人与授权教师可见。
+    </view>
+  </view>
+
+  <view class="doc__section">
+    <view class="doc__h">四、您的权利</view>
+    <view class="doc__p">
+      您可随时查看自己的学习记录并申请删除；发布的内容可自行删除。
+      如需注销账号，请联系社团管理员处理。
+    </view>
+  </view>
+
+  <view class="doc__section">
+    <view class="doc__h">五、未成年人保护</view>
+    <view class="doc__p">
+      若您未满 18 周岁，请在监护人指导下使用本小程序。
+    </view>
+  </view>
+
+  <view class="doc__tip">
+    本指引为小程序内说明文本，正式上线前需在
+    微信公众平台「设置 - 服务内容声明 - 用户隐私保护指引」中同步配置。
+  </view>
+
+  <view class="doc__btn" bindtap="openPrivacyContract">查看平台隐私保护指引</view>
+</view>

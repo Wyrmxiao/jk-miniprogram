@@ -1,0 +1,54 @@
+<view class="page">
+  <view class="hero">
+    <view class="hero__title">赛事维护</view>
+    <view class="hero__sub">编辑报名时间、开赛时间与赛事信息</view>
+    <input
+      class="hero__search"
+      placeholder="搜索竞赛名称"
+      placeholder-class="hero__ph"
+      value="{{keyword}}"
+      confirm-type="search"
+      bindconfirm="onSearch"
+      cursor-spacing="80"
+    />
+  </view>
+
+  <scroll-view class="chips" scroll-x enhanced show-scrollbar="{{false}}">
+    <view
+      wx:for="{{filters}}"
+      wx:key="key"
+      class="chip {{filter === item.key ? 'chip--on' : ''}}"
+      data-key="{{item.key}}"
+      bindtap="onFilter"
+    >{{item.text}}</view>
+  </scroll-view>
+
+  <view class="count">共 {{list.length}} 项</view>
+
+  <view wx:if="{{loading}}" class="empty">加载中…</view>
+  <view wx:elif="{{list.length === 0}}" class="empty">
+    <text class="empty__emoji">🔍</text>没有符合条件的赛事
+  </view>
+  <view wx:else class="list">
+    <view wx:for="{{list}}" wx:key="_id" class="card" data-id="{{item._id}}" bindtap="goEdit">
+      <view class="card__head">
+        <view class="card__title">{{item.name}}</view>
+        <view class="level level--{{item.level}}">{{item.level}}类</view>
+      </view>
+      <view class="card__time">
+        <view class="card__dot card__dot--{{item.hasTime ? 'ok' : 'todo'}}"></view>
+        <text wx:if="{{item.regEnd}}">报名 {{item.regStart || '—'}} 至 {{item.regEnd}}</text>
+        <text wx:elif="{{item.contestDate}}">开赛 {{item.contestDate}}</text>
+        <text wx:elif="{{item.typicalMonths.length}}">往期惯例 {{item.typicalText}} 月</text>
+        <text wx:else class="card__time-todo">时间未填写</text>
+      </view>
+      <view class="card__meta">
+        <text wx:if="{{item.host}}">{{item.host}}</text>
+        <text wx:if="{{item.isFocus}}" class="card__focus">★ 院内重点</text>
+        <text class="card__edit">编辑 ›</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="fab" bindtap="goCreate">＋</view>
+</view>

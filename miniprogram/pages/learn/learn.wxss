@@ -1,0 +1,103 @@
+/* pages/learn/learn.wxss —— Apple 风格学习页 */
+.page {
+  min-height: 100vh;
+  padding-bottom: var(--space-xl);
+  background: var(--bg-page);
+}
+
+.hero {
+  padding: 40rpx var(--space-lg) 32rpx;
+  background: linear-gradient(135deg, #7c99ad 0%, #5f7d93 100%);
+  border-bottom-left-radius: var(--radius-sheet);
+  border-bottom-right-radius: var(--radius-sheet);
+}
+.hero__title { font-size: var(--font-large); font-weight: 700; color: #fff; letter-spacing: 2rpx; }
+.hero__sub { margin-top: 10rpx; font-size: var(--font-caption); color: rgba(255, 255, 255, 0.85); line-height: 1.5; }
+
+.unverified {
+  margin: var(--space-xl) var(--space-lg);
+  padding: var(--space-xl);
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  text-align: center;
+}
+.unverified__title { font-size: var(--font-body); color: var(--text-primary); margin-bottom: var(--space-lg); }
+
+.actions { padding: var(--space-md) var(--space-lg) 0; }
+
+/* ===== 任务/记录卡片 ===== */
+.list { padding: var(--space-sm) var(--space-lg) 0; }
+.card {
+  margin-bottom: var(--space-md);
+  padding: var(--space-lg);
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+.card__head { flex-direction: row; align-items: flex-start; justify-content: space-between; }
+.card__title { flex: 1; font-size: var(--font-body); font-weight: 600; color: var(--text-primary); line-height: 1.5; }
+.card__date { margin-left: var(--space-sm); font-size: var(--font-micro); color: var(--text-tertiary); }
+.card__author { margin-top: 6rpx; font-size: var(--font-caption); color: var(--color-primary); }
+.card__desc {
+  margin-top: var(--space-sm);
+  font-size: var(--font-caption);
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+.card__meta {
+  display: flex;
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+  font-size: var(--font-micro);
+  color: var(--text-tertiary);
+}
+.card__tags { flex-direction: row; flex-wrap: wrap; margin-top: var(--space-sm); }
+.card__tags .tag { margin-right: var(--space-sm); }
+.card__btns { margin-top: var(--space-md); flex-direction: row; justify-content: flex-end; }
+
+/* 教师批注 */
+.comment {
+  margin-top: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  background: var(--color-warning-light);
+  font-size: var(--font-caption);
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+.comment__by { color: var(--color-warning); margin-right: 6rpx; font-weight: 500; }
+
+.state { padding: var(--space-xl) 0; text-align: center; font-size: var(--font-caption); color: var(--text-secondary); }
+.state--empty { display: flex; flex-direction: column; align-items: center; }
+.state__emoji { font-size: 72rpx; margin-bottom: var(--space-sm); }
+
+/* ===== 弹层内：学生提交卡片 ===== */
+.pick-box {
+  margin-top: var(--space-sm);
+  padding: var(--space-sm);
+  border-radius: var(--radius-md);
+  background: var(--bg-block);
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.pick {
+  padding: 10rpx var(--space-md);
+  margin: 0 12rpx 12rpx 0;
+  border-radius: var(--radius-pill);
+  background: var(--bg-card);
+  font-size: var(--font-caption);
+  color: var(--text-secondary);
+}
+.pick--on { background: var(--color-primary); color: #fff; }
+.pick-tip { padding: var(--space-md) 0; font-size: var(--font-caption); color: var(--text-tertiary); }
+
+.sub {
+  margin-top: var(--space-md);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  background: var(--bg-block);
+}
+.sub__head { flex-direction: row; align-items: center; justify-content: space-between; }
+.sub__name { font-size: var(--font-body); font-weight: 500; color: var(--text-primary); }
+.sub__content { margin-top: var(--space-sm); font-size: var(--font-caption); color: var(--text-secondary); line-height: 1.6; }

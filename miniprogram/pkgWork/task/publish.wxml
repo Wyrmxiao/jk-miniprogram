@@ -1,0 +1,61 @@
+<view class="page">
+  <view class="rolebar rolebar--teacher">
+    <view class="rolebar__icon">师</view>
+    <view class="rolebar__text">教师端 · 布置学习任务，可指派全体或指定学生</view>
+  </view>
+
+  <view class="block">
+    <view class="block__title">任务内容</view>
+    <input class="field" placeholder="标题，如：完成动态规划专题练习" value="{{form.title}}" data-field="title" bindinput="onField" cursor-spacing="120" />
+    <textarea
+      class="field field--area"
+      placeholder="任务要求与验收标准（可选）"
+      value="{{form.content}}"
+      data-field="content"
+      bindinput="onField"
+      auto-height
+      cursor-spacing="240"
+    />
+  </view>
+
+  <view class="block">
+    <view class="block__title">时间与方向</view>
+    <view class="row">
+      <text class="row__label">截止日期</text>
+      <picker mode="date" value="{{form.dueDate}}" bindchange="onDueDate">
+        <view class="picker">{{form.dueDate || '选择日期（可选）'}}</view>
+      </picker>
+    </view>
+    <view class="row__label block-label">方向（可选）</view>
+    <view class="opts">
+      <text wx:for="{{directions}}" wx:key="key"
+        class="opt {{form.direction === item.key ? 'opt--on' : ''}}"
+        data-value="{{item.key}}" bindtap="onDirection">{{item.name}}</text>
+    </view>
+  </view>
+
+  <view class="block">
+    <view class="block__title">指派范围</view>
+    <view class="opts">
+      <text class="opt {{form.assignType === 'all' ? 'opt--on' : ''}}" data-value="all" bindtap="onAssignType">全体学生</text>
+      <text class="opt {{form.assignType === 'some' ? 'opt--on' : ''}}" data-value="some" bindtap="onAssignType">指定学生</text>
+    </view>
+    <block wx:if="{{form.assignType === 'some'}}">
+      <view class="pick-box">
+        <view wx:for="{{students}}" wx:key="openid"
+          class="pick {{assignSel[item.openid] ? 'pick--on' : ''}}"
+          data-openid="{{item.openid}}" bindtap="toggleStudent">
+          {{item.realName || item.nickname || '未实名'}}
+        </view>
+        <view wx:if="{{students.length === 0}}" class="pick-tip">暂无已认证学生，学生需先完成实名认证</view>
+      </view>
+      <view wx:if="{{students.length > 0}}" class="counter">已选 {{form.assignTo.length}} / {{students.length}} 人</view>
+    </block>
+  </view>
+
+  <view class="footer" wx:if="{{!keyboard}}">
+    <view class="submit pressable {{submitting ? 'submit--disabled' : ''}}" hover-class="pressing" bindtap="submit">
+      {{submitting ? '发布中…' : '发布任务'}}
+    </view>
+  </view>
+</view>

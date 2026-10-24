@@ -1,0 +1,68 @@
+/* pkgContest/manage/manage.wxss —— Apple 风格赛事维护 */
+.page { min-height: 100vh; background: var(--bg-page); padding-bottom: var(--space-xl); }
+.hero {
+  padding: 40rpx var(--space-lg) 32rpx;
+  background: linear-gradient(135deg, #7c99ad 0%, #5f7d93 100%);
+  border-bottom-left-radius: var(--radius-sheet);
+  border-bottom-right-radius: var(--radius-sheet);
+}
+.hero__title { font-size: var(--font-large); font-weight: 700; color: #fff; letter-spacing: 2rpx; }
+.hero__sub { margin-top: 10rpx; font-size: var(--font-caption); color: rgba(255, 255, 255, 0.85); }
+.hero__search {
+  margin-top: var(--space-md); height: 74rpx; padding: 0 28rpx;
+  border-radius: var(--radius-pill); background: #fff; font-size: var(--font-caption);
+}
+.hero__ph { color: var(--text-tertiary); }
+
+.list { padding: var(--space-sm) var(--space-lg) 0; }
+.card {
+  margin-bottom: var(--space-md); padding: var(--space-lg);
+  background: var(--bg-card); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+.card__head { flex-direction: row; align-items: flex-start; justify-content: space-between; }
+.card__title { flex: 1; font-size: var(--font-body); font-weight: 600; color: var(--text-primary); line-height: 1.5; }
+.state { padding: var(--space-xl) 0; text-align: center; font-size: var(--font-caption); color: var(--text-secondary); }
+
+/* 筛选 chips（白底胶囊，与赛事库一致） */
+.chips { white-space: nowrap; padding: var(--space-sm) var(--space-lg) var(--space-xs); }
+.chip {
+  display: inline-block;
+  padding: 12rpx 28rpx;
+  margin-right: var(--space-sm);
+  border-radius: var(--radius-pill);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-card);
+  font-size: var(--font-caption);
+  color: var(--text-secondary);
+}
+.chip--on { background: var(--color-primary); color: #fff; font-weight: 500; }
+
+.count { padding: var(--space-sm) var(--space-lg); font-size: var(--font-micro); color: var(--text-tertiary); }
+
+.card__time { flex-direction: row; align-items: center; margin-top: var(--space-sm); font-size: var(--font-caption); color: var(--color-primary); }
+.card__dot { width: 12rpx; height: 12rpx; margin-right: var(--space-sm); border-radius: 50%; }
+.card__dot--ok { background: var(--color-success); }
+.card__dot--todo { background: var(--color-warning); }
+.card__time-todo { color: var(--color-warning); }
+.card__meta { flex-direction: row; align-items: center; margin-top: var(--space-sm); font-size: var(--font-micro); color: var(--text-tertiary); }
+.card__focus { color: var(--color-warning); }
+.card__edit { margin-left: auto; color: var(--color-primary); font-weight: 500; }
+
+/* 新增按钮 */
+.fab {
+  position: fixed;
+  right: var(--space-lg);
+  bottom: calc(48rpx + env(safe-area-inset-bottom));
+  width: 104rpx;
+  height: 104rpx;
+  line-height: 100rpx;
+  text-align: center;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 48rpx;
+  font-weight: 300;
+  box-shadow: var(--shadow-float);
+  z-index: 50;
+}

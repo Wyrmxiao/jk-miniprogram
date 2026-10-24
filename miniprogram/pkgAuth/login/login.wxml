@@ -1,0 +1,48 @@
+<view class="page auth">
+  <!-- 品牌区 -->
+  <view class="auth__brand">
+    <view class="auth__logo">计科创新中心</view>
+    <view class="auth__sub">重庆移通学院计算机学院 · 个性化能力培养平台</view>
+  </view>
+
+  <!-- 登录说明（inset 分组） -->
+  <view class="group">
+    <view class="cell">
+      <view class="cell__icon cell__icon--blue">💬</view>
+      <view class="cell__body">
+        <view class="cell__title">登录方式</view>
+        <view class="cell__desc">微信一键登录，获取你的身份</view>
+      </view>
+    </view>
+    <view class="cell">
+      <view class="cell__icon cell__icon--green">🪪</view>
+      <view class="cell__body">
+        <view class="cell__title">实名方式</view>
+        <view class="cell__desc">学生：学号 + 姓名，教师审核；教师：完善姓名即用</view>
+      </view>
+    </view>
+    <view class="cell">
+      <view class="cell__icon cell__icon--purple">🔒</view>
+      <view class="cell__body">
+        <view class="cell__title">信息用途</view>
+        <view class="cell__desc">仅用于身份核验与学习档案，不对外公开</view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{needPrivacy}}" class="auth__privacy pressable" hover-class="pressing" bindtap="onAgreePrivacy">
+    检测到需要隐私授权，点击完成授权
+  </view>
+
+  <view class="auth__agree">
+    <checkbox value="agree" checked="{{agreed}}" bindchange="onAgreeChange" color="#007aff" />
+    <text class="auth__agree-text">
+      我已阅读并同意
+      <text class="auth__link" bindtap="openAgreement">《用户隐私保护指引》</text>
+    </text>
+  </view>
+
+  <view class="btn btn-block {{agreed ? '' : 'btn-disabled'}} pressable" hover-class="pressing" bindtap="onLogin">
+    {{loading ? '登录中…' : '微信登录'}}
+  </view>
+</view>

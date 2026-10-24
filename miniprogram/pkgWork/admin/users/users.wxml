@@ -1,0 +1,53 @@
+<view class="page">
+  <!-- 大标题头部 -->
+  <view class="hero">
+    <view class="hero__title">用户与权限</view>
+    <view class="hero__sub">共 {{total}} 位 · 可分配学生 / 教师 / 管理员</view>
+    <input
+      class="hero__search"
+      placeholder="搜索姓名 / 学号"
+      placeholder-class="hero__ph"
+      value="{{keyword}}"
+      confirm-type="search"
+      bindconfirm="onSearch"
+      cursor-spacing="80"
+    />
+  </view>
+
+  <!-- 角色筛选 -->
+  <view class="seg">
+    <view
+      wx:for="{{tabs}}"
+      wx:key="key"
+      class="seg__item {{tab === item.key ? 'seg__item--on' : ''}}"
+      data-key="{{item.key}}"
+      bindtap="switchTab"
+    >{{item.text}}</view>
+  </view>
+
+  <!-- 列表 -->
+  <view wx:if="{{loading && list.length === 0}}" class="state">正在加载用户…</view>
+  <view wx:elif="{{list.length === 0}}" class="empty">
+    <text class="empty__emoji">👥</text>暂无匹配的用户
+  </view>
+  <view wx:else class="list">
+    <view wx:for="{{list}}" wx:key="_id" class="ucard">
+      <view class="ucard__avatar">{{item.initial}}</view>
+      <view class="ucard__body">
+        <view class="ucard__row">
+          <text class="ucard__name">{{item.name}}</text>
+          <text class="tag {{item.roleTag}}">{{item.roleText}}</text>
+          <text wx:if="{{item.isSelf}}" class="tag">本人</text>
+        </view>
+        <view class="ucard__meta">{{item.sub}} · {{item.authText}}</view>
+      </view>
+      <view class="ucard__ops">
+        <text class="opt {{item.role === 'student' ? 'opt--on' : ''}}" data-id="{{item._id}}" data-role="student" bindtap="setRole">学生</text>
+        <text class="opt {{item.role === 'teacher' ? 'opt--on' : ''}}" data-id="{{item._id}}" data-role="teacher" bindtap="setRole">教师</text>
+        <text class="opt {{item.role === 'admin' ? 'opt--on' : ''}}" data-id="{{item._id}}" data-role="admin" bindtap="setRole">管理员</text>
+      </view>
+    </view>
+    <view wx:if="{{loadingMore}}" class="state">加载中…</view>
+    <view wx:if="{{noMore && list.length > 0}}" class="state state--end">— 已展示全部 {{total}} 位 —</view>
+  </view>
+</view>

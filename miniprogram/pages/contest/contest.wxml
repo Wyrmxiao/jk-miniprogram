@@ -1,0 +1,76 @@
+<view class="page">
+  <!-- 顶部：大标题 + 搜索 -->
+  <view class="hero">
+    <view class="hero__row">
+      <view class="hero__title">赛事库</view>
+      <view class="hero__btns">
+        <view wx:if="{{isTeacher}}" class="hero__manage pressable" hover-class="pressing" bindtap="goManage">赛事维护</view>
+      </view>
+    </view>
+    <view class="hero__sub">共 {{total}} 项赛事 · 按最近可参与时间排序 · 默认展示理工其他类</view>
+    <input
+      class="hero__search"
+      placeholder="搜索竞赛名称"
+      placeholder-class="hero__ph"
+      value="{{keyword}}"
+      confirm-type="search"
+      bindconfirm="onSearch"
+      cursor-spacing="80"
+    />
+  </view>
+
+  <!-- 筛选：级别 -->
+  <scroll-view class="chips" scroll-x enhanced show-scrollbar="{{false}}">
+    <view
+      wx:for="{{levels}}"
+      wx:key="key"
+      class="chip pressable {{level === item.key ? 'chip--on' : ''}}"
+      hover-class="chip--pressing"
+      data-key="{{item.key}}"
+      bindtap="onLevelChange"
+    >{{item.text}}</view>
+  </scroll-view>
+
+  <!-- 筛选：学科分类 + 院内重点 -->
+  <scroll-view class="chips" scroll-x enhanced show-scrollbar="{{false}}">
+    <view
+      wx:for="{{categories}}"
+      wx:key="key"
+      class="chip pressable {{category === item.key ? 'chip--on' : ''}}"
+      hover-class="chip--pressing"
+      data-key="{{item.key}}"
+      bindtap="onCategoryChange"
+    >{{item.text}}</view>
+    <view class="chip pressable {{focusOnly ? 'chip--on' : ''}}" hover-class="chip--pressing" bindtap="toggleFocus">★ 院内重点</view>
+  </scroll-view>
+
+  <!-- 列表 -->
+  <view wx:if="{{loading}}" class="state">正在加载赛事…</view>
+  <view wx:elif="{{list.length === 0}}" class="state state--empty">
+    <view class="state__emoji">🏆</view>
+    <view>暂无符合条件的竞赛</view>
+  </view>
+  <view wx:else class="list">
+    <view wx:for="{{list}}" wx:key="_id" class="card pressable" hover-class="pressing" data-id="{{item._id}}" bindtap="goDetail">
+      <view class="card__head">
+        <view class="card__name">{{item.name}}</view>
+        <view class="level level--{{item.level}}">{{item.level}}类</view>
+      </view>
+      <view class="card__tags">
+        <text wx:if="{{item.categoryText}}" class="tag">{{item.categoryText}}</text>
+        <text wx:if="{{item.host}}" class="tag">{{item.host}}</text>
+        <text wx:if="{{item.isFocus}}" class="tag tag-success">★ 院内重点</text>
+        <text wx:if="{{item.hasUrl}}" class="tag tag-primary">🔗 官网</text>
+      </view>
+      <view class="card__time time--{{item.timeState}}">
+        <view class="card__time-dot"></view>
+        <text>{{item.timeLabel}}</text>
+        <text wx:if="{{item.soon}}" class="card__time-badge">即将开始</text>
+        <text wx:if="{{item.timeState === 'normal'}}" class="card__time-note">以官方通知为准</text>
+      </view>
+    </view>
+    <view wx:if="{{loadingMore}}" class="state">加载中…</view>
+    <view wx:if="{{noMore && list.length > 0}}" class="state state--end">— 已加载全部 {{total}} 项 —</view>
+  </view>
+
+</view>

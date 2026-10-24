@@ -1,0 +1,9 @@
+{
+  "name": "auth",
+  "version": "1.0.0",
+  "description": "计科创新中心 · 认证域（登录、实名认证、审核）",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

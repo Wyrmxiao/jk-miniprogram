@@ -1,0 +1,36 @@
+/* pkgWork/announce/publish.wxss —— 教师端：职能蓝主题 */
+.page { min-height: 100vh; background: var(--bg-page); padding: 0 var(--space-lg) 160rpx; }
+
+.block {
+  margin-top: var(--space-md);
+  padding: var(--space-lg);
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+.block__title { font-size: var(--font-body); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-md); }
+.counter { margin-top: var(--space-sm); text-align: right; font-size: var(--font-micro); color: var(--text-tertiary); }
+
+.switch-row__desc { margin-top: 6rpx; font-size: var(--font-micro); color: var(--text-tertiary); }
+
+/* 底部操作条：毛玻璃 */
+.footer {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  padding: var(--space-md) var(--space-lg) calc(var(--space-md) + env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(24rpx) saturate(180%);
+  -webkit-backdrop-filter: blur(24rpx) saturate(180%);
+  box-shadow: 0 -4rpx 20rpx rgba(90, 82, 70, 0.06);
+}
+.submit {
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  border-radius: var(--radius-pill);
+  background: var(--color-teacher);
+  color: #fff;
+  font-size: var(--font-body);
+  font-weight: 600;
+}
+.submit--disabled { opacity: 0.6; }

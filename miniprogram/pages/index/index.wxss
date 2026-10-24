@@ -1,0 +1,199 @@
+/* pages/index/index.wxss —— Apple 风格首页 */
+.index-page {
+  background: var(--bg-page);
+  /* 底部避让固定小按钮 */
+  padding-bottom: calc(140rpx + env(safe-area-inset-bottom));
+}
+
+/* 角色徽章 */
+.hero__role {
+  padding: 10rpx 24rpx;
+  border-radius: var(--radius-pill);
+  font-size: var(--font-caption);
+  font-weight: 600;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.22);
+}
+.hero__role--student { background: var(--color-student); }
+.hero__role--teacher { background: rgba(255, 255, 255, 0.28); }
+
+/* 引导卡（整卡可点） */
+.guide {
+  display: flex;
+  align-items: center;
+  margin: var(--space-md) var(--space-lg) 0;
+  padding: var(--space-md) var(--space-lg);
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+.guide__icon {
+  width: 72rpx;
+  height: 72rpx;
+  margin-right: var(--space-md);
+  border-radius: 50%;
+  background: var(--color-primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+}
+.guide__body { flex: 1; min-width: 0; }
+.guide__title { font-size: var(--font-body); font-weight: 600; color: var(--text-primary); }
+.guide__desc { margin-top: 4rpx; font-size: var(--font-caption); color: var(--text-secondary); }
+.guide__go { font-size: var(--font-caption); color: var(--color-primary); font-weight: 500; }
+
+/* 快捷入口（2×2 瓷砖） */
+.quick {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 var(--space-lg);
+}
+.quick__item {
+  width: calc(50% - 12rpx);
+  margin-bottom: var(--space-md);
+  padding: var(--space-lg) var(--space-md);
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.quick__item:nth-child(2n) { margin-left: var(--space-md); }
+.quick__icon {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 44rpx;
+  margin-bottom: var(--space-sm);
+}
+.quick__icon--blue { background: rgba(107, 140, 163, 0.12); }
+.quick__icon--green { background: rgba(127, 154, 117, 0.14); }
+.quick__icon--orange { background: rgba(192, 138, 85, 0.14); }
+.quick__icon--purple { background: rgba(141, 132, 171, 0.12); }
+.quick__text { font-size: var(--font-caption); color: var(--text-primary); font-weight: 500; }
+
+/* 待办横幅 */
+.todo {
+  display: flex;
+  align-items: center;
+  margin: var(--space-md) var(--space-lg) 0;
+  padding: var(--space-md) var(--space-lg);
+  border-radius: var(--radius-lg);
+}
+.todo--teacher { background: var(--color-warning-light); }
+.todo--student { background: var(--color-primary-light); }
+.todo__num {
+  min-width: 72rpx;
+  height: 72rpx;
+  line-height: 72rpx;
+  margin-right: var(--space-md);
+  border-radius: 50%;
+  text-align: center;
+  font-size: var(--font-headline);
+  font-weight: 700;
+  color: #fff;
+  background: var(--color-warning);
+}
+.todo--student .todo__num { background: var(--color-primary); }
+.todo__body { flex: 1; }
+.todo__title { font-size: var(--font-body); font-weight: 600; color: var(--text-primary); }
+.todo__desc { margin-top: 4rpx; font-size: var(--font-caption); color: var(--text-secondary); }
+.todo__arrow { font-size: 36rpx; color: var(--text-tertiary); }
+
+/* 公告与赛事列表 */
+.group__title--row { display: flex; align-items: center; justify-content: space-between; }
+.group__more { font-size: var(--font-caption); color: var(--color-primary); font-weight: 500; }
+.anno__top { flex-direction: row; align-items: center; margin-bottom: 8rpx; }
+.anno__top .tag { margin-right: 8rpx; }
+.anno__title { font-size: var(--font-body); font-weight: 500; color: var(--text-primary); }
+
+/* ===== 右下角俏皮 FAB：跳转赛事库 ===== */
+.floatbar {
+  position: fixed;
+  right: var(--space-lg);
+  bottom: calc(28rpx + env(safe-area-inset-bottom));
+  z-index: 100;
+  pointer-events: none;
+}
+.floatbar__fab {
+  position: relative;
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7c99ad 0%, #5f7d93 100%);
+  box-shadow: 0 10rpx 28rpx rgba(107, 140, 163, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  /* 俏皮：轻轻摇摆 + 上下漂浮，像小球在打招呼 */
+  animation: fab-dance 3.2s ease-in-out 0.4s infinite;
+}
+@keyframes fab-dance {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  30% { transform: translateY(-8rpx) rotate(-5deg); }
+  60% { transform: translateY(-4rpx) rotate(4deg); }
+}
+.floatbar__emoji {
+  font-size: 40rpx;
+  line-height: 1;
+  /* 奖杯自己也微微眨眼 */
+  animation: emoji-blink 3.2s ease-in-out 0.4s infinite;
+}
+@keyframes emoji-blink {
+  0%, 100% { transform: scale(1); }
+  30% { transform: scale(1.14); }
+  60% { transform: scale(0.94); }
+}
+.floatbar__badge {
+  position: absolute;
+  top: -8rpx;
+  right: -10rpx;
+  min-width: 40rpx;
+  height: 40rpx;
+  line-height: 40rpx;
+  padding: 0 10rpx;
+  border-radius: var(--radius-pill);
+  background: var(--color-danger);
+  border: 4rpx solid var(--bg-card);
+  text-align: center;
+  font-size: var(--font-micro);
+  font-weight: 600;
+  color: #fff;
+  box-sizing: border-box;
+  /* 小巧思：徽章慢慢心跳，提醒「这里有 N 项」 */
+  animation: badge-beat 4s ease-in-out infinite;
+}
+@keyframes badge-beat {
+  0%, 100% { transform: scale(1); }
+  8% { transform: scale(1.18); }
+  16% { transform: scale(1); }
+}
+/* 小巧思：旁边一颗偶尔眨眼的小火花 */
+.floatbar__sparkle {
+  position: absolute;
+  left: -34rpx;
+  bottom: 8rpx;
+  font-size: 26rpx;
+  animation: sparkle-twinkle 2.4s ease-in-out infinite;
+}
+@keyframes sparkle-twinkle {
+  0%, 100% { opacity: 0.25; transform: scale(0.8) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1.15) rotate(20deg); }
+}
+
+/* ===== 首页分区入场（年轻化：依次轻轻上浮） ===== */
+.reveal { animation: rise-in 0.5s var(--ease-pop) both; }
+.reveal-1 { animation-delay: 0.05s; }
+.reveal-2 { animation-delay: 0.13s; }
+.reveal-3 { animation-delay: 0.21s; }
+.reveal-4 { animation-delay: 0.29s; }
+@keyframes rise-in {
+  from { transform: translateY(24rpx); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}

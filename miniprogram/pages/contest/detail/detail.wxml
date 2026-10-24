@@ -1,0 +1,117 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="state">正在加载…</view>
+
+  <view wx:elif="{{detail}}">
+    <!-- 头部：赛事名 + 级别 -->
+    <view class="hero">
+      <view class="hero__title detail__title">{{detail.name}}</view>
+      <view class="hero__btns">
+        <view class="level level--{{detail.level}}">{{detail.level}}类</view>
+        <text wx:if="{{categoryText}}" class="hero__meta">{{categoryText}}</text>
+        <text wx:if="{{detail.isFocus}}" class="hero__meta">★ 院内重点</text>
+      </view>
+    </view>
+
+    <!-- 时间安排 -->
+    <view class="group">
+      <view class="group__title">时间安排</view>
+      <view wx:if="{{timeRows.length}}" class="cell">
+        <view class="cell__body">
+          <view wx:for="{{timeRows}}" wx:key="label" class="time-row">
+            <text class="time-row__label">{{item.label}}</text>
+            <text class="time-row__value {{item.strong ? 'time-row__value--strong' : ''}}">{{item.value}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="cell">
+        <view class="cell__body">
+          <view class="detail__note">{{timeNote}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 赛事官网 -->
+    <view class="group">
+      <view class="group__title">赛事官网</view>
+      <view wx:if="{{detail.officialUrl}}" class="cell pressable" hover-class="pressing" bindtap="copyUrl">
+        <view class="cell__body">
+          <view class="cell__title">{{detail.officialName || '赛事官方网站'}}</view>
+          <view class="cell__desc detail__url">{{detail.officialUrl}}</view>
+        </view>
+        <text class="cell__value">复制</text>
+        <text class="cell__chevron">›</text>
+      </view>
+      <view wx:else class="cell">
+        <view class="cell__body">
+          <view class="detail__note">暂无官网链接，请通过学校教务或承办单位获取通知</view>
+        </view>
+      </view>
+      <view wx:if="{{detail.officialUrl}}" class="cell">
+        <view class="cell__body">
+          <view class="detail__tip">小程序内不能直接跳转外部网站，点上方复制链接后用浏览器打开</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 主办与来源 -->
+    <view class="group">
+      <view class="group__title">主办信息</view>
+      <view wx:if="{{detail.host}}" class="cell">
+        <view class="cell__body">
+          <view class="cell__title">承办单位</view>
+          <view class="cell__desc">{{detail.host}}</view>
+        </view>
+      </view>
+      <view wx:if="{{detail.source}}" class="cell">
+        <view class="cell__body">
+          <view class="cell__title">目录来源</view>
+          <view class="cell__desc">{{detail.source}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 赛事简介 -->
+    <view class="group">
+      <view class="group__title">赛事简介</view>
+      <view class="cell">
+        <view class="cell__body">
+          <view wx:if="{{detail.intro}}" class="detail__intro">{{detail.intro}}</view>
+          <view wx:else class="detail__note">暂无简介，可点击上方官网了解赛事详情</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 相关公告 -->
+    <view wx:if="{{announcements.length}}" class="group">
+      <view class="group__title">相关公告</view>
+      <view
+        wx:for="{{announcements}}"
+        wx:key="_id"
+        class="cell pressable"
+        hover-class="pressing"
+        data-id="{{item._id}}"
+        bindtap="goAnnounce"
+      >
+        <view class="cell__body">
+          <view class="cell__title">{{item.title}}</view>
+        </view>
+        <text class="cell__chevron">›</text>
+      </view>
+    </view>
+  </view>
+
+  <view wx:else class="empty">
+    <text class="empty__emoji">🏆</text>
+    赛事不存在或已下架
+  </view>
+
+  <!-- 底部操作 -->
+  <view wx:if="{{detail}}" class="footer">
+    <view wx:if="{{isTeacher}}" class="btn btn-plain pressable" hover-class="pressing" bindtap="goManage">赛事维护</view>
+    <view
+      class="btn btn-block {{following ? 'btn-plain' : 'btn-student'}} pressable"
+      hover-class="pressing"
+      bindtap="toggleFollow"
+    >{{following ? '已关注' : '关注赛事'}}</view>
+  </view>
+</view>

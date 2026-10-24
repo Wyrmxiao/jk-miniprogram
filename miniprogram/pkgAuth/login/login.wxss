@@ -1,0 +1,23 @@
+/* pkgAuth/login/login.wxss —— Apple 风格登录页 */
+.auth {
+  padding: 120rpx var(--space-lg) var(--space-xl);
+  background: var(--bg-page);
+  min-height: 100vh;
+}
+.auth__brand { text-align: center; margin-bottom: var(--space-xl); }
+.auth__logo { font-size: var(--font-large); font-weight: 700; color: var(--text-primary); letter-spacing: 4rpx; }
+.auth__sub { margin-top: var(--space-sm); font-size: var(--font-caption); color: var(--text-secondary); }
+
+.auth__privacy {
+  margin: var(--space-lg) var(--space-lg) 0;
+  padding: var(--space-md) var(--space-lg);
+  border-radius: var(--radius-md);
+  background: var(--color-warning-light);
+  color: var(--color-warning);
+  font-size: var(--font-caption);
+  text-align: center;
+}
+
+.auth__agree { flex-direction: row; align-items: center; margin: var(--space-lg); }
+.auth__agree-text { margin-left: var(--space-sm); font-size: var(--font-caption); color: var(--text-secondary); }
+.auth__link { color: var(--color-primary); }

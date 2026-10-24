@@ -1,0 +1,90 @@
+<view class="page">
+  <!-- ===== 学生：学号实名认证 ===== -->
+  <view wx:if="{{!isTeacher}}">
+    <view wx:if="{{application && application.status === 'pending'}}" class="card status-card">
+      <view class="status-card__title">审核中</view>
+      <view class="status-card__desc">
+        {{application.realName}} · {{application.studentId}}，请等待教师审核
+      </view>
+    </view>
+
+    <view wx:elif="{{application && application.status === 'approved'}}" class="card status-card status-card--ok">
+      <view class="status-card__title">已认证</view>
+      <view class="status-card__desc">{{application.realName}} · {{application.studentId}}</view>
+    </view>
+
+    <view wx:elif="{{application && application.status === 'rejected'}}" class="card status-card status-card--no">
+      <view class="status-card__title">未通过</view>
+      <view class="status-card__desc">{{application.remark || '请联系教师确认信息'}}</view>
+    </view>
+
+    <view wx:else class="card">
+      <view class="form-row">
+        <text class="form-row__label">学号</text>
+        <input class="form-row__input" placeholder="请输入学号" type="number"
+          value="{{form.studentId}}" data-field="studentId" bindinput="onInput" cursor-spacing="80" />
+      </view>
+      <view class="form-row">
+        <text class="form-row__label">姓名</text>
+        <input class="form-row__input" placeholder="请输入真实姓名"
+          value="{{form.realName}}" data-field="realName" bindinput="onInput" cursor-spacing="80" />
+      </view>
+      <view class="form-row">
+        <text class="form-row__label">年级</text>
+        <input class="form-row__input" placeholder="如 2024级"
+          value="{{form.grade}}" data-field="grade" bindinput="onInput" cursor-spacing="80" />
+      </view>
+      <view class="form-row">
+        <text class="form-row__label">专业</text>
+        <input class="form-row__input" placeholder="如 计算机科学与技术"
+          value="{{form.major}}" data-field="major" bindinput="onInput" cursor-spacing="80" />
+      </view>
+      <view class="btn btn-block" bindtap="submit">{{submitting ? '提交中…' : '提交认证'}}</view>
+    </view>
+  </view>
+
+  <!-- ===== 教师/管理员：完善个人资料 ===== -->
+  <view wx:else>
+    <view wx:if="{{profile && profile.realName}}" class="card status-card status-card--ok">
+      <view class="status-card__title">已完善资料</view>
+      <view class="status-card__desc">
+        {{profile.realName}}<text wx:if="{{profile.title}}"> · {{profile.title}}</text>
+      </view>
+    </view>
+
+    <view wx:else class="card">
+      <view class="form-row">
+        <text class="form-row__label">姓名</text>
+        <input class="form-row__input" placeholder="请输入真实姓名"
+          value="{{form.realName}}" data-field="realName" bindinput="onInput" cursor-spacing="80" />
+      </view>
+      <view class="form-row">
+        <text class="form-row__label">职称/身份</text>
+        <input class="form-row__input" placeholder="如 讲师 / 副教授（可选）"
+          value="{{form.title}}" data-field="title" bindinput="onInput" cursor-spacing="80" />
+      </view>
+      <view class="form-row">
+        <text class="form-row__label">联系电话</text>
+        <input class="form-row__input" placeholder="便于学生联系（可选）"
+          value="{{form.phone}}" data-field="phone" bindinput="onInput" cursor-spacing="80" />
+      </view>
+      <view class="btn btn-block" bindtap="submitProfile">{{submitting ? '保存中…' : '完善资料'}}</view>
+    </view>
+
+    <view class="section-title">待审核实名申请</view>
+    <view wx:if="{{loading}}" class="state-empty">加载中…</view>
+    <view wx:elif="{{pendingList.length === 0}}" class="state-empty">暂无待审核申请</view>
+    <view wx:else class="card-flat pending-wrap">
+      <view wx:for="{{pendingList}}" wx:key="_id" class="pending-item">
+        <view class="pending-item__name">{{item.realName}} · {{item.studentId}}</view>
+        <view class="pending-item__meta">{{item.grade}} {{item.major}} · {{item.timeText}}</view>
+        <view class="pending-item__actions">
+          <view class="mini-btn mini-btn--ok"
+            data-id="{{item._id}}" data-approved="true" bindtap="review">通过</view>
+          <view class="mini-btn mini-btn--no"
+            data-id="{{item._id}}" data-approved="false" bindtap="review">驳回</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

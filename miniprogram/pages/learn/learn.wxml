@@ -1,0 +1,165 @@
+<view class="page">
+  <view class="hero">
+    <view class="hero__title">学习</view>
+    <view class="hero__sub">{{isTeacher ? '布置任务 · 查看与批阅学生学习过程' : '记录学习过程 · 完成老师布置的任务'}}</view>
+  </view>
+
+  <!-- 未认证引导 -->
+  <view wx:if="{{!isVerified}}" class="unverified">
+    <view class="unverified__title">完成实名认证后使用学习功能</view>
+    <view class="btn btn-block pressable" hover-class="pressing" bindtap="goRealname">去认证</view>
+  </view>
+
+  <block wx:else>
+    <view class="seg">
+      <view class="seg__item {{tab === 'task' ? 'seg__item--on' : ''}}" data-tab="task" bindtap="switchTab">学习任务</view>
+      <view class="seg__item {{tab === 'log' ? 'seg__item--on' : ''}}" data-tab="log" bindtap="switchTab">学习记录</view>
+    </view>
+
+    <!-- ===== 学习任务 ===== -->
+    <block wx:if="{{tab === 'task'}}">
+      <view wx:if="{{isTeacher}}" class="actions">
+        <view class="btn btn-primary pressable" hover-class="pressing" bindtap="goPublishTask">+ 布置任务</view>
+      </view>
+
+      <view wx:if="{{loading}}" class="state">加载中…</view>
+      <view wx:elif="{{tasks.length === 0}}" class="state state--empty">
+        <view class="state__emoji">📝</view>
+        <view>{{isTeacher ? '还没有布置任务' : '暂无学习任务'}}</view>
+      </view>
+
+      <view wx:else class="list">
+        <view wx:for="{{tasks}}" wx:key="_id" class="card">
+          <view class="card__head">
+            <view class="card__title">{{item.title}}</view>
+            <view wx:if="{{!isTeacher}}" class="badge badge--{{item.myStatus}}">{{SUB_TEXT[item.myStatus]}}</view>
+          </view>
+          <view wx:if="{{item.content}}" class="card__desc">{{item.content}}</view>
+          <view class="card__meta">
+            <text wx:if="{{item.dueDate}}">截止 {{item.dueDate}}</text>
+            <text wx:if="{{isTeacher}}">提交 {{item.submitCount || 0}} · 批阅 {{item.reviewedCount || 0}}</text>
+            <text wx:else>布置人 {{item.createdByName}}</text>
+          </view>
+          <view wx:if="{{isTeacher}}" class="card__btns">
+            <view class="btn btn-plain pressable" hover-class="pressing" data-id="{{item._id}}" bindtap="openSubmissions">查看提交</view>
+          </view>
+          <view wx:else class="card__btns">
+            <view class="btn btn-primary pressable" hover-class="pressing" data-id="{{item._id}}" data-title="{{item.title}}" bindtap="openSubmit">
+              {{item.myStatus === 'todo' || item.myStatus === 'returned' ? '提交完成情况' : '重新提交'}}
+            </view>
+          </view>
+          <view wx:if="{{item.mySubmission && item.mySubmission.teacherComment}}" class="comment">
+            <text class="comment__by">{{item.mySubmission.reviewBy}}批注：</text>
+            <text>{{item.mySubmission.teacherComment}}</text>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <!-- ===== 学习记录 ===== -->
+    <block wx:if="{{tab === 'log'}}">
+      <view wx:if="{{!isTeacher}}" class="actions">
+        <view class="btn btn-primary pressable" hover-class="pressing" bindtap="goWriteLog">+ 写学习记录</view>
+      </view>
+
+      <view wx:if="{{loading}}" class="state">加载中…</view>
+      <view wx:elif="{{logs.length === 0}}" class="state state--empty">
+        <view class="state__emoji">📚</view>
+        <view>还没有学习记录</view>
+      </view>
+
+      <view wx:else class="list">
+        <view wx:for="{{logs}}" wx:key="_id" class="card">
+          <view class="card__head">
+            <view class="card__title">{{item.title}}</view>
+            <text wx:if="{{item.studyDate}}" class="card__date">{{item.studyDate}}</text>
+          </view>
+          <view wx:if="{{isTeacher && item.authorName}}" class="card__author">{{item.authorName}}</view>
+          <view class="card__desc">{{item.content}}</view>
+          <view wx:if="{{item.tags.length}}" class="card__tags">
+            <text wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this" class="tag">{{tag}}</text>
+          </view>
+          <view wx:if="{{item.teacherComment}}" class="comment">
+            <text class="comment__by">{{item.commentBy || '老师'}}批注：</text>
+            <text>{{item.teacherComment}}</text>
+          </view>
+          <view wx:if="{{isTeacher}}" class="card__btns">
+            <view class="btn btn-plain pressable" hover-class="pressing" data-id="{{item._id}}" data-kind="log" bindtap="openReview">
+              {{item.teacherComment ? '修改批注' : '批注'}}
+            </view>
+          </view>
+        </view>
+      </view>
+    </block>
+  </block>
+
+  <!-- ===== 弹层：学生提交完成情况 ===== -->
+  <view wx:if="{{showSubmit}}" class="mask" bindtap="closeSubmit">
+    <view class="sheet" catchtap="noop">
+      <view class="sheet__grip"></view>
+      <view class="sheet__title">提交完成情况</view>
+      <view class="sheet__tip">{{submitForm.title}}</view>
+      <textarea
+        class="field field--area"
+        placeholder="写清楚完成了哪些内容、遇到的问题"
+        maxlength="1000"
+        value="{{submitForm.content}}"
+        bindinput="onSubmitInput"
+        auto-height
+        cursor-spacing="240"
+      />
+      <view class="counter">{{submitForm.content.length}}/1000</view>
+      <view class="btn btn-block btn-primary pressable" hover-class="pressing" bindtap="submitMyWork">提交</view>
+    </view>
+  </view>
+
+  <!-- ===== 弹层：批阅/批注 ===== -->
+  <view wx:if="{{showReview}}" class="mask" bindtap="closeReview">
+    <view class="sheet" catchtap="noop">
+            <view class="sheet__grip"></view>
+      <view class="sheet__title">{{reviewForm.kind === 'log' ? '批注学习记录' : '批阅学生提交'}}</view>
+      <textarea
+        class="field field--area"
+        placeholder="写下你的评价与建议"
+        value="{{reviewForm.comment}}"
+        bindinput="onReviewInput"
+        auto-height
+        cursor-spacing="240"
+      />
+      <view wx:if="{{reviewForm.kind !== 'log'}}" class="row">
+        <text class="row__label">结果</text>
+        <view class="opts">
+          <text class="opt {{reviewForm.status === 'reviewed' ? 'opt--on' : ''}}" data-value="reviewed" bindtap="onReviewStatus">通过</text>
+          <text class="opt {{reviewForm.status === 'returned' ? 'opt--on' : ''}}" data-value="returned" bindtap="onReviewStatus">退回重做</text>
+        </view>
+      </view>
+      <view class="btn btn-block btn-primary pressable" hover-class="pressing" bindtap="submitReview">提交</view>
+    </view>
+  </view>
+
+  <!-- ===== 弹层：教师查看某任务的提交 ===== -->
+  <view wx:if="{{activeTask}}" class="mask" bindtap="closeSubmissions">
+    <view class="sheet" catchtap="noop">
+            <view class="sheet__grip"></view>
+      <view class="sheet__title">{{activeTask.title}}</view>
+      <view class="sheet__tip">共 {{submissions.length}} 份提交</view>
+      <view wx:if="{{submissions.length === 0}}" class="pick-tip">暂无学生提交</view>
+      <view wx:for="{{submissions}}" wx:key="_id" class="sub">
+        <view class="sub__head">
+          <text class="sub__name">{{item.studentName || '未实名'}}</text>
+          <text class="badge badge--{{item.status}}">{{SUB_TEXT[item.status]}}</text>
+        </view>
+        <view class="sub__content">{{item.content}}</view>
+        <view wx:if="{{item.teacherComment}}" class="comment">
+          <text class="comment__by">{{item.reviewBy}}：</text><text>{{item.teacherComment}}</text>
+        </view>
+        <view class="card__btns">
+          <view class="btn btn-plain pressable" hover-class="pressing" data-id="{{item._id}}" data-kind="submission" bindtap="openReview">
+            {{item.teacherComment ? '修改批阅' : '批阅'}}
+          </view>
+        </view>
+      </view>
+      <view class="btn btn-block btn-plain pressable" hover-class="pressing" bindtap="closeActiveTask">关闭该任务</view>
+    </view>
+  </view>
+</view>

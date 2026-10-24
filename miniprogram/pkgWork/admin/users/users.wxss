@@ -1,0 +1,65 @@
+/* pkgWork/admin/users/users.wxss —— 用户与权限（Apple 风格） */
+.page {
+  min-height: 100vh;
+  padding-bottom: var(--space-xl);
+  background: var(--bg-page);
+}
+
+.list { padding: 0 var(--space-lg); }
+
+.ucard {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: var(--space-md);
+  padding: var(--space-lg);
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+.ucard__avatar {
+  flex-shrink: 0;
+  width: 88rpx;
+  height: 88rpx;
+  margin-right: var(--space-md);
+  border-radius: 50%;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-size: var(--font-headline);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ucard__body { flex: 1; min-width: 0; }
+.ucard__row { flex-direction: row; align-items: center; flex-wrap: wrap; }
+.ucard__name {
+  margin-right: var(--space-sm);
+  font-size: var(--font-body);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.ucard__row .tag { margin-right: var(--space-xs); }
+.ucard__meta {
+  margin-top: 6rpx;
+  font-size: var(--font-micro);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.ucard__ops {
+  flex-shrink: 0;
+  margin-left: var(--space-sm);
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  width: 260rpx;
+}
+.ucard__ops .opt {
+  margin: 6rpx 0 0 12rpx;
+  padding: 8rpx 18rpx;
+  font-size: var(--font-micro);
+}
+
+/* ===== 状态 ===== */
+.state { padding: var(--space-xl) 0; text-align: center; font-size: var(--font-caption); color: var(--text-secondary); }
+.state--end { padding: var(--space-lg) 0; color: var(--text-tertiary); font-size: var(--font-micro); }

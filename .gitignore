@@ -1,0 +1,26 @@
+# ===== 依赖 =====
+node_modules/
+
+# ===== 微信开发者工具项目配置（含 AppID 等私有信息，clone 后需自行配置）=====
+project.config.json
+project.private.config.json
+
+# ===== 工作区内部记忆（.workbuddy 为本地工作数据，不属于项目资产）=====
+.workbuddy/
+
+# ===== 未使用素材（quickstart 模板图片，零引用）=====
+_unused_assets/
+
+# ===== 过程产物：截图 / 探测日志 =====
+tools/_*.png
+tools/_*.log
+tools/_*.txt
+tools/shots/
+
+# ===== 学校内部文件（竞赛管理办法 PDF，按需自行解除忽略）=====
+*.pdf
+
+# ===== 系统与编辑器 =====
+.DS_Store
+Thumbs.db
+*.log

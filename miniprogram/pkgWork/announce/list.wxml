@@ -1,0 +1,41 @@
+<view class="page">
+  <!-- 大标题头部 -->
+  <view class="hero">
+    <view class="hero__title">通知与赛事公告</view>
+    <view class="hero__sub">共 {{total}} 条 · 教师发布的重要信息</view>
+  </view>
+
+  <!-- 类型筛选 -->
+  <view class="seg">
+    <view class="seg__item {{tab === '' ? 'seg__item--on' : ''}}" data-tab="" bindtap="switchTab">全部</view>
+    <view class="seg__item {{tab === 'notice' ? 'seg__item--on' : ''}}" data-tab="notice" bindtap="switchTab">通知</view>
+    <view class="seg__item {{tab === 'contest' ? 'seg__item--on' : ''}}" data-tab="contest" bindtap="switchTab">赛事</view>
+  </view>
+
+  <!-- 列表 -->
+  <view wx:if="{{loading && list.length === 0}}" class="state">正在加载…</view>
+  <view wx:elif="{{list.length === 0}}" class="empty">
+    <text class="empty__emoji">📭</text>暂无公告
+  </view>
+  <view wx:else class="list">
+    <view wx:for="{{list}}" wx:key="_id" class="item">
+      <view class="item__main pressable" hover-class="pressing" data-id="{{item._id}}" bindtap="openDetail">
+        <view class="item__badges">
+          <text class="tag {{item.type === 'contest' ? 'tag-warning' : 'tag-primary'}}">
+            {{item.type === 'contest' ? '赛事公告' : '通知'}}
+          </text>
+          <text wx:if="{{item.top}}" class="tag tag-danger">置顶</text>
+          <view wx:if="{{!item.read}}" class="item__dot"></view>
+        </view>
+        <view class="item__title">{{item.title}}</view>
+        <view class="item__meta">
+          {{item.publisherName || '老师'}} · {{item.timeText}}
+          <text wx:if="{{item.viewCount}}"> · {{item.viewCount}} 次浏览</text>
+        </view>
+      </view>
+      <view wx:if="{{item.canDel}}" class="item__del pressable" hover-class="pressing" data-id="{{item._id}}" bindtap="removeItem">删除</view>
+    </view>
+    <view wx:if="{{loadingMore}}" class="state">加载中…</view>
+    <view wx:if="{{noMore && list.length > 0}}" class="state state--end">— 已展示全部 {{total}} 条 —</view>
+  </view>
+</view>

@@ -1,0 +1,93 @@
+<view class="page">
+  <!-- 角色条 -->
+  <view class="rolebar rolebar--student">
+    <view class="rolebar__label">学生端 · 项目档案</view>
+    <view class="rolebar__desc">把你的学习与竞赛经历沉淀为项目，持续记录进展</view>
+  </view>
+
+  <view class="block">
+    <view class="block__title">基本信息</view>
+    <input
+      class="field"
+      placeholder="项目名称（必填）"
+      maxlength="40"
+      value="{{form.name}}"
+      data-field="name"
+      bindinput="onField"
+      cursor-spacing="120"
+    />
+    <textarea
+      class="field field--area"
+      placeholder="一句话简介：这个项目做了什么"
+      maxlength="120"
+      value="{{form.summary}}"
+      data-field="summary"
+      bindinput="onField"
+      auto-height
+      cursor-spacing="240"
+    />
+
+    <view class="block__label">技术方向</view>
+    <view class="opts">
+      <text
+        wx:for="{{directions}}"
+        wx:key="key"
+        class="opt {{dirSel[item.key] ? 'opt--on' : ''}}"
+        data-key="{{item.key}}"
+        bindtap="pickDirection"
+      >{{item.name}}</text>
+    </view>
+
+    <view class="block__label">项目阶段</view>
+    <view class="opts">
+      <text
+        wx:for="{{stages}}"
+        wx:key="key"
+        class="opt {{stageSel[item.key] ? 'opt--on' : ''}}"
+        data-key="{{item.key}}"
+        bindtap="pickStage"
+      >{{item.name}}</text>
+    </view>
+  </view>
+
+  <view class="block">
+    <view class="block__title">成果与团队</view>
+    <textarea
+      class="field field--area"
+      placeholder="项目成果（可选）：完成了什么、拿了什么奖、学到了什么"
+      maxlength="2000"
+      value="{{form.outcome}}"
+      data-field="outcome"
+      bindinput="onField"
+      auto-height
+      cursor-spacing="240"
+    />
+    <input
+      class="field"
+      placeholder="团队成员（可选，用顿号分隔）"
+      maxlength="120"
+      value="{{form.members}}"
+      data-field="members"
+      bindinput="onField"
+      cursor-spacing="120"
+    />
+
+    <view class="block__label">关联竞赛（可选）</view>
+    <picker mode="selector" range="{{contestNames}}" value="{{contestIndex}}" bindchange="onContestPick">
+      <view class="picker {{form.competitionName ? 'picker--on' : ''}}">
+        {{form.competitionName || '选择要参加/参加过的竞赛'}}
+      </view>
+    </picker>
+  </view>
+
+  <!-- 底部保存条：键盘弹起时收起 -->
+  <view class="footer" wx:if="{{!keyboard}}">
+    <view
+      class="submit pressable {{submitting ? 'submit--disabled' : ''}}"
+      hover-class="pressing"
+      bindtap="submit"
+    >
+      {{submitting ? '保存中…' : (id ? '保存修改' : '创建项目')}}
+    </view>
+  </view>
+</view>

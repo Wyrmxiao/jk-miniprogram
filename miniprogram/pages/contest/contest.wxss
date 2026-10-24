@@ -1,0 +1,73 @@
+/* pages/contest/contest.wxss —— Apple 风格赛事库 */
+.page {
+  min-height: 100vh;
+  padding-bottom: var(--space-xl);
+  background: var(--bg-page);
+}
+
+/* ===== 筛选 chips（白底胶囊） ===== */
+.chips {
+  white-space: nowrap;
+  padding: var(--space-sm) var(--space-lg) var(--space-xs);
+}
+.chip {
+  display: inline-block;
+  padding: 12rpx 28rpx;
+  margin-right: var(--space-sm);
+  border-radius: var(--radius-pill);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-card);
+  font-size: var(--font-caption);
+  color: var(--text-secondary);
+  transition: transform 0.12s var(--ease-press);
+}
+.chip--on {
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 500;
+}
+.chip--pressing { transform: scale(0.95); }
+
+/* ===== 赛事卡片 ===== */
+.list { padding: 0 var(--space-lg); }
+.card {
+  margin-bottom: var(--space-md);
+  padding: var(--space-lg);
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+.card__head { flex-direction: row; align-items: flex-start; justify-content: space-between; }
+.card__name { flex: 1; margin-right: var(--space-sm); font-size: var(--font-body); font-weight: 600; color: var(--text-primary); line-height: 1.5; }
+.card__tags { flex-direction: row; flex-wrap: wrap; margin-top: var(--space-sm); }
+.card__tags .tag { margin-right: var(--space-sm); }
+
+.card__time {
+  flex-direction: row;
+  align-items: center;
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 2rpx solid var(--border-light);
+  font-size: var(--font-caption);
+  color: var(--text-secondary);
+}
+.card__time-dot { width: 12rpx; height: 12rpx; margin-right: var(--space-sm); border-radius: 50%; background: var(--text-tertiary); }
+.time--exact .card__time-dot { background: var(--color-primary); }
+.time--soon .card__time-dot { background: var(--color-warning); }
+.time--pending .card__time-dot { background: var(--text-tertiary); }
+.card__time-badge {
+  margin-left: var(--space-sm);
+  padding: 2rpx 12rpx;
+  border-radius: var(--radius-pill);
+  background: var(--color-warning-light);
+  color: var(--color-warning);
+  font-size: var(--font-micro);
+}
+.card__time-note { margin-left: var(--space-sm); color: var(--text-tertiary); font-size: var(--font-micro); }
+
+/* ===== 状态 ===== */
+.state { padding: var(--space-xl) 0; text-align: center; font-size: var(--font-caption); color: var(--text-secondary); }
+.state--empty { display: flex; flex-direction: column; align-items: center; }
+.state__emoji { font-size: 72rpx; margin-bottom: var(--space-sm); }
+.state--end { color: var(--text-tertiary); font-size: var(--font-micro); }
+

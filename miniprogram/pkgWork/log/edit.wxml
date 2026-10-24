@@ -1,0 +1,44 @@
+<view class="page">
+  <view class="rolebar rolebar--student">
+    <view class="rolebar__icon">学</view>
+    <view class="rolebar__text">学生端 · 记录学习过程，教师可见并可批注</view>
+  </view>
+
+  <view class="block">
+    <view class="block__title">今天学了什么</view>
+    <input class="field" placeholder="标题，如：完成动态规划专题" value="{{form.title}}" data-field="title" bindinput="onField" cursor-spacing="120" />
+    <textarea
+      class="field field--area"
+      placeholder="记录学习内容、遇到的问题与下一步计划"
+      maxlength="2000"
+      value="{{form.content}}"
+      data-field="content"
+      bindinput="onField"
+      auto-height
+      cursor-spacing="240"
+    />
+    <view class="counter">{{form.content.length}}/2000</view>
+  </view>
+
+  <view class="block">
+    <view class="block__title">日期与方向</view>
+    <view class="row">
+      <text class="row__label">学习日期</text>
+      <picker mode="date" value="{{form.studyDate}}" bindchange="onDate">
+        <view class="picker">{{form.studyDate || '选择日期'}}</view>
+      </picker>
+    </view>
+    <view class="row__label block-label">方向标签（可选）</view>
+    <view class="opts">
+      <text wx:for="{{directions}}" wx:key="key"
+        class="opt {{tagSel[item.key] ? 'opt--on' : ''}}"
+        data-key="{{item.key}}" bindtap="toggleTag">{{item.name}}</text>
+    </view>
+  </view>
+
+  <view class="footer" wx:if="{{!keyboard}}">
+    <view class="submit pressable {{submitting ? 'submit--disabled' : ''}}" hover-class="pressing" bindtap="submit">
+      {{submitting ? '保存中…' : '保存记录'}}
+    </view>
+  </view>
+</view>

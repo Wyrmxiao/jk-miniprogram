@@ -1,0 +1,61 @@
+<view class="page">
+  <view class="rolebar rolebar--teacher">
+    <view class="rolebar__icon">师</view>
+    <view class="rolebar__text">教师端 · 发布后学生端立即可见，可置顶或撤回</view>
+  </view>
+
+  <view class="block">
+    <view class="block__title">公告类型</view>
+    <view class="opts">
+      <text class="opt {{form.type === 'notice' ? 'opt--on' : ''}}" data-value="notice" bindtap="onType">📢 通知</text>
+      <text class="opt {{form.type === 'contest' ? 'opt--on' : ''}}" data-value="contest" bindtap="onType">🏆 赛事公告</text>
+    </view>
+  </view>
+
+  <view class="block">
+    <view class="block__title">公告内容</view>
+    <input class="field" placeholder="标题，如：蓝桥杯校赛报名通知" value="{{form.title}}" data-field="title" bindinput="onField" cursor-spacing="120" />
+    <textarea
+      class="field field--area"
+      placeholder="写清楚时间、地点、参与对象与要求"
+      maxlength="2000"
+      value="{{form.content}}"
+      data-field="content"
+      bindinput="onField"
+      auto-height
+      cursor-spacing="240"
+    />
+    <view class="counter">{{form.content.length}}/2000</view>
+  </view>
+
+  <view wx:if="{{form.type === 'contest'}}" class="block">
+    <view class="block__title">关联竞赛（可选）</view>
+    <picker mode="selector" range="{{competitionNames}}" value="{{competitionIndex}}" bindchange="onCompetitionPick">
+      <view class="picker">{{competitionIndex >= 0 ? competitionNames[competitionIndex] : '选择关联竞赛'}}</view>
+    </picker>
+  </view>
+
+  <view class="block">
+    <view class="block__title">发布设置</view>
+    <view class="switch-row">
+      <view>
+        <view>置顶显示</view>
+        <view class="switch-row__desc">置顶后学生端列表最前</view>
+      </view>
+      <switch checked="{{form.top}}" data-field="top" bindchange="onToggle" color="#1b64f2" />
+    </view>
+    <view class="switch-row">
+      <view>
+        <view>推送站内通知</view>
+        <view class="switch-row__desc">学生端「我的」收到提醒</view>
+      </view>
+      <switch checked="{{form.push}}" data-field="push" bindchange="onToggle" color="#1b64f2" />
+    </view>
+  </view>
+
+  <view class="footer" wx:if="{{!keyboard}}">
+    <view class="submit pressable {{submitting ? 'submit--disabled' : ''}}" hover-class="pressing" bindtap="submit">
+      {{submitting ? '发布中…' : '发布公告'}}
+    </view>
+  </view>
+</view>

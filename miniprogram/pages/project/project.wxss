@@ -1,0 +1,74 @@
+/* pages/project/project.wxss —— 项目广场 */
+.page { min-height: 100vh; background: var(--bg-page); padding-bottom: 160rpx; }
+
+.hero { padding: var(--space-lg) var(--space-lg) 0; }
+.hero__title { font-size: 64rpx; font-weight: 700; color: var(--text-primary); letter-spacing: 1rpx; }
+.hero__sub { margin-top: var(--space-xs); font-size: var(--font-caption); color: var(--text-tertiary); }
+
+.chips { white-space: nowrap; padding: var(--space-md) var(--space-lg) var(--space-xs); box-sizing: border-box; width: 100%; }
+.chip {
+  display: inline-flex; align-items: center;
+  margin-right: var(--space-sm);
+  padding: 12rpx 28rpx; border-radius: 999rpx;
+  background: var(--bg-block); color: var(--text-secondary);
+  font-size: var(--font-caption);
+  transition: all 0.2s ease;
+}
+.chip--on { background: var(--color-primary); color: #fff; font-weight: 500; }
+.chip--mine { background: var(--color-success-light); color: var(--color-success); font-weight: 500; }
+
+.list { padding: var(--space-sm) var(--space-lg) 0; }
+.card {
+  position: relative;
+  background: var(--bg-card); border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+  box-shadow: var(--shadow-card);
+}
+.card__star {
+  display: inline-block;
+  margin-bottom: var(--space-sm);
+  padding: 4rpx 16rpx; border-radius: 999rpx;
+  background: var(--color-warning-light); color: var(--color-warning);
+  font-size: var(--font-micro);
+}
+.card__head { display: flex; align-items: center; }
+.card__avatar {
+  width: 76rpx; height: 76rpx; border-radius: 50%;
+  background: var(--color-success-light); color: var(--color-success);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32rpx; font-weight: 600; flex-shrink: 0;
+}
+.card__who { margin-left: var(--space-md); flex: 1; min-width: 0; }
+.card__name {
+  font-size: var(--font-headline); font-weight: 600; color: var(--text-primary);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.card__owner { margin-top: 4rpx; font-size: var(--font-micro); color: var(--text-tertiary); }
+.card__summary {
+  margin-top: var(--space-sm);
+  font-size: var(--font-caption); color: var(--text-secondary); line-height: 1.6;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
+}
+.card__tags { margin-top: var(--space-sm); }
+.tag {
+  display: inline-block; margin-right: var(--space-sm);
+  padding: 4rpx 16rpx; border-radius: 8rpx;
+  background: var(--bg-block); color: var(--text-secondary);
+  font-size: var(--font-micro);
+}
+.tag--stage-doing { background: var(--color-primary-light); color: var(--color-primary); }
+.tag--stage-done { background: var(--color-success-light); color: var(--color-success); }
+.tag--stage-awarded { background: var(--color-warning-light); color: var(--color-warning); }
+.card__meta { margin-top: var(--space-sm); font-size: var(--font-micro); color: var(--text-tertiary); }
+
+.list__end { padding: var(--space-md) 0; text-align: center; font-size: var(--font-micro); color: var(--text-quaternary); }
+
+.fab {
+  position: fixed; right: 40rpx; bottom: 80rpx;
+  width: 108rpx; height: 108rpx; border-radius: 50%;
+  background: var(--color-success); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 52rpx; font-weight: 300;
+  box-shadow: 0 8rpx 24rpx rgba(127, 154, 117, 0.4);
+}

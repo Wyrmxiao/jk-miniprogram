@@ -1,0 +1,114 @@
+<view class="page" wx:if="{{project}}">
+  <!-- ===== 档案头 ===== -->
+  <view class="head">
+    <view class="head__badges">
+      <text class="badge badge--stage-{{project.stage}}">{{project.stageText}}</text>
+      <text wx:if="{{project.featured}}" class="badge badge--star">⭐ {{project.featuredBy}} 推荐</text>
+    </view>
+    <view class="head__name">{{project.name}}</view>
+    <view class="head__meta">{{project.ownerName}} · {{project.directionText}} · 更新于 {{project.timeText}}</view>
+    <view wx:if="{{project.summary}}" class="head__summary">{{project.summary}}</view>
+    <view wx:if="{{project.outcome}}" class="head__block">
+      <view class="head__label">项目成果</view>
+      <view class="head__outcome">{{project.outcome}}</view>
+    </view>
+    <view wx:if="{{project.competitionName}}" class="head__contest">
+      🏆 关联竞赛：{{project.competitionName}}
+    </view>
+
+    <!-- 操作行：教师推荐 / 作者编辑删除 -->
+    <view class="head__ops">
+      <view wx:if="{{isTeacher}}" class="op {{project.featured ? 'op--star' : ''}}" bindtap="toggleFeature">
+        {{project.featured ? '取消推荐' : '⭐ 推荐项目'}}
+      </view>
+      <block wx:if="{{isOwner}}">
+        <view class="op" bindtap="editProject">编辑</view>
+        <view class="op op--danger" bindtap="removeProject">删除项目</view>
+      </block>
+    </view>
+  </view>
+
+  <!-- ===== 项目进展（时间线） ===== -->
+  <view class="group">
+    <view class="group__title">项目进展 · {{updates.length}}</view>
+
+    <!-- 主人发布进展 -->
+    <view wx:if="{{isOwner}}" class="upd-editor">
+      <textarea
+        class="field field--area"
+        placeholder="记录一条项目进展，如：完成了登录模块"
+        maxlength="2000"
+        value="{{draft}}"
+        bindinput="onDraftInput"
+        auto-height
+        cursor-spacing="240"
+      />
+      <view class="upd-editor__foot">
+        <text class="upd-editor__count">{{draft.length}}/2000</text>
+        <view class="upd-editor__send {{canSend ? '' : 'upd-editor__send--off'}}" bindtap="publishUpdate">
+          {{sending ? '发布中' : '发布进展'}}
+        </view>
+      </view>
+    </view>
+
+    <!-- 时间线 -->
+    <view wx:for="{{updates}}" wx:key="_id" class="upd">
+      <view class="upd__dot"></view>
+      <view class="upd__body">
+        <view class="upd__head">
+          <text class="upd__time">{{item.timeText}}</text>
+          <text
+            wx:if="{{item.canDelete}}"
+            class="upd__del"
+            data-id="{{item._id}}"
+            catchtap="removeUpdate"
+          >删除</text>
+        </view>
+        <view class="upd__content">{{item.content}}</view>
+      </view>
+    </view>
+    <view wx:if="{{!updates.length}}" class="empty empty--inline">还没有进展记录</view>
+  </view>
+
+  <!-- ===== 留言 ===== -->
+  <view class="group">
+    <view class="group__title">留言 · {{comments.length}}</view>
+    <view wx:for="{{comments}}" wx:key="_id" class="cmt">
+      <view class="cmt__avatar">{{item.authorName[0] || '留'}}</view>
+      <view class="cmt__body">
+        <view class="cmt__head">
+          <text class="cmt__name">{{item.authorName}}</text>
+          <text wx:if="{{item.isTeacher}}" class="cmt__role">教师</text>
+          <text class="cmt__time">{{item.timeText}}</text>
+          <text
+            wx:if="{{item.canDelete}}"
+            class="cmt__del"
+            data-id="{{item._id}}"
+            catchtap="removeComment"
+          >删除</text>
+        </view>
+        <view class="cmt__content">{{item.content}}</view>
+      </view>
+    </view>
+    <view wx:if="{{!comments.length}}" class="empty empty--inline">还没有留言，说点什么吧</view>
+  </view>
+
+  <view class="bottom-gap"></view>
+
+  <!-- ===== 底部评论栏 ===== -->
+  <view class="footer">
+    <input
+      class="footer__input"
+      placeholder="写下你的留言或建议"
+      maxlength="500"
+      value="{{commentDraft}}"
+      bindinput="onCommentInput"
+      confirm-type="send"
+      bindconfirm="sendComment"
+      cursor-spacing="120"
+    />
+    <view class="footer__send {{canSendComment ? '' : 'footer__send--off'}}" bindtap="sendComment">
+      {{commentSending ? '发送中' : '发送'}}
+    </view>
+  </view>
+</view>

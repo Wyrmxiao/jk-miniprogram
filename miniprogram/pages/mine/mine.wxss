@@ -1,0 +1,71 @@
+/* pages/mine/mine.wxss —— Apple 风格「我的」 */
+.page { background: var(--bg-page); }
+
+/* ===== 个人信息卡 ===== */
+.profile {
+  display: flex;
+  align-items: center;
+  margin: var(--space-md) var(--space-lg) 0;
+  padding: var(--space-lg);
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+.profile__avatar {
+  width: 112rpx;
+  height: 112rpx;
+  margin-right: var(--space-lg);
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7c99ad 0%, #5f7d93 100%);
+  color: #fff;
+  font-size: var(--font-title);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.profile__info { flex: 1; min-width: 0; }
+.profile__name { font-size: var(--font-headline); font-weight: 600; color: var(--text-primary); }
+.profile__meta { flex-direction: row; align-items: center; margin-top: var(--space-sm); }
+.profile__meta .tag { margin-right: var(--space-sm); }
+.profile__id { margin-top: var(--space-sm); font-size: var(--font-caption); color: var(--text-secondary); }
+
+/* ===== 分组列表图标 ===== */
+.cell__icon {
+  flex-shrink: 0;
+  width: 64rpx;
+  height: 64rpx;
+  margin-right: var(--space-md);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+}
+.cell__icon--blue { background: rgba(107, 140, 163, 0.12); }
+.cell__icon--green { background: rgba(127, 154, 117, 0.14); }
+.cell__icon--orange { background: rgba(192, 138, 85, 0.14); }
+.cell__icon--purple { background: rgba(141, 132, 171, 0.12); }
+.cell__icon--red { background: rgba(185, 128, 127, 0.12); }
+.cell__icon--gray { background: var(--bg-block); }
+
+/* ===== 我的公告 ===== */
+.anno-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) 0;
+  border-bottom: 2rpx solid var(--border-light);
+}
+.anno-row:last-child { border-bottom: none; }
+.anno-row__info { flex: 1; min-width: 0; }
+.anno-row__title { flex-direction: row; align-items: center; font-size: var(--font-body); color: var(--text-primary); }
+.anno-row__title .tag { margin-right: var(--space-sm); }
+.anno-row__meta { margin-top: 6rpx; font-size: var(--font-caption); color: var(--text-secondary); }
+.anno-row__del { font-size: var(--font-caption); color: var(--color-danger); padding: var(--space-sm); }
+
+/* ===== 我关注的赛事 ===== */
+.my-race__top { flex-direction: row; align-items: flex-start; justify-content: space-between; }
+.my-race__name { flex: 1; min-width: 0; font-size: var(--font-body); font-weight: 500; color: var(--text-primary); line-height: 1.5; margin-right: var(--space-sm); }
+.my-race__top .level { flex-shrink: 0; }
+.cell__desc .tag { margin-right: var(--space-sm); }

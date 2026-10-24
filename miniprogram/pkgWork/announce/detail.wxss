@@ -1,0 +1,75 @@
+/* pkgWork/announce/detail.wxss */
+.page { min-height: 100vh; background: var(--bg-page); padding-bottom: 160rpx; }
+
+.state { text-align: center; color: var(--text-secondary); font-size: var(--font-caption); padding: 60rpx 0; }
+
+/* ===== 全屏文章式排版 ===== */
+.article { padding: var(--space-lg); }
+
+.article__badges { flex-direction: row; align-items: center; margin-bottom: var(--space-md); }
+
+.article__title {
+  font-size: var(--font-title);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.4;
+  letter-spacing: 1rpx;
+}
+
+.article__meta {
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-top: var(--space-md);
+  padding-bottom: var(--space-md);
+  font-size: var(--font-caption);
+  color: var(--text-tertiary);
+}
+.article__meta text { margin-right: var(--space-md); }
+
+.article__content {
+  font-size: var(--font-body);
+  color: var(--text-primary);
+  line-height: 1.9;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* 关联竞赛卡 */
+.link-card {
+  margin-top: var(--space-lg);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+.link-card__label { font-size: var(--font-caption); color: var(--text-tertiary); }
+.link-card__name {
+  margin-top: 6rpx;
+  font-size: var(--font-body);
+  font-weight: 600;
+  color: var(--color-primary);
+}
+.link-card__time { margin-top: 6rpx; font-size: var(--font-caption); color: var(--text-secondary); }
+
+/* ===== 底部操作条（毛玻璃） ===== */
+.footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: var(--space-md) var(--space-lg);
+  padding-bottom: calc(var(--space-md) + env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px);
+  border-top: 2rpx solid var(--border-light);
+}
+.del {
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  border-radius: var(--radius-md);
+  background: var(--color-danger-light);
+  color: var(--color-danger);
+  font-size: var(--font-body);
+  font-weight: 600;
+}

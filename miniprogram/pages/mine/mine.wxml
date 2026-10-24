@@ -1,0 +1,169 @@
+<view class="page">
+  <!-- 个人信息卡 -->
+  <view class="profile">
+    <view class="profile__avatar">{{profile && profile.realName ? profile.realName[0] : (profile ? '同' : '客')}}</view>
+    <view wx:if="{{profile}}" class="profile__info">
+      <view class="profile__name">{{profile.realName || profile.nickname || '未填写姓名'}}</view>
+      <view class="profile__meta">
+        <text class="tag {{isTeacher ? 'tag-primary' : 'tag-success'}}">{{roleText}}</text>
+        <text class="tag {{isVerified ? 'tag-success' : 'tag-warning'}}">{{authStatusText}}</text>
+      </view>
+      <view wx:if="{{profile.studentId}}" class="profile__id">学号 {{profile.studentId}}</view>
+    </view>
+    <view wx:else class="profile__info" bindtap="goLogin">
+      <view class="profile__name">未登录</view>
+      <view class="profile__meta">点击使用微信登录</view>
+    </view>
+  </view>
+
+  <!-- 资料完善引导（学生认证 / 教师完善资料） -->
+  <view wx:if="{{profile && !isVerified}}" class="group">
+    <view class="cell pressable" hover-class="pressing" bindtap="goRealname">
+      <view class="cell__icon cell__icon--{{isTeacher ? 'blue' : 'green'}}">{{isTeacher ? '✏️' : '🪪'}}</view>
+      <view class="cell__body">
+        <view class="cell__title">{{isTeacher ? '完善个人资料' : '学号实名认证'}}</view>
+        <view class="cell__desc">{{isTeacher ? '填写姓名与联系方式，便于学生联系' : '认证后可使用学习记录、任务与竞赛关注'}}</view>
+      </view>
+      <text class="cell__chevron">›</text>
+    </view>
+  </view>
+
+  <!-- 我关注的赛事 -->
+  <view wx:if="{{isVerified}}" class="group">
+    <view class="group__title">我关注的赛事</view>
+    <view wx:if="{{myContests.length === 0}}" class="cell pressable" hover-class="pressing" bindtap="goContest">
+      <view class="cell__icon cell__icon--orange">🏆</view>
+      <view class="cell__body">
+        <view class="cell__title">还没有关注赛事</view>
+        <view class="cell__desc">在赛事库点「关注」，报名时间到了不错过</view>
+      </view>
+      <text class="cell__chevron">›</text>
+    </view>
+    <view wx:for="{{myContests}}" wx:key="_id" class="cell pressable" hover-class="pressing"
+      data-id="{{item.competitionId}}" bindtap="goContestDetail">
+      <view class="cell__body">
+        <view class="my-race__top">
+          <text class="my-race__name text-2lines">{{item.name}}</text>
+          <text class="level level--{{item.level}}">{{item.level}}类</text>
+        </view>
+        <view class="cell__desc">
+          <text class="tag {{item.statusClass}}">{{item.statusText}}</text>
+          <text>{{item.timeText}}</text>
+        </view>
+      </view>
+      <text class="cell__chevron">›</text>
+    </view>
+  </view>
+
+  <!-- 教师工作台 -->
+  <view wx:if="{{isTeacher}}" class="group">
+    <view class="group__title">教师工作台</view>
+    <view class="cell pressable" hover-class="pressing" bindtap="goPublishAnnounce">
+      <view class="cell__icon cell__icon--blue">📣</view>
+      <view class="cell__body">
+        <view class="cell__title">发布公告</view>
+        <view class="cell__desc">通知或赛事公告，学生端立即可见</view>
+      </view>
+      <text class="cell__chevron">›</text>
+    </view>
+    <view class="cell pressable" hover-class="pressing" bindtap="goPublishTask">
+      <view class="cell__icon cell__icon--orange">📝</view>
+      <view class="cell__body">
+        <view class="cell__title">布置任务</view>
+        <view class="cell__desc">给学生下发学习任务并批阅</view>
+      </view>
+      <text class="cell__chevron">›</text>
+    </view>
+    <view class="cell pressable" hover-class="pressing" bindtap="goManageContest">
+      <view class="cell__icon cell__icon--purple">🏆</view>
+      <view class="cell__body">
+        <view class="cell__title">赛事维护</view>
+        <view class="cell__desc">编辑报名时间、开赛时间与赛事信息</view>
+      </view>
+      <text class="cell__chevron">›</text>
+    </view>
+    <view class="cell pressable" hover-class="pressing" bindtap="goRealname">
+      <view class="cell__icon cell__icon--green">✅</view>
+      <view class="cell__body">
+        <view class="cell__title">认证审核</view>
+        <view class="cell__desc">审核学生实名申请</view>
+      </view>
+      <text class="cell__chevron">›</text>
+    </view>
+    <view class="cell pressable" hover-class="pressing" bindtap="goMyAnnouncements">
+      <view class="cell__icon cell__icon--red">📢</view>
+      <view class="cell__body">
+        <view class="cell__title">我的公告</view>
+        <view class="cell__desc">查看或删除已发布</view>
+      </view>
+      <text class="cell__chevron">›</text>
+    </view>
+  </view>
+
+  <!-- 系统管理（管理员） -->
+  <view wx:if="{{isAdmin}}" class="group">
+    <view class="group__title">系统管理</view>
+    <view class="cell">
+      <view class="cell__body">
+        <view class="cell__title">系统状态</view>
+        <view class="cell__desc">竞赛库 {{systemStatus.competitions || 0}} 项 · {{systemStatus.initialized ? '已初始化' : '未初始化'}}</view>
+      </view>
+    </view>
+    <view class="cell pressable" hover-class="pressing" bindtap="rerunInit">
+      <view class="cell__icon cell__icon--blue">⚙️</view>
+      <view class="cell__body">
+        <view class="cell__title">系统初始化</view>
+        <view class="cell__desc">建配置与指定管理员</view>
+      </view>
+      <text class="cell__chevron">›</text>
+    </view>
+    <view class="cell pressable" hover-class="pressing" bindtap="forceReseed">
+      <view class="cell__icon cell__icon--orange">📥</view>
+      <view class="cell__body">
+        <view class="cell__title">重导竞赛库</view>
+        <view class="cell__desc">按 83 号文覆盖导入</view>
+      </view>
+      <text class="cell__chevron">›</text>
+    </view>
+    <view class="cell pressable" hover-class="pressing" bindtap="goUsers">
+      <view class="cell__icon cell__icon--purple">👥</view>
+      <view class="cell__body">
+        <view class="cell__title">用户与权限</view>
+        <view class="cell__desc">查看全部用户，分配学生 / 教师 / 管理员</view>
+      </view>
+      <text class="cell__chevron">›</text>
+    </view>
+  </view>
+
+  <!-- 通用 -->
+  <view class="group">
+    <view class="cell pressable" hover-class="pressing" bindtap="goAgreement">
+      <view class="cell__icon cell__icon--gray">📄</view>
+      <view class="cell__body">
+        <view class="cell__title">用户隐私保护指引</view>
+      </view>
+      <text class="cell__chevron">›</text>
+    </view>
+  </view>
+
+  <!-- ===== 我的公告弹层 ===== -->
+  <view wx:if="{{showMyAnnounce}}" class="mask" bindtap="closeMyAnnounce">
+    <view class="sheet" catchtap="noop">
+      <view class="sheet__grip"></view>
+      <view class="sheet__title">我发布的公告</view>
+      <scroll-view scroll-y class="sheet__list">
+        <view wx:for="{{myAnnouncements}}" wx:key="_id" class="anno-row">
+          <view class="anno-row__info">
+            <view class="anno-row__title">
+              <text class="tag tag-primary">{{item.type === 'contest' ? '赛事' : '通知'}}</text>
+              {{item.title}}
+            </view>
+            <view class="anno-row__meta">{{item.createdAtText || item.createdAt}}</view>
+          </view>
+          <text class="anno-row__del" data-id="{{item._id}}" bindtap="removeAnnounce">删除</text>
+        </view>
+        <view wx:if="{{!myAnnouncements.length}}" class="empty">还没有发布过公告</view>
+      </scroll-view>
+    </view>
+  </view>
+</view>

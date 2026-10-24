@@ -1,0 +1,89 @@
+<view class="page" wx:if="{{loaded}}">
+  <view class="rolebar rolebar--teacher">
+    <view class="rolebar__icon">师</view>
+    <view class="rolebar__text">教师端 · 维护赛事信息与时间，保存后学生端立即生效</view>
+  </view>
+
+  <view class="block">
+    <view class="block__title">基础信息</view>
+    <input class="field" placeholder="竞赛名称" value="{{form.name}}" data-field="name" bindinput="onField" cursor-spacing="120" />
+
+    <view class="row">
+      <text class="row__label">竞赛级别</text>
+      <view class="opts">
+        <text wx:for="{{levels}}" wx:key="*this"
+          class="opt {{form.level === item ? 'opt--on' : ''}}"
+          data-value="{{item}}" bindtap="pickLevel">{{item}}类</text>
+      </view>
+    </view>
+
+    <view class="row">
+      <text class="row__label">学科分类</text>
+      <view class="opts">
+        <text wx:for="{{categories}}" wx:key="key"
+          class="opt {{form.category === item.key ? 'opt--on' : ''}}"
+          data-value="{{item.key}}" bindtap="pickCategory">{{item.text}}</text>
+      </view>
+    </view>
+
+    <input class="field" placeholder="校内承办单位" value="{{form.host}}" data-field="host" bindinput="onField" cursor-spacing="120" />
+    <view class="switch-row">
+      <text>标记为院内重点赛事</text>
+      <switch checked="{{form.isFocus}}" bindchange="toggleFocus" color="#1b64f2" />
+    </view>
+  </view>
+
+  <view class="block">
+    <view class="block__title">时间安排</view>
+    <view class="tip">填写确切日期后，将以此为准排序；未填写时按「往期惯例月份」估算。</view>
+
+    <view class="row">
+      <text class="row__label">报名开始</text>
+      <picker mode="date" value="{{form.regStart}}" data-field="regStart" bindchange="onDate">
+        <view class="picker">{{form.regStart || '选择日期'}}</view>
+      </picker>
+    </view>
+
+    <view class="row">
+      <text class="row__label">报名截止</text>
+      <picker mode="date" value="{{form.regEnd}}" data-field="regEnd" bindchange="onDate">
+        <view class="picker">{{form.regEnd || '选择日期'}}</view>
+      </picker>
+    </view>
+
+    <view class="row">
+      <text class="row__label">开赛时间</text>
+      <picker mode="date" value="{{form.contestDate}}" data-field="contestDate" bindchange="onDate">
+        <view class="picker">{{form.contestDate || '选择日期'}}</view>
+      </picker>
+    </view>
+
+    <view class="row__label block-label">往期惯例月份（可多选）</view>
+    <view class="months">
+      <text wx:for="{{months}}" wx:key="*this"
+        class="month {{monthSel[item] ? 'month--on' : ''}}"
+        data-month="{{item}}" bindtap="toggleMonth">{{item}}月</text>
+    </view>
+  </view>
+
+  <view class="block">
+    <view class="block__title">补充信息</view>
+    <input class="field" placeholder="官网链接（可选）" value="{{form.officialUrl}}" data-field="officialUrl" bindinput="onField" cursor-spacing="120" />
+    <textarea
+      class="field field--area"
+      placeholder="赛事简介 / 参赛须知（可选）"
+      value="{{form.intro}}"
+      data-field="intro"
+      bindinput="onField"
+      auto-height
+      cursor-spacing="240"
+    />
+  </view>
+
+  <view class="actions">
+    <view class="btn btn-primary btn-block {{submitting ? 'btn-disabled' : ''}} pressable" hover-class="pressing" bindtap="save">
+      {{submitting ? '保存中…' : '保存'}}
+    </view>
+    <view wx:if="{{id}}" class="btn btn-danger btn-block pressable" hover-class="pressing" bindtap="takeOffline">下架该赛事</view>
+  </view>
+</view>

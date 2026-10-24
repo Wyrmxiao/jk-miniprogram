@@ -1,0 +1,127 @@
+<view class="page index-page">
+  <!-- 品牌大标题头部 -->
+  <view class="hero">
+    <view class="flex-between">
+      <view>
+        <view class="hero__title">计科创新中心</view>
+        <view class="hero__sub">重庆移通学院计算机学院 · 个性化能力培养平台</view>
+      </view>
+      <view wx:if="{{profile}}" class="hero__role hero__role--{{isTeacher ? 'teacher' : 'student'}}">
+        {{isTeacher ? '教师' : (isVerified ? '学生' : '待认证')}}
+      </view>
+    </view>
+  </view>
+
+  <!-- 未登录 / 未完善资料引导 -->
+  <view wx:if="{{!profile || showAuthTip}}" class="guide reveal reveal-1 pressable" hover-class="pressing" bindtap="{{!profile ? 'goLogin' : 'goRealname'}}">
+    <view class="guide__icon">{{!profile ? '👋' : (isTeacher ? '✏️' : '🪪')}}</view>
+    <view class="guide__body">
+      <view class="guide__title">
+        <block wx:if="{{!profile}}">微信登录后开始使用</block>
+        <block wx:elif="{{isTeacher}}">完善个人资料</block>
+        <block wx:else>完成学号实名认证</block>
+      </view>
+      <view class="guide__desc">
+        <block wx:if="{{!profile}}">登录后可使用学习记录、任务与竞赛关注</block>
+        <block wx:elif="{{isTeacher}}">填写姓名与联系方式，便于学生联系到你</block>
+        <block wx:else>认证后教师才能为你布置任务与批复记录</block>
+      </view>
+    </view>
+    <text class="guide__go">{{!profile ? '登录' : (isTeacher ? '去完善' : '去认证')}} ›</text>
+  </view>
+
+  <!-- 快捷入口（按角色） -->
+  <view class="group__title">{{isTeacher ? '教师快捷操作' : '学习快捷操作'}}</view>
+  <view class="quick reveal reveal-2">
+    <block wx:if="{{isTeacher}}">
+      <view class="quick__item pressable" hover-class="pressing" bindtap="goPublishAnnounce">
+        <view class="quick__icon quick__icon--blue">📣</view>
+        <view class="quick__text">发布公告</view>
+      </view>
+      <view class="quick__item pressable" hover-class="pressing" bindtap="goPublishTask">
+        <view class="quick__icon quick__icon--orange">📝</view>
+        <view class="quick__text">布置任务</view>
+      </view>
+      <view class="quick__item pressable" hover-class="pressing" bindtap="goManageContest">
+        <view class="quick__icon quick__icon--purple">🏆</view>
+        <view class="quick__text">赛事维护</view>
+      </view>
+      <view class="quick__item pressable" hover-class="pressing" bindtap="goRealname">
+        <view class="quick__icon quick__icon--green">✅</view>
+        <view class="quick__text">认证审核</view>
+      </view>
+    </block>
+    <block wx:else>
+      <view class="quick__item pressable" hover-class="pressing" bindtap="goWriteLog">
+        <view class="quick__icon quick__icon--green">📚</view>
+        <view class="quick__text">写学习记录</view>
+      </view>
+      <view class="quick__item pressable" hover-class="pressing" bindtap="goLearn">
+        <view class="quick__icon quick__icon--blue">🎯</view>
+        <view class="quick__text">我的任务</view>
+      </view>
+      <view class="quick__item pressable" hover-class="pressing" bindtap="goContest">
+        <view class="quick__icon quick__icon--orange">🏆</view>
+        <view class="quick__text">竞赛库</view>
+      </view>
+      <view class="quick__item pressable" hover-class="pressing" bindtap="goMine">
+        <view class="quick__icon quick__icon--purple">👤</view>
+        <view class="quick__text">我的</view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 待办提醒 -->
+  <view wx:if="{{isTeacher && pendingCount > 0}}" class="todo todo--teacher reveal reveal-3 pressable" hover-class="pressing" bindtap="goRealname">
+    <view class="todo__num">{{pendingCount}}</view>
+    <view class="todo__body">
+      <view class="todo__title">条实名认证待审核</view>
+      <view class="todo__desc">审核通过后学生即可使用完整功能</view>
+    </view>
+    <text class="todo__arrow">›</text>
+  </view>
+  <view wx:elif="{{!isTeacher && todoTaskCount > 0}}" class="todo todo--student reveal reveal-3 pressable" hover-class="pressing" bindtap="goLearn">
+    <view class="todo__num">{{todoTaskCount}}</view>
+    <view class="todo__body">
+      <view class="todo__title">个学习任务待完成</view>
+      <view class="todo__desc">去学习页查看老师布置的任务</view>
+    </view>
+    <text class="todo__arrow">›</text>
+  </view>
+
+  <!-- 通知与赛事公告 -->
+  <view class="group__title group__title--row reveal reveal-4">
+    <text>通知与赛事公告</text>
+    <text class="group__more" bindtap="goAnnounceList">全部 ›</text>
+  </view>
+  <view wx:if="{{announcements.length === 0}}" class="empty">
+    <text class="empty__emoji">📭</text>暂无公告
+  </view>
+  <view wx:else class="group">
+    <view wx:for="{{announcements}}" wx:key="_id" class="cell pressable" hover-class="pressing"
+      data-id="{{item._id}}" bindtap="openAnno">
+      <view class="cell__body">
+        <view class="anno__top">
+          <text class="tag {{item.type === 'contest' ? 'tag-warning' : 'tag-primary'}}">
+            {{item.type === 'contest' ? '赛事' : '通知'}}
+          </text>
+          <text wx:if="{{item.top}}" class="tag tag-danger">置顶</text>
+        </view>
+        <view class="anno__title text-ellipsis">{{item.title}}</view>
+        <view class="cell__desc">{{item.publisherName || '老师'}} · {{item.timeText}}</view>
+      </view>
+      <text class="cell__chevron">›</text>
+    </view>
+  </view>
+
+  <view class="gap-md"></view>
+
+  <!-- 右下角俏皮小按钮：跳转赛事库（替代原「近期可参与赛事」列表） -->
+  <view class="floatbar">
+    <view class="floatbar__fab pressable" hover-class="pressing" bindtap="goContest">
+      <text class="floatbar__emoji">🏆</text>
+      <text wx:if="{{contestTotal}}" class="floatbar__badge">{{contestTotal}}</text>
+    </view>
+    <text class="floatbar__sparkle">✨</text>
+  </view>
+</view>

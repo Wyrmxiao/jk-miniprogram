@@ -1,0 +1,9 @@
+{
+  "name": "announce",
+  "version": "1.0.0",
+  "description": "计科创新中心 · 公告域（通知与赛事公告）",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}
