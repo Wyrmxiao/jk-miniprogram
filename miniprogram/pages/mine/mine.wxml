@@ -22,14 +22,14 @@
       <view class="cell__icon cell__icon--{{isTeacher ? 'blue' : 'green'}}">{{isTeacher ? '✏️' : '🪪'}}</view>
       <view class="cell__body">
         <view class="cell__title">{{isTeacher ? '完善个人资料' : '学号实名认证'}}</view>
-        <view class="cell__desc">{{isTeacher ? '填写姓名与联系方式，便于学生联系' : '认证后可使用学习记录、任务与竞赛关注'}}</view>
+        <view class="cell__desc">{{isTeacher ? '填写姓名与联系方式，便于学生联系' : '认证后可使用学习记录与任务'}}</view>
       </view>
       <text class="cell__chevron">›</text>
     </view>
   </view>
 
-  <!-- 我关注的赛事 -->
-  <view wx:if="{{isVerified}}" class="group">
+  <!-- 我关注的赛事（登录即可查看） -->
+  <view wx:if="{{isLogin}}" class="group">
     <view class="group__title">我关注的赛事</view>
     <view wx:if="{{myContests.length === 0}}" class="cell pressable" hover-class="pressing" bindtap="goContest">
       <view class="cell__icon cell__icon--orange">🏆</view>

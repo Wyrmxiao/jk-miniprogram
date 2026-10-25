@@ -42,7 +42,7 @@
       bindtap="onCategoryChange"
     >{{item.text}}</view>
     <view class="chip pressable {{focusOnly ? 'chip--on' : ''}}" hover-class="chip--pressing" bindtap="toggleFocus">★ 院内重点</view>
-    <view class="chip pressable {{favOnly ? 'chip--on' : ''}}" hover-class="chip--pressing" bindtap="toggleFavOnly">☆ 只看收藏</view>
+    <view class="chip pressable {{followedOnly ? 'chip--on' : ''}}" hover-class="chip--pressing" bindtap="toggleFollowedOnly">☆ 只看关注</view>
 
   </scroll-view>
 
@@ -56,7 +56,7 @@
     <view wx:for="{{displayList}}" wx:key="_id" class="card pressable" hover-class="pressing" data-id="{{item._id}}" bindtap="goDetail">
       <view class="card__head">
         <view class="card__name">{{item.name}}</view>
-        <view class="fav pressable {{item.fav ? 'fav--on' : ''}}" hover-class="pressing" catchtap="toggleFav" data-id="{{item._id}}">{{item.fav ? '★' : '☆'}}</view>
+        <view class="fav pressable {{item.followed ? 'fav--on' : ''}}" hover-class="pressing" catchtap="toggleFollow" data-id="{{item._id}}">{{item.followed ? '★' : '☆'}}</view>
         <view class="level level--{{item.level}}">{{item.level}}类</view>
       </view>
       <view class="card__tags">

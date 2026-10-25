@@ -82,6 +82,6 @@
   font-size: 36rpx;
   color: var(--text-tertiary);
 }
-.fav--on { color: #f0a020; }
+.fav--on { color: var(--color-warning); }
 
 

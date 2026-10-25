@@ -42,14 +42,14 @@
         <view>置顶显示</view>
         <view class="switch-row__desc">置顶后学生端列表最前</view>
       </view>
-      <switch checked="{{form.top}}" data-field="top" bindchange="onToggle" color="#1b64f2" />
+      <switch checked="{{form.top}}" data-field="top" bindchange="onToggle" color="#6b8ca3" />
     </view>
     <view class="switch-row">
       <view>
         <view>推送站内通知</view>
         <view class="switch-row__desc">学生端「我的」收到提醒</view>
       </view>
-      <switch checked="{{form.push}}" data-field="push" bindchange="onToggle" color="#1b64f2" />
+      <switch checked="{{form.push}}" data-field="push" bindchange="onToggle" color="#6b8ca3" />
     </view>
   </view>
 

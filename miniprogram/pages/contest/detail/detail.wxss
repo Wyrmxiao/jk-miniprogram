@@ -66,16 +66,3 @@
 }
 .footer .btn { flex: 1; }
 .footer .btn-plain { max-width: 220rpx; margin-right: var(--space-md); }
-
-/* ===== 本地收藏按钮 ===== */
-.detail__fav {
-  margin-top: 8rpx;
-  align-self: flex-start;
-  padding: 8rpx 24rpx;
-  border-radius: var(--radius-pill);
-  font-size: var(--font-caption);
-  font-weight: 500;
-  color: var(--color-primary);
-  background: var(--color-primary-light);
-}
-.detail__fav--on { color: #fff; background: #f0a020; }

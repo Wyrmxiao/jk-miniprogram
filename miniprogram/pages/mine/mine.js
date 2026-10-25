@@ -1,6 +1,7 @@
 // pages/mine/mine.js
 const { announce, contest, auth } = require('../../services/index');
-const { getProfile, isTeacher, isVerified } = require('../../utils/auth');
+const { getProfile, isTeacher, isVerified, isLogin } = require('../../utils/auth');
+const favorite = require('../../utils/favorite');
 const { ROLE_TEXT, AUTH_STATUS_TEXT, MY_CONTEST_STATUS_TEXT } = require('../../constants/index');
 
 /** 关注状态 → 标签配色 */
@@ -17,6 +18,7 @@ Page({
     isTeacher: false,
     isAdmin: false,
     isVerified: false,
+    isLogin: false,
     roleText: '',
     authStatusText: '',
     // 管理员系统面板
@@ -43,11 +45,13 @@ Page({
       isTeacher: isTeacher(),
       isAdmin: admin,
       isVerified: isVerified(),
+      isLogin: isLogin(),
       roleText: ROLE_TEXT[role] || '游客',
       authStatusText: AUTH_STATUS_TEXT[authStatus] || '未认证'
     });
     if (admin) this.loadSystemStatus();
-    if (this.data.isVerified) this.loadMyContests();
+    // 只要登录就可读「我关注的赛事」（云端 myList 仅要求登录）
+    if (this.data.isLogin) this.loadMyContests();
   },
 
   /** 我关注的赛事（报名时间/开赛时间/往期惯例） */
@@ -66,6 +70,8 @@ Page({
           timeText: this.buildRaceTime(c)
         };
       });
+      // 云端是真相：把云端关注合并进本地缓存，保证赛事库星标一致
+      favorite.addMany(list.map((x) => x.competitionId));
       this.setData({ myContests: list });
     } catch (e) {
       this.setData({ myContests: [] });

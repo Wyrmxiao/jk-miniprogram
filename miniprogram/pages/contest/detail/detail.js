@@ -1,6 +1,6 @@
 // pages/contest/detail/detail.js
 const { contest } = require('../../../services/index');
-const { isTeacher, isVerified } = require('../../../utils/auth');
+const { isTeacher, isLogin } = require('../../../utils/auth');
 
 const favorite = require('../../../utils/favorite');
 
@@ -27,29 +27,19 @@ Page({
     timeNote: '',
     announcements: [],
     isTeacher: false,
-    isVerified: false,
-    following: false,
-    fav: false
-
+    isLogin: false,
+    following: false
   },
 
   onLoad(options) {
     const id = (options && options.id) || '';
-    this.setData({ id, fav: favorite.has(id) });
+    this.setData({ id });
     this.loadDetail();
   },
 
   onShow() {
-    this.setData({ isTeacher: isTeacher(), isVerified: isVerified() });
+    this.setData({ isTeacher: isTeacher(), isLogin: isLogin() });
   },
-
-    /** 本地收藏切换 */
-    toggleFav() {
-      const fav = favorite.toggle(this.data.id);
-      this.setData({ fav });
-      wx.showToast({ title: fav ? '已收藏' : '已取消收藏', icon: 'none', duration: 800 });
-    },
-  
 
   async loadDetail() {
     if (!this.data.id) {
@@ -59,13 +49,15 @@ Page({
     this.setData({ loading: true });
     try {
       const d = await contest.detail({ id: this.data.id });
+      const cloudFollowed = !!(d.mine && d.mine.status === 'following');
       this.setData({
         detail: d,
         categoryText: CATEGORY_TEXT[d.category] || '',
         timeRows: this.buildTimeRows(d),
         timeNote: this.buildTimeNote(d),
         announcements: (d.announcements || []).map((a) => a),
-        following: !!(d.mine && d.mine.status === 'following'),
+        // 云端状态优先，本地缓存兜底（未认证用户/云端未同步时）
+        following: cloudFollowed || favorite.has(this.data.id),
         loading: false
       });
     } catch (e) {
@@ -109,17 +101,28 @@ Page({
     });
   },
 
+  /** 关注/取消关注：先写本地缓存（即时反馈），已登录用户再同步云端 */
   async toggleFollow() {
-    if (!this.data.isVerified) {
-      wx.showToast({ title: '请先完善实名资料', icon: 'none' });
+    const id = this.data.id;
+    if (!id) return;
+    const followed = !this.data.following;
+
+    // 未登录：本地关注，登录后会随云端 myList 同步
+    if (!this.data.isLogin) {
+      favorite.set(id, followed);
+      this.setData({ following: followed });
+      wx.showToast({ title: followed ? '已关注' : '已取消关注', icon: 'none' });
       return;
     }
+
     try {
-      await contest.follow({ competitionId: this.data.id });
-      this.setData({ following: !this.data.following });
-      wx.showToast({ title: this.data.following ? '已关注' : '已取消关注', icon: 'success' });
+      // follow 为幂等语义：true=关注，false=取消（不传会永远只增不减）
+      await contest.follow({ competitionId: id, follow: followed });
+      favorite.set(id, followed);
+      this.setData({ following: followed });
+      wx.showToast({ title: followed ? '已关注' : '已取消关注', icon: 'success' });
     } catch (e) {
-      /* 错误已在 request 层提示 */
+      /* 错误已在 request 层提示，状态不切换 */
     }
   },
 

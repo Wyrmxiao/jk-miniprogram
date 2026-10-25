@@ -29,7 +29,7 @@
     <input class="field" placeholder="校内承办单位" value="{{form.host}}" data-field="host" bindinput="onField" cursor-spacing="120" />
     <view class="switch-row">
       <text>标记为院内重点赛事</text>
-      <switch checked="{{form.isFocus}}" bindchange="toggleFocus" color="#1b64f2" />
+      <switch checked="{{form.isFocus}}" bindchange="toggleFocus" color="#6b8ca3" />
     </view>
   </view>
 

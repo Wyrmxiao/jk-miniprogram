@@ -35,7 +35,7 @@
   </view>
 
   <view class="auth__agree">
-    <checkbox value="agree" checked="{{agreed}}" bindchange="onAgreeChange" color="#007aff" />
+    <checkbox value="agree" checked="{{agreed}}" bindchange="onAgreeChange" color="#6b8ca3" />
     <text class="auth__agree-text">
       我已阅读并同意
       <text class="auth__link" bindtap="openAgreement">《用户隐私保护指引》</text>
