@@ -2,6 +2,9 @@
 const { contest } = require('../../../services/index');
 const { isTeacher, isVerified } = require('../../../utils/auth');
 
+const favorite = require('../../../utils/favorite');
+
+
 const CATEGORY_TEXT = {
   hardware: '硬件类',
   scienceOther: '理工其他',
@@ -25,17 +28,28 @@ Page({
     announcements: [],
     isTeacher: false,
     isVerified: false,
-    following: false
+    following: false,
+    fav: false
+
   },
 
   onLoad(options) {
-    this.setData({ id: (options && options.id) || '' });
+    const id = (options && options.id) || '';
+    this.setData({ id, fav: favorite.has(id) });
     this.loadDetail();
   },
 
   onShow() {
     this.setData({ isTeacher: isTeacher(), isVerified: isVerified() });
   },
+
+    /** 本地收藏切换 */
+    toggleFav() {
+      const fav = favorite.toggle(this.data.id);
+      this.setData({ fav });
+      wx.showToast({ title: fav ? '已收藏' : '已取消收藏', icon: 'none', duration: 800 });
+    },
+  
 
   async loadDetail() {
     if (!this.data.id) {

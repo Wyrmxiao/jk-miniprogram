@@ -1,6 +1,7 @@
 // pages/contest/contest.js
 const { contest } = require('../../services/index');
 const { isTeacher } = require('../../utils/auth');
+const favorite = require('../../utils/favorite');
 
 const LEVELS = [
   { key: '', text: '全部' },
@@ -50,6 +51,9 @@ Page({
     category: 'scienceOther',
     keyword: '',
     focusOnly: false,
+    favOnly: false,
+    displayList: [],
+
     list: [],
     total: 0,
     page: 1,
@@ -97,17 +101,21 @@ Page({
         category: this.data.category,
         keyword: this.data.keyword,
         focusOnly: this.data.focusOnly,
+      
         page,
         size: 20
       });
       const list = res.list.map((c) =>
         Object.assign({}, c, timeMeta(c), {
           categoryText: CATEGORY_TEXT[c.category] || '',
-          hasUrl: !!c.officialUrl
+          hasUrl: !!c.officialUrl,
+          fav: favorite.has(c._id)
         })
       );
+      const all = reset ? list : this.data.list.concat(list);
       this.setData({
-        list: reset ? list : this.data.list.concat(list),
+        list: all,
+        displayList: this.filterDisplay(all),
         total: res.total,
         page,
         noMore: list.length >= res.total,
@@ -129,6 +137,24 @@ Page({
 
   toggleFocus() {
     this.setData({ focusOnly: !this.data.focusOnly }, () => this.loadList(true));
+  },
+  toggleFav(e) {
+    const id = e.currentTarget.dataset.id;
+    const nowFav = favorite.toggle(id);
+    const list = this.data.list.map((c) =>
+      c._id === id ? Object.assign({}, c, { fav: nowFav }) : c
+    );
+    this.setData({ list, displayList: this.filterDisplay(list) });
+    wx.showToast({ title: nowFav ? '已收藏' : '已取消', icon: 'none', duration: 800 });
+  },
+
+  toggleFavOnly() {
+    const favOnly = !this.data.favOnly;
+    this.setData({ favOnly, displayList: this.filterDisplay(this.data.list) });
+  },
+
+  filterDisplay(list) {
+    return this.data.favOnly ? list.filter((c) => c.fav) : list;
   },
 
   onSearch(e) {
