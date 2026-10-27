@@ -9,5 +9,12 @@ module.exports = {
   update: user.update,
   completeProfile: user.completeProfile,
   list: user.list,
-  setRole: user.setRole
+  setRole: user.setRole,
+  submitFeedback: user.submitFeedback,
+  myFeedbacks: user.myFeedbacks,
+  feedbackList: user.feedbackList,
+  replyFeedback: user.replyFeedback,
+  feedbackBadge: user.feedbackBadge,
+  markFeedbacksRead: user.markFeedbacksRead
+
 };

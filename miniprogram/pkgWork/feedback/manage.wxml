@@ -1,0 +1,77 @@
+<!--pkgWork/feedback/manage.wxml-->
+<view class="page">
+  <!-- 大标题头部 -->
+  <view class="hero">
+    <view class="hero__title">反馈管理</view>
+    <view class="hero__sub">共 {{total}} 条 · 回复后学生教师端立即可见</view>
+    <input
+      class="hero__search"
+      placeholder="搜索反馈内容 / 姓名"
+      placeholder-class="hero__ph"
+      value="{{keyword}}"
+      confirm-type="search"
+      bindconfirm="onSearch"
+      cursor-spacing="80"
+    />
+  </view>
+
+  <!-- 状态筛选 -->
+  <view class="seg">
+    <view
+      wx:for="{{tabs}}"
+      wx:key="key"
+      class="seg__item {{tab === item.key ? 'seg__item--on' : ''}}"
+      data-key="{{item.key}}"
+      bindtap="switchTab"
+    >{{item.text}}</view>
+  </view>
+
+  <!-- 列表 -->
+  <view wx:if="{{loading && list.length === 0}}" class="state">正在加载反馈…</view>
+  <view wx:elif="{{list.length === 0}}" class="empty">
+    <text class="empty__emoji">📭</text>暂无反馈
+  </view>
+  <view wx:else class="list">
+    <view wx:for="{{list}}" wx:key="_id" class="fbcard">
+      <view class="fbcard__head flex-between">
+        <text class="fbcard__name">{{item.userName}}</text>
+        <text class="tag {{item.statusClass}}">{{item.statusText}}</text>
+      </view>
+      <view class="fbcard__time">{{item.createdText}}</view>
+      <view class="fbcard__content">{{item.content}}</view>
+      <view wx:if="{{item.contact}}" class="fbcard__contact">联系方式：{{item.contact}}</view>
+      <view wx:if="{{item.status === 'replied'}}" class="fbcard__reply">
+        <view class="fbcard__reply-meta">{{item.replyBy}} 回复于 {{item.replyText}}</view>
+        <view class="fbcard__reply-body">{{item.reply}}</view>
+      </view>
+      <view wx:else class="fbcard__ops">
+        <text class="fbcard__btn pressable" hover-class="pressing" data-id="{{item._id}}" bindtap="openReply">回复</text>
+      </view>
+    </view>
+    <view wx:if="{{loadingMore}}" class="state">加载中…</view>
+    <view wx:if="{{noMore && list.length > 0}}" class="state state--end">— 已展示全部 {{total}} 条 —</view>
+  </view>
+
+  <!-- ===== 回复弹层 ===== -->
+  <view wx:if="{{showReply}}" class="mask" bindtap="closeReply">
+    <view class="sheet" catchtap="noop">
+      <view class="sheet__grip"></view>
+      <view class="sheet__title">回复反馈</view>
+      <view class="fb-origin">{{replyItem && replyItem.content}}</view>
+      <textarea
+        class="field field--area"
+        placeholder="输入回复内容…"
+        maxlength="500"
+        value="{{replyText}}"
+        bindinput="onReplyInput"
+        auto-height
+        cursor-spacing="80"
+      />
+      <view class="counter">{{replyText.length}}/500</view>
+      <view class="sheet__btns">
+        <view class="btn btn-plain pressable" hover-class="pressing" bindtap="closeReply">取消</view>
+        <view class="btn pressable {{sending ? 'btn-disabled' : ''}}" hover-class="pressing" bindtap="sendReply">{{sending ? '发送中…' : '发送回复'}}</view>
+      </view>
+    </view>
+  </view>
+</view>
