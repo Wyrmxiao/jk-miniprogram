@@ -1,0 +1,51 @@
+/* pkgWork/feedback/submit.wxss —— 意见反馈提交 */
+.page { min-height: 100vh; background: var(--bg-page); padding: 0 var(--space-lg) 160rpx; }
+
+.block {
+  margin-top: var(--space-md);
+  padding: var(--space-lg);
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+.block__title { font-size: var(--font-body); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-md); }
+.counter { margin-top: var(--space-sm); text-align: right; font-size: var(--font-micro); color: var(--text-tertiary); }
+
+/* 单行输入框：显式高度 + 零垂直 padding，避免提示字上下被裁（仿 realname 输入框范式） */
+.field--input {
+  width: 100%;
+  height: 88rpx;
+  padding: 0 var(--space-md);
+}
+/* 底部操作条：毛玻璃 */
+.footer {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  padding: var(--space-md) var(--space-lg) calc(var(--space-md) + env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(24rpx) saturate(180%);
+  -webkit-backdrop-filter: blur(24rpx) saturate(180%);
+  box-shadow: 0 -4rpx 20rpx rgba(90, 82, 70, 0.06);
+}
+.submit {
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+  color: #fff;
+  font-size: var(--font-body);
+  font-weight: 600;
+}
+.submit--disabled { opacity: 0.6; }
+
+/* ===== 我的反馈历史 ===== */
+.fb { padding: var(--space-md); background: var(--bg-block); border-radius: var(--radius-md); }
+.fb + .fb { margin-top: var(--space-md); }
+.fb__time { font-size: var(--font-micro); color: var(--text-tertiary); }
+.fb__content { margin-top: var(--space-sm); font-size: var(--font-body); color: var(--text-primary); line-height: 1.6; word-break: break-all; }
+.fb__contact { margin-top: var(--space-xs); font-size: var(--font-micro); color: var(--text-tertiary); }
+.fb__reply { margin-top: var(--space-md); padding: var(--space-sm) var(--space-md); border-radius: var(--radius-sm); background: var(--color-success-light); }
+.fb__reply-head { font-size: var(--font-micro); color: var(--color-student-deep); }
+.fb__reply-body { margin-top: 6rpx; font-size: var(--font-caption); color: var(--text-primary); line-height: 1.6; word-break: break-all; }
+.fb-empty { padding: var(--space-lg) 0; text-align: center; font-size: var(--font-caption); color: var(--text-tertiary); }

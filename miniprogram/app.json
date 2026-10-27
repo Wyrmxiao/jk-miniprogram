@@ -36,7 +36,9 @@
         "task/publish",
         "log/edit",
         "project/edit",
-        "admin/users/users"
+        "admin/users/users",
+        "feedback/submit",
+        "feedback/manage"
       ]
     }
   ],

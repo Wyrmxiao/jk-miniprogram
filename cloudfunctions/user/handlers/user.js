@@ -5,6 +5,8 @@
 const cloud = require('wx-server-sdk');
 const { badRequest, notFound, forbidden } = require('../utils/response');
 
+const { ensure } = require('../utils/ensure');
+
 const db = () => cloud.database();
 const now = () => db().serverDate();
 
@@ -150,10 +152,177 @@ async function setRole(params, ctx) {
   };
 }
 
+/* ============================================================
+ * 意见反馈：用户提交 → 教师/管理员回复
+ * 数据存 feedbacks 集合；内容仅后台可见，不公开展示
+ * ============================================================ */
+
+const FB_MAX_LEN = 500;      // 反馈内容上限
+const CONTACT_MAX_LEN = 20;  // 联系方式上限
+const FB_PENDING_MAX = 3;    // 同一用户待处理反馈上限（防刷）
+
+/** 用户提交反馈（登录；content 必填，contact 选填） */
+async function submitFeedback(params, ctx) {
+  ctx.requireLogin();
+  const { content = '', contact = '' } = params || {};
+  const text = String(content).trim();
+  if (!text) throw badRequest('请填写反馈内容');
+  if (text.length > FB_MAX_LEN) throw badRequest(`反馈内容不能超过 ${FB_MAX_LEN} 字`);
+
+  const contactText = String(contact || '').trim();
+  if (contactText.length > CONTACT_MAX_LEN) throw badRequest(`联系方式不能超过 ${CONTACT_MAX_LEN} 字`);
+
+  await ensure('feedbacks');
+  const col = db().collection('feedbacks');
+
+  // 防刷：待处理中的反馈不超过上限
+  const pendingRes = await col.where({ openid: ctx.openid, status: 'pending' }).count();
+  if (pendingRes.total >= FB_PENDING_MAX) {
+    throw forbidden('有反馈还在处理中，请耐心等待回复后再提交');
+  }
+
+  const res = await col.add({
+    data: {
+      openid: ctx.openid,
+      userName: (ctx.user && ctx.user.realName) || (ctx.user && ctx.user.nickname) || '用户',
+      content: text,
+      contact: contactText,
+      status: 'pending',
+      reply: '',
+      replyBy: '',
+      replyAt: null,
+      createdAt: now(),
+      updatedAt: now()
+    }
+  });
+  return { id: res._id };
+}
+
+/** 我的反馈历史（登录） */
+async function myFeedbacks(params, ctx) {
+  ctx.requireLogin();
+  const { page = 1, size = 20 } = params || {};
+  const safeSize = Math.min(50, Math.max(1, Number(size) || 20));
+  const safePage = Math.max(1, Number(page) || 1);
+
+  await ensure('feedbacks');
+  const col = db().collection('feedbacks');
+  const countRes = await col.where({ openid: ctx.openid }).count();
+  const listRes = await col
+    .where({ openid: ctx.openid })
+    .orderBy('createdAt', 'desc')
+    .skip((safePage - 1) * safeSize)
+    .limit(safeSize)
+    .get();
+
+  return { total: countRes.total, list: listRes.data, page: safePage, size: safeSize };
+}
+
+/** 全部反馈（仅管理员）：反馈收件人=开发团队（admin），按状态筛选 + 关键词（内容/姓名） */
+async function feedbackList(params, ctx) {
+  ctx.requireRole('admin');
+  const { status = '', keyword = '', page = 1, size = 20 } = params || {};
+  const safeSize = Math.min(50, Math.max(1, Number(size) || 20));
+  const safePage = Math.max(1, Number(page) || 1);
+
+  await ensure('feedbacks');
+  const col = db().collection('feedbacks');
+  const _ = db().command;
+  const conds = [];
+  if (status === 'pending' || status === 'replied') conds.push({ status });
+
+  const kw = String(keyword || '').trim();
+  if (kw) {
+    const reg = db().RegExp({ regexp: kw, options: 'i' });
+    conds.push(_.or([{ content: reg }, { userName: reg }]));
+  }
+
+  const where = conds.length === 0 ? {} : conds.length === 1 ? conds[0] : _.and(conds);
+  const countRes = await col.where(where).count();
+  const listRes = await col
+    .where(where)
+    .orderBy('createdAt', 'desc')
+    .skip((safePage - 1) * safeSize)
+    .limit(safeSize)
+    .get();
+
+  return { total: countRes.total, list: listRes.data, page: safePage, size: safeSize };
+}
+
+/** 回复反馈（仅管理员：开发团队处理） */
+async function replyFeedback(params, ctx) {
+  ctx.requireRole('admin');
+  const { id, reply = '' } = params || {};
+  if (!id) throw badRequest('缺少反馈 ID');
+  const text = String(reply).trim();
+  if (!text) throw badRequest('请填写回复内容');
+  if (text.length > FB_MAX_LEN) throw badRequest(`回复不能超过 ${FB_MAX_LEN} 字`);
+
+  const col = db().collection('feedbacks');
+  const res = await col.doc(id).get().catch(() => null);
+  if (!res || !res.data) throw notFound('反馈不存在');
+
+  await col.doc(id).update({
+    data: {
+      reply: text,
+      replyBy: (ctx.user && ctx.user.realName) || '老师',
+      replyAt: now(),
+      status: 'replied',
+      updatedAt: now()
+    }
+  });
+  return { id };
+}
+
+/** 反馈红点计数：管理员=待处理数；所有人=自己收到的未读回复数（一次调用，返回两个计数） */
+async function feedbackBadge(params, ctx) {
+  ctx.requireLogin();
+  await ensure('feedbacks');
+  const col = db().collection('feedbacks');
+  const _ = db().command;
+
+  const role = (ctx.user && ctx.user.role) || 'guest';
+
+  // 反馈收件人=开发团队（admin），只有管理员需要统计待处理数
+  const pendingRes = role === 'admin'
+    ? await col.where({ status: 'pending' }).count()
+    : { total: 0 };
+  // 未读回复：自己的反馈已被回复、且尚未标记已读（无 replyRead 字段视为未读）
+  const unreadRes = await col
+    .where({ openid: ctx.openid, status: 'replied', replyRead: _.neq(true) })
+    .count();
+
+  return { pendingCount: pendingRes.total, unreadCount: unreadRes.total };
+}
+
+/** 标记我的反馈回复为已读（登录；学生打开「我的反馈」历史时调用） */
+async function markFeedbacksRead(params, ctx) {
+  ctx.requireLogin();
+  await ensure('feedbacks');
+  const col = db().collection('feedbacks');
+  const _ = db().command;
+
+  const where = { openid: ctx.openid, status: 'replied', replyRead: _.neq(true) };
+  const unreadRes = await col.where(where).get();
+  if (!unreadRes.data.length) return { marked: 0 };
+
+  await col.where(where).update({
+    data: { replyRead: true, replyReadAt: now() }
+  });
+  return { marked: unreadRes.data.length };
+}
+
+
 module.exports = {
   profile,
   update,
   completeProfile,
   list,
-  setRole
+  setRole,
+  submitFeedback,
+  myFeedbacks,
+  feedbackList,
+  replyFeedback,
+  feedbackBadge,
+  markFeedbacksRead
 };

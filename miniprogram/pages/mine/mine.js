@@ -1,6 +1,6 @@
 // pages/mine/mine.js
-const { announce, contest, auth } = require('../../services/index');
-const { getProfile, isTeacher, isVerified } = require('../../utils/auth');
+const { announce, contest, auth, user } = require('../../services/index');
+const { getProfile, isLogin, isTeacher, isVerified } = require('../../utils/auth');
 const { ROLE_TEXT, AUTH_STATUS_TEXT, MY_CONTEST_STATUS_TEXT } = require('../../constants/index');
 
 /** 关注状态 → 标签配色 */
@@ -25,11 +25,15 @@ Page({
     myAnnouncements: [],
     showMyAnnounce: false,
     // 学生/教师：我关注的赛事
-    myContests: []
+    myContests: [],
+    // 意见反馈红点：教师=有待处理反馈；学生=有未读回复
+    fbManageDot: false,
+    fbSubmitDot: false
   },
 
   onShow() {
     this.applyIdentity();
+    this.loadFeedbackDot();
   },
 
   /** 从本地登录态计算身份并渲染（激活/完善资料后调用） */
@@ -48,6 +52,23 @@ Page({
     });
     if (admin) this.loadSystemStatus();
     if (this.data.isVerified) this.loadMyContests();
+  },
+
+  /** 意见反馈红点：教师=待处理数，学生=未读回复数（静默失败，不影响页面） */
+  async loadFeedbackDot() {
+    if (!isLogin()) {
+      this.setData({ fbManageDot: false, fbSubmitDot: false });
+      return;
+    }
+    try {
+      const res = await user.feedbackBadge();
+      this.setData({
+        fbManageDot: this.data.isAdmin && (res.pendingCount || 0) > 0,
+        fbSubmitDot: (res.unreadCount || 0) > 0
+      });
+    } catch (e) {
+      /* 静默 */
+    }
   },
 
   /** 我关注的赛事（报名时间/开赛时间/往期惯例） */
@@ -157,6 +178,20 @@ Page({
 
   goManageContest() {
     wx.navigateTo({ url: '/pkgContest/manage/manage' });
+  },
+
+  /** 意见反馈：提交入口（未登录先去登录） */
+  goFeedback() {
+    if (!isLogin()) {
+      wx.navigateTo({ url: '/pkgAuth/login/login' });
+      return;
+    }
+    wx.navigateTo({ url: '/pkgWork/feedback/submit' });
+  },
+
+  /** 意见反馈：管理入口（教师/管理员，isTeacher 含 admin） */
+  goFeedbackManage() {
+    wx.navigateTo({ url: '/pkgWork/feedback/manage' });
   },
 
   /** 去赛事库（tab 页） */

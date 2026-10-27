@@ -24,8 +24,17 @@ const user = {
   // 完善个人资料：教师/管理员填姓名即通过；学生走学号认证
   completeProfile: (data) => request(DOMAIN.USER, 'completeProfile', data, { loading: '保存中' }),
   list: (params) => request(DOMAIN.USER, 'list', params, { silent: true }),
-  setRole: (data) => request(DOMAIN.USER, 'setRole', data, { loading: '处理中' })
+  setRole: (data) => request(DOMAIN.USER, 'setRole', data, { loading: '处理中' }),
+  // 意见反馈：用户提交 → 教师/管理员回复
+  submitFeedback: (data) => request(DOMAIN.USER, 'submitFeedback', data, { loading: '提交中' }),
+  myFeedbacks: (params) => request(DOMAIN.USER, 'myFeedbacks', params, { silent: true }),
+  feedbackList: (params) => request(DOMAIN.USER, 'feedbackList', params, { silent: true }),
+  replyFeedback: (data) => request(DOMAIN.USER, 'replyFeedback', data, { loading: '提交中' }),
+  // 红点计数：教师=待处理数 / 学生=未读回复数；标记回复已读
+  feedbackBadge: () => request(DOMAIN.USER, 'feedbackBadge', {}, { silent: true }),
+  markFeedbacksRead: () => request(DOMAIN.USER, 'markFeedbacksRead', {}, { silent: true })
 };
+
 
 // ============ 学习路线与成长记录 ============
 const learn = {

@@ -133,10 +133,28 @@
       </view>
       <text class="cell__chevron">›</text>
     </view>
+    <view class="cell cell--dot pressable" hover-class="pressing" bindtap="goFeedbackManage">
+      <view class="cell__icon cell__icon--purple">💬</view>
+      <view class="cell__body">
+        <view class="cell__title">反馈管理</view>
+        <view class="cell__desc">开发团队处理小程序问题反馈</view>
+      </view>
+      <view wx:if="{{fbManageDot}}" class="fb-dot"></view>
+      <text class="cell__chevron">›</text>
+    </view>
   </view>
 
   <!-- 通用 -->
   <view class="group">
+    <view wx:if="{{!isAdmin}}" class="cell cell--dot pressable" hover-class="pressing" bindtap="goFeedback">
+      <view class="cell__icon cell__icon--blue">💬</view>
+      <view class="cell__body">
+        <view class="cell__title">意见反馈</view>
+        <view class="cell__desc">提交问题或建议，开发团队会回复</view>
+      </view>
+      <view wx:if="{{fbSubmitDot}}" class="fb-dot"></view>
+      <text class="cell__chevron">›</text>
+    </view>
     <view class="cell pressable" hover-class="pressing" bindtap="goAgreement">
       <view class="cell__icon cell__icon--gray">📄</view>
       <view class="cell__body">

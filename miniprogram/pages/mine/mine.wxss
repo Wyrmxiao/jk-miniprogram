@@ -1,6 +1,18 @@
 /* pages/mine/mine.wxss —— Apple 风格「我的」 */
 .page { background: var(--bg-page); }
 
+/* ===== 意见反馈红点（cell 右上角小圆点） ===== */
+.cell--dot { position: relative; }
+.fb-dot {
+  position: absolute;
+  top: 16rpx;
+  right: 56rpx;
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+  background: #fa5151;
+}
+
 /* ===== 个人信息卡 ===== */
 .profile {
   display: flex;
