@@ -79,7 +79,29 @@ async function list(params, ctx) {
       return o;
     });
 
-  return { total: countRes.total, list, page, size };
+  // 已登录用户：标记每项是否已关注（让列表星标跨设备一致）
+  const followedMap = {};
+  if (ctx.openid) {
+    try {
+      const mineRes = await db()
+        .collection('my_contests')
+        .where({ openid: ctx.openid })
+        .limit(1000)
+        .get();
+      mineRes.data.forEach((m) => {
+        if (m.competitionId) followedMap[m.competitionId] = true;
+      });
+    } catch (e) {
+      /* 查询失败时退回前端本地缓存，不影响列表 */
+    }
+  }
+
+  return {
+    total: countRes.total,
+    list: list.map((c) => Object.assign({}, c, { followed: !!followedMap[c._id] })),
+    page,
+    size
+  };
 }
 
 /** 竞赛详情 */

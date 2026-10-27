@@ -71,3 +71,17 @@
 .state__emoji { font-size: 72rpx; margin-bottom: var(--space-sm); }
 .state--end { color: var(--text-tertiary); font-size: var(--font-micro); }
 
+/* ===== 本地收藏星标 ===== */
+.fav {
+  flex-shrink: 0;
+  margin-right: var(--space-sm);
+  width: 64rpx;
+  height: 64rpx;
+  line-height: 64rpx;
+  text-align: center;
+  font-size: 36rpx;
+  color: var(--text-tertiary);
+}
+.fav--on { color: var(--color-warning); }
+
+

@@ -38,6 +38,20 @@ node tools/remote.js init      # 幂等初始化
 node tools/remote.js smoke     # 公告链路冒烟
 ```
 
+### 代码校验与推送
+
+```bash
+# 全站校验：页面四件套 / WXML 配平 / 绑定方法调用 / 跳转注册对齐 /
+# WXSS @import / JS require 路径
+node tools/check_all.js
+
+# git 端点被拦截时（如代理拦 CONNECT），用 GitHub REST API 推送本地提交。
+# 令牌取自凭据管理器，不要写进命令行：
+GH_TOKEN=$(printf 'protocol=https\nhost=github.com\n\n' | git credential fill | sed -n 's/^password=//p') \
+  node tools/push_via_api.js main
+# 推完对齐：git fetch && git reset --hard origin/main
+```
+
 ## 目录结构
 
 ```
@@ -67,6 +81,8 @@ docs/
 
 tools/
 ├── remote.js            联机工具：初始化 / 自检 / 冒烟 / 单接口调试
+├── check_all.js         全站静态校验（四件套 / WXML / 跳转 / 引用路径）
+├── push_via_api.js      git 端点不可用时，走 GitHub REST API 推送
 ├── deploy_cloudfunctions.sh  批量部署云函数
 ├── gen_competition_seed.py   由 83 号文生成竞赛种子数据
 ├── gen_tabbar_icons.py       生成 tabBar 图标

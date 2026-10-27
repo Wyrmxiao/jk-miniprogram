@@ -42,18 +42,21 @@
       bindtap="onCategoryChange"
     >{{item.text}}</view>
     <view class="chip pressable {{focusOnly ? 'chip--on' : ''}}" hover-class="chip--pressing" bindtap="toggleFocus">★ 院内重点</view>
+    <view class="chip pressable {{followedOnly ? 'chip--on' : ''}}" hover-class="chip--pressing" bindtap="toggleFollowedOnly">☆ 只看关注</view>
+
   </scroll-view>
 
   <!-- 列表 -->
   <view wx:if="{{loading}}" class="state">正在加载赛事…</view>
-  <view wx:elif="{{list.length === 0}}" class="state state--empty">
+  <view wx:elif="{{displayList.length === 0}}" class="state state--empty">
     <view class="state__emoji">🏆</view>
     <view>暂无符合条件的竞赛</view>
   </view>
   <view wx:else class="list">
-    <view wx:for="{{list}}" wx:key="_id" class="card pressable" hover-class="pressing" data-id="{{item._id}}" bindtap="goDetail">
+    <view wx:for="{{displayList}}" wx:key="_id" class="card pressable" hover-class="pressing" data-id="{{item._id}}" bindtap="goDetail">
       <view class="card__head">
         <view class="card__name">{{item.name}}</view>
+        <view class="fav pressable {{item.followed ? 'fav--on' : ''}}" hover-class="pressing" catchtap="toggleFollow" data-id="{{item._id}}">{{item.followed ? '★' : '☆'}}</view>
         <view class="level level--{{item.level}}">{{item.level}}类</view>
       </view>
       <view class="card__tags">

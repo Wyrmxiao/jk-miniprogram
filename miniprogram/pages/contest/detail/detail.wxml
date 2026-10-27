@@ -9,6 +9,7 @@
         <view class="level level--{{detail.level}}">{{detail.level}}类</view>
         <text wx:if="{{categoryText}}" class="hero__meta">{{categoryText}}</text>
         <text wx:if="{{detail.isFocus}}" class="hero__meta">★ 院内重点</text>
+        <text wx:if="{{following}}" class="hero__meta">★ 已关注</text>
       </view>
     </view>
 
