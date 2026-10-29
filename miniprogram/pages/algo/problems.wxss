@@ -1,0 +1,89 @@
+@import '../../styles/variables.wxss';
+@import '../../styles/mixins.wxss';
+
+.prob {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  margin: 0 var(--space-sm) var(--space-sm);
+}
+.prob--done {
+  opacity: 0.72;
+}
+
+.prob__dot {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  border: 2rpx solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-caption);
+  color: #fff;
+  flex-shrink: 0;
+}
+.prob__dot--on {
+  border-color: var(--color-student);
+  background: var(--color-student);
+}
+
+.prob__body {
+  flex: 1;
+  min-width: 0;
+}
+.prob__title {
+  font-size: var(--font-body);
+  color: var(--text-primary);
+}
+.prob__meta {
+  margin-top: 4rpx;
+  font-size: var(--font-micro);
+  color: var(--text-tertiary);
+}
+
+.prob__btn {
+  padding: 8rpx 26rpx;
+  border-radius: var(--radius-pill);
+  background: var(--color-student);
+  color: #fff;
+  font-size: var(--font-caption);
+  flex-shrink: 0;
+}
+.prob__btn--doing {
+  opacity: 0.6;
+}
+
+/* 底部「下一题」浮条 */
+.prob__next {
+  position: fixed;
+  left: var(--space-lg);
+  right: var(--space-lg);
+  bottom: calc(var(--space-lg) + env(safe-area-inset-bottom));
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 20rpx var(--space-md);
+  background: var(--color-primary);
+  color: var(--text-inverse);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-float);
+}
+.prob__next-label {
+  font-size: var(--font-caption);
+  opacity: 0.85;
+  flex-shrink: 0;
+}
+.prob__next-title {
+  flex: 1;
+  font-size: var(--font-body);
+  font-weight: 500;
+  text-align: center;
+}
+.prob__next-arrow {
+  font-size: var(--font-title);
+  flex-shrink: 0;
+}

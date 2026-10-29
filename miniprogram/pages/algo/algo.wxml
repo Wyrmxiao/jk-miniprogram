@@ -1,0 +1,200 @@
+<view class="page">
+  <view class="hero">
+    <view wx:if="{{mode === 'student'}}" class="rolebar rolebar--student" bindtap="goBack">
+      <view class="rolebar__text">← 返回</view>
+    </view>
+    <view class="hero__title">{{mode === 'student' ? viewName : '算法训练'}}</view>
+    <view class="hero__sub">{{stats ? '连续 ' + stats.streak + ' 天 · 累计 ' + stats.total + ' 题' : '每日刷题 · 记录成长'}}</view>
+    <view class="hero__btns">
+      <view class="btn btn-plain pressable" hover-class="pressing" bindtap="openSheet">+ 补记外站题</view>
+      <view class="btn pressable hero__go" hover-class="pressing" bindtap="goModules">去刷题</view>
+    </view>
+  </view>
+
+  <view wx:if="{{isTeacher && !viewOpenid}}" class="seg algo__seg">
+    <view class="seg__item {{mode !== 'students' ? 'seg__item--on' : ''}}" data-mode="mine" bindtap="switchMode">我的训练</view>
+    <view class="seg__item {{mode === 'students' ? 'seg__item--on' : ''}}" data-mode="students" bindtap="switchMode">学生训练</view>
+  </view>
+
+  <!-- 未认证引导 -->
+  <view wx:if="{{!isVerified && !isTeacher}}" class="empty">
+    <view class="empty__emoji">🔐</view>
+    <view>完成实名认证后开始训练</view>
+  </view>
+
+  <block wx:if="{{mode === 'students'}}">
+    <view class="group">
+      <view class="group__title">学生训练总览</view>
+      <view wx:for="{{overview}}" wx:key="openid" class="cell pressable" hover-class="pressing" data-openid="{{item.openid}}" data-name="{{item.name}}" bindtap="goStudent">
+        <view class="cell__body">
+          <view class="cell__title">{{item.name}}</view>
+          <view class="cell__desc">{{item.studentNo || '未填写学号'}}</view>
+        </view>
+        <view class="cell__value">{{item.total}} 题 · 连续 {{item.streak}} 天</view>
+        <view class="cell__chevron">›</view>
+      </view>
+      <view wx:if="{{overview.length === 0}}" class="empty">
+        <view class="empty__emoji">🌱</view>
+        <view>还没有学生的训练数据</view>
+      </view>
+    </view>
+  </block>
+
+  <block wx:else>
+    <!-- 备赛目标 -->
+    <view wx:if="{{goalText}}" class="goal pressable" hover-class="pressing" bindtap="openGoal">
+      <view class="flex-between">
+        <view class="goal__title">{{goalText}}</view>
+        <view class="goal__num">{{goalDone}}/{{goalTotal}}</view>
+      </view>
+      <view class="goal__bar">
+        <view class="goal__bar-inner" style="width: {{goalPct}}%"></view>
+      </view>
+    </view>
+    <view wx:elif="{{isVerified}}" class="goal goal--empty pressable" hover-class="pressing" bindtap="openGoal">
+      <view class="goal__title">🎯 设一个备赛目标，让训练更有方向</view>
+      <view class="cell__chevron">›</view>
+    </view>
+
+    <!-- 统计三卡 -->
+    <view wx:if="{{stats}}" class="algo__cards">
+      <view class="algo__card">
+        <view class="algo__card-num">{{stats.total}}</view>
+        <view class="algo__card-label">累计题数</view>
+      </view>
+      <view class="algo__card">
+        <view class="algo__card-num">{{passRate}}%</view>
+        <view class="algo__card-label">通过率</view>
+      </view>
+      <view class="algo__card">
+        <view class="algo__card-num">{{stats.streak}}</view>
+        <view class="algo__card-label">连续天数</view>
+      </view>
+    </view>
+
+    <!-- 12 周热力图 -->
+    <view wx:if="{{stats}}" class="group">
+      <view class="group__title">近 12 周训练热力</view>
+      <view class="heat">
+        <view wx:for="{{heatCells}}" wx:key="d" class="heat__cell heat--{{item.l}}"></view>
+      </view>
+      <view class="heat__legend">
+        <text>少</text>
+        <view wx:for="{{heatLegend}}" wx:key="*this" class="heat__cell heat--{{item}}"></view>
+        <text>多</text>
+      </view>
+    </view>
+
+    <!-- 知识点分布 -->
+    <view wx:if="{{tagRows.length}}" class="group">
+      <view class="group__title">知识点分布</view>
+      <view wx:for="{{tagRows}}" wx:key="key" class="tagrow">
+        <text class="tagrow__name">{{item.name}}</text>
+        <view class="tagrow__bar">
+          <view class="tagrow__inner" style="width: {{item.pct}}%"></view>
+        </view>
+        <text class="tagrow__num">{{item.n}}</text>
+      </view>
+    </view>
+
+    <!-- 打卡流水 -->
+    <view class="group">
+      <view class="group__title">打卡流水</view>
+      <view wx:if="{{recordsLoading}}" class="state-empty">加载中…</view>
+      <view wx:elif="{{records.length === 0}}" class="empty">
+        <view class="empty__emoji">✏️</view>
+        <view>还没有记录，去题库刷第一题吧</view>
+      </view>
+      <view wx:else wx:for="{{records}}" wx:key="_id" class="cell pressable" hover-class="pressing" data-id="{{item._id}}" bindtap="goRecord">
+        <view class="rec__dot rec__dot--{{item.passed ? 'pass' : 'fail'}}">{{item.passed ? '✓' : '○'}}</view>
+        <view class="cell__body">
+          <view class="cell__title text-ellipsis">{{item.title}}</view>
+          <view class="cell__desc">{{item.dateText}} · {{item.difficulty}}{{item.tagsText ? ' · ' + item.tagsText : ''}}</view>
+        </view>
+        <view wx:if="{{item.hasComment}}" class="tag tag-primary">评</view>
+        <view class="cell__chevron">›</view>
+      </view>
+    </view>
+  </block>
+
+  <!-- 手动补记弹层 -->
+  <view wx:if="{{sheetShow}}" class="mask" bindtap="closeSheet">
+    <view class="sheet" catchtap="noop">
+      <view class="sheet__grip"></view>
+      <view class="sheet__title">补记外站题</view>
+      <view class="sheet__tip">洛谷 / 牛客等题库外的题，在这里手动记录</view>
+
+      <view class="field">
+        <input value="{{form.title}}" bindinput="onTitle" placeholder="题名（必填）" cursor-spacing="120" />
+      </view>
+
+      <view class="field">
+        <picker mode="selector" range="{{platformNames}}" value="{{platformIndex}}" bindchange="onPlatform">
+          <view class="picker">{{platformIndex >= 0 ? platformNames[platformIndex] : '选择平台'}}</view>
+        </picker>
+      </view>
+
+      <view class="opts">
+        <view wx:for="{{bands}}" wx:key="key" class="opt {{diffIndex === index ? 'opt--on' : ''}}" data-index="{{index}}" bindtap="onDiffTap">{{item.name}}</view>
+      </view>
+
+      <view class="opts">
+        <view wx:for="{{tagChips}}" wx:key="key" class="opt {{tagSel[item.key] ? 'opt--on' : ''}}" data-key="{{item.key}}" bindtap="toggleTag">{{item.name}}</view>
+      </view>
+
+      <view class="field">
+        <input value="{{form.url}}" bindinput="onUrl" placeholder="题目链接（选填）" cursor-spacing="120" />
+      </view>
+
+      <view class="field">
+        <picker mode="date" start="{{dateStart}}" end="{{dateEnd}}" value="{{form.date}}" bindchange="onDate">
+          <view class="picker">做题日期：{{form.date}}</view>
+        </picker>
+      </view>
+
+      <view class="switch-row">
+        <view>
+          <view class="row__label">已通过</view>
+          <view class="switch-row__desc">记录以自觉为准，不做判题校验</view>
+        </view>
+        <switch checked="{{form.passed}}" bindchange="onPassed" color="#6b8ca3" />
+      </view>
+
+      <view class="field field--area">
+        <textarea value="{{form.note}}" bindinput="onNote" placeholder="思路 / 备注（选填）" maxlength="300" cursor-spacing="240" auto-height />
+      </view>
+
+      <view class="btn btn-primary btn-block pressable {{canSubmit ? '' : 'btn-disabled'}}" hover-class="pressing" bindtap="submitCheckIn">保存记录</view>
+      <view class="safe-bottom"></view>
+    </view>
+  </view>
+
+  <!-- 备赛目标弹层 -->
+  <view wx:if="{{goalShow}}" class="mask" bindtap="closeGoal">
+    <view class="sheet" catchtap="noop">
+      <view class="sheet__grip"></view>
+      <view class="sheet__title">备赛目标</view>
+      <view class="sheet__tip">选一场赛事，定个目标题数，主页追踪进度</view>
+
+      <view class="field">
+        <picker mode="selector" range="{{contestNames}}" value="{{contestIndex}}" bindchange="onContest">
+          <view class="picker">{{contestIndex >= 0 ? contestNames[contestIndex] : '选择目标赛事'}}</view>
+        </picker>
+      </view>
+
+      <view class="field">
+        <input type="number" value="{{goalForm.targetCount}}" bindinput="onTargetCount" placeholder="目标题数（如 300）" cursor-spacing="120" />
+      </view>
+
+      <view class="field">
+        <picker mode="date" start="{{dateEnd}}" value="{{goalForm.deadline}}" bindchange="onDeadline">
+          <view class="picker">{{goalForm.deadline ? '截止 ' + goalForm.deadline : '截止日期（选填）'}}</view>
+        </picker>
+      </view>
+
+      <view class="btn btn-primary btn-block pressable" hover-class="pressing" bindtap="submitGoal">保存目标</view>
+      <view wx:if="{{goalText}}" class="btn btn-plain btn-block pressable" hover-class="pressing" bindtap="clearGoal">清除目标</view>
+      <view class="safe-bottom"></view>
+    </view>
+  </view>
+</view>

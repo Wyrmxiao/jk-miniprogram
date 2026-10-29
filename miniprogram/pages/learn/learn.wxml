@@ -11,6 +11,18 @@
   </view>
 
   <block wx:else>
+    <!-- 算法训练入口 -->
+    <view class="algo-entry pressable" hover-class="pressing" bindtap="goAlgo">
+      <view class="algo-entry__icon">∑</view>
+      <view class="algo-entry__body">
+        <view class="algo-entry__title">算法训练</view>
+        <view class="algo-entry__desc" wx:if="{{algoStat}}">{{algoStat.total > 0 ? '连续 ' + algoStat.streak + ' 天 · 累计 ' + algoStat.total + ' 题' + (algoStat.todayDone ? ' · 今日已完成' : ' · 今天还没刷') : '从入门题开始你的第一次刷题'}}</view>
+        <view class="algo-entry__desc" wx:else>820 道精选题 · 按知识点与难度分层</view>
+      </view>
+      <view class="algo-entry__go">{{algoStat && algoStat.todayDone ? '✓' : 'GO'}}</view>
+      <view class="cell__chevron">›</view>
+    </view>
+
     <view class="seg">
       <view class="seg__item {{tab === 'task' ? 'seg__item--on' : ''}}" data-tab="task" bindtap="switchTab">学习任务</view>
       <view class="seg__item {{tab === 'log' ? 'seg__item--on' : ''}}" data-tab="log" bindtap="switchTab">学习记录</view>

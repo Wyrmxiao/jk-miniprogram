@@ -49,7 +49,21 @@ const learn = {
   taskDetail: (params) => request(DOMAIN.LEARN, 'taskDetail', params, { silent: true }),
   submitTask: (data) => request(DOMAIN.LEARN, 'submitTask', data, { loading: '提交中' }),
   reviewSubmission: (data) => request(DOMAIN.LEARN, 'reviewSubmission', data, { loading: '提交中' }),
-  closeTask: (data) => request(DOMAIN.LEARN, 'closeTask', data, { loading: '处理中' })
+  closeTask: (data) => request(DOMAIN.LEARN, 'closeTask', data, { loading: '处理中' }),
+  // 算法训练：题库刷题 + 打卡统计
+  algoProblemModules: (params) => request(DOMAIN.LEARN, 'algoProblemModules', params, { silent: true }),
+  algoProblemList: (params) => request(DOMAIN.LEARN, 'algoProblemList', params, { silent: true }),
+  algoProblemDetail: (params) => request(DOMAIN.LEARN, 'algoProblemDetail', params, { silent: true }),
+  algoMarkProblem: (data) => request(DOMAIN.LEARN, 'algoMarkProblem', data, { loading: '记录中' }),
+  algoCheckIn: (data) => request(DOMAIN.LEARN, 'algoCheckIn', data, { loading: '保存中' }),
+  algoRecords: (params) => request(DOMAIN.LEARN, 'algoRecords', params, { silent: true }),
+  algoRecordDetail: (params) => request(DOMAIN.LEARN, 'algoRecordDetail', params, { silent: true }),
+  algoRemove: (data) => request(DOMAIN.LEARN, 'algoRemove', data, { loading: '删除中' }),
+  algoUpdateNote: (data) => request(DOMAIN.LEARN, 'algoUpdateNote', data, { loading: '保存中' }),
+  algoComment: (data) => request(DOMAIN.LEARN, 'algoComment', data, { loading: '提交中' }),
+  algoStats: (params) => request(DOMAIN.LEARN, 'algoStats', params, { silent: true }),
+  algoSetGoal: (data) => request(DOMAIN.LEARN, 'algoSetGoal', data, { loading: '保存中' }),
+  algoTeacherOverview: (params) => request(DOMAIN.LEARN, 'algoTeacherOverview', params, { silent: true })
 };
 
 // ============ 竞赛 ============

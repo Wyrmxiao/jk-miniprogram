@@ -101,3 +101,51 @@
 .sub__head { flex-direction: row; align-items: center; justify-content: space-between; }
 .sub__name { font-size: var(--font-body); font-weight: 500; color: var(--text-primary); }
 .sub__content { margin-top: var(--space-sm); font-size: var(--font-caption); color: var(--text-secondary); line-height: 1.6; }
+
+/* ===== 算法训练入口 ===== */
+.algo-entry {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin: var(--space-md) var(--space-lg) 0;
+  padding: var(--space-md);
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+.algo-entry__icon {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-size: 40rpx;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.algo-entry__body {
+  flex: 1;
+  min-width: 0;
+}
+.algo-entry__title {
+  font-size: var(--font-body);
+  font-weight: 500;
+  color: var(--text-primary);
+}
+.algo-entry__desc {
+  margin-top: 4rpx;
+  font-size: var(--font-micro);
+  color: var(--text-tertiary);
+}
+.algo-entry__go {
+  padding: 6rpx 22rpx;
+  border-radius: var(--radius-pill);
+  background: var(--color-student);
+  color: #fff;
+  font-size: var(--font-micro);
+  font-weight: 500;
+  flex-shrink: 0;
+}

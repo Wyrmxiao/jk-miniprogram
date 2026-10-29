@@ -137,6 +137,49 @@ const MY_CONTEST_STATUS_TEXT = {
   finished: '已完赛'
 };
 
+/** 算法训练 · 难度档位（对应 CF rating 区间，与题库 algo_problems.json 一致） */
+const ALGO_BANDS = [
+  { key: 'entry', name: '入门', range: '800-1000' },
+  { key: 'basic', name: '基础', range: '1100-1300' },
+  { key: 'improve', name: '提高', range: '1400-1600' },
+  { key: 'advanced', name: '进阶', range: '1700-1900' },
+  { key: 'challenge', name: '挑战', range: '2000-2200' }
+];
+
+const ALGO_BAND_TEXT = {
+  entry: '入门',
+  basic: '基础',
+  improve: '提高',
+  advanced: '进阶',
+  challenge: '挑战'
+};
+
+/** 算法训练 · 知识点（与题库一致，顺序即展示顺序） */
+const ALGO_TAGS = [
+  { key: 'simulation', name: '模拟枚举' },
+  { key: 'sort', name: '排序' },
+  { key: 'binary', name: '二分' },
+  { key: 'prefix', name: '前缀和差分' },
+  { key: 'twopointer', name: '双指针' },
+  { key: 'greedy', name: '贪心' },
+  { key: 'recursion', name: '递归分治' },
+  { key: 'dp', name: '动态规划' },
+  { key: 'graph', name: '图论' },
+  { key: 'tree', name: '树' },
+  { key: 'ds', name: '数据结构' },
+  { key: 'string', name: '字符串' },
+  { key: 'search', name: '搜索' },
+  { key: 'math', name: '数学' }
+];
+
+const ALGO_TAG_TEXT = ALGO_TAGS.reduce((m, t) => {
+  m[t.key] = t.name;
+  return m;
+}, {});
+
+/** 算法训练 · 手动补记平台建议 */
+const ALGO_PLATFORMS = ['洛谷', '牛客', '力扣', 'Codeforces', 'AtCoder', '其他'];
+
 /** 后端服务域：与云函数目录名一一对应，新增域需同步后端 */
 const DOMAIN = {
   AUTH: 'auth',
@@ -176,6 +219,11 @@ module.exports = {
   ANNOUNCE_TYPE_TEXT,
   MY_CONTEST_STATUS,
   MY_CONTEST_STATUS_TEXT,
+  ALGO_BANDS,
+  ALGO_BAND_TEXT,
+  ALGO_TAGS,
+  ALGO_TAG_TEXT,
+  ALGO_PLATFORMS,
   DOMAIN,
   STORAGE_KEY
 };

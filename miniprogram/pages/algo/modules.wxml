@@ -1,0 +1,41 @@
+<view class="page">
+  <view class="hero">
+    <view class="hero__title">算法题库</view>
+    <view class="hero__sub">选知识点 · 选难度档 · 从今天开始刷</view>
+  </view>
+
+  <view class="seg mod__seg">
+    <view
+      wx:for="{{bands}}"
+      wx:key="key"
+      class="seg__item {{bandIndex === index ? 'seg__item--on' : ''}}"
+      data-index="{{index}}"
+      bindtap="switchBand"
+    >{{item.name}}</view>
+  </view>
+  <view class="mod__range">{{bands[bandIndex].name}}（rating {{bands[bandIndex].range}}）</view>
+
+  <view wx:if="{{loading}}" class="state-empty">加载中…</view>
+
+  <view wx:else class="mod__grid">
+    <view
+      wx:for="{{view}}"
+      wx:key="key"
+      class="mod__card pressable {{item.empty ? 'mod__card--empty' : ''}}"
+      hover-class="pressing"
+      data-key="{{item.key}}"
+      data-empty="{{item.empty}}"
+      bindtap="goProblems"
+    >
+      <view class="mod__name">{{item.name}}</view>
+      <view class="mod__num">{{item.done}}/{{item.total}}</view>
+      <view wx:if="{{item.empty}}" class="mod__tip">本档暂无</view>
+      <view wx:else class="mod__bar">
+        <view class="mod__bar-inner" style="width: {{item.pct}}%"></view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{builtAtText}}" class="mod__meta">题库更新于 {{builtAtText}} · 共 820 题</view>
+  <view class="safe-bottom"></view>
+</view>

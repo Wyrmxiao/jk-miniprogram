@@ -1,0 +1,61 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="state-empty">加载中…</view>
+
+  <block wx:elif="{{problem}}">
+    <view class="hero">
+      <view class="hero__title">{{problem.titleCn || problem.title}}</view>
+      <view wx:if="{{problem.titleCn}}" class="hero__sub">{{problem.title}}</view>
+      <view class="hero__btns">
+        <view class="level">{{problem.rating || '—'}}</view>
+        <text class="hero__meta">{{problem.pid}} · {{problem.source === 'codeforces' ? 'Codeforces' : '力扣'}}</text>
+        <text wx:if="{{done}}" class="tag tag-success">已通过</text>
+      </view>
+    </view>
+
+    <view class="group">
+      <view class="group__title">知识点</view>
+      <view class="opts pd">
+        <view
+          wx:for="{{problem.tagNames}}"
+          wx:key="*this"
+          class="opt opt--on"
+          data-tag="{{problem.tags[index]}}"
+          bindtap="goTagProblems"
+        >{{item}}</view>
+      </view>
+    </view>
+
+    <view class="group">
+      <view class="btn btn-primary btn-block pressable" hover-class="pressing" bindtap="copyLink">复制题目链接，去官方做题</view>
+      <view class="pb__tip">个人主体小程序无法内嵌外部网页，请在浏览器中打开链接；完成后回到题单页点「通过」。</view>
+    </view>
+
+    <view wx:if="{{myRecords.length}}" class="group">
+      <view class="group__title">我的做题备注</view>
+      <view class="field field--area">
+        <textarea value="{{note}}" bindinput="onNote" placeholder="写点思路 / 踩过的坑…" maxlength="500" cursor-spacing="240" auto-height />
+      </view>
+      <view class="btn btn-plain btn-block pressable {{noteSaving ? 'btn-disabled' : ''}}" hover-class="pressing" bindtap="saveNote">保存备注</view>
+      <view
+        wx:for="{{myRecords}}"
+        wx:key="_id"
+        class="cell pressable"
+        hover-class="pressing"
+        data-id="{{item._id}}"
+        bindtap="goRecord"
+      >
+        <view class="cell__body">
+          <view class="cell__title">{{item.date}}</view>
+          <view class="cell__desc">{{item.teacherComment ? '老师已评语' : '查看记录详情'}}</view>
+        </view>
+        <view class="cell__chevron">›</view>
+      </view>
+    </view>
+  </block>
+
+  <view wx:else class="empty">
+    <view class="empty__emoji">🤔</view>
+    <view>题目不存在</view>
+  </view>
+  <view class="safe-bottom"></view>
+</view>

@@ -42,12 +42,44 @@ Page({
 
     // 教师查看某任务的提交
     activeTask: null,
-    submissions: []
+    submissions: [],
+
+    // 算法训练入口
+    algoStat: null
   },
 
   onShow() {
     this.setData({ isVerified: isVerified(), isTeacher: isTeacher() });
     this.loadData();
+    this.loadAlgoStat();
+  },
+
+  /** 算法训练入口状态（静默，失败不提示） */
+  async loadAlgoStat() {
+    if (!isVerified()) {
+      this.setData({ algoStat: null });
+      return;
+    }
+    try {
+      const s = await learn.algoStats({});
+      this.setData({
+        algoStat: {
+          streak: s.streak || 0,
+          total: s.total || 0,
+          todayDone: !!(s.byDate && s.byDate[this.bjToday()])
+        }
+      });
+    } catch (e) {
+      this.setData({ algoStat: null });
+    }
+  },
+
+  bjToday() {
+    return new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
+  },
+
+  goAlgo() {
+    wx.navigateTo({ url: '/pages/algo/algo' });
   },
 
   onPullDownRefresh() {

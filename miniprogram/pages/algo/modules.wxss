@@ -1,0 +1,67 @@
+@import '../../styles/variables.wxss';
+@import '../../styles/mixins.wxss';
+
+.mod__seg {
+  margin: var(--space-md) var(--space-lg) 0;
+}
+
+.mod__range {
+  margin: var(--space-xs) var(--space-lg) 0;
+  font-size: var(--font-caption);
+  color: var(--text-tertiary);
+}
+
+.mod__grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-lg);
+}
+
+.mod__card {
+  width: calc((100% - var(--space-sm)) / 2);
+  box-sizing: border-box;
+  padding: var(--space-md);
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+.mod__card--empty {
+  opacity: 0.55;
+}
+
+.mod__name {
+  font-size: var(--font-body);
+  font-weight: 500;
+  color: var(--text-primary);
+}
+.mod__num {
+  margin-top: 6rpx;
+  font-size: var(--font-caption);
+  color: var(--color-primary);
+}
+.mod__tip {
+  margin-top: var(--space-sm);
+  font-size: var(--font-micro);
+  color: var(--text-tertiary);
+}
+.mod__bar {
+  margin-top: var(--space-sm);
+  height: 12rpx;
+  border-radius: var(--radius-pill);
+  background: var(--bg-block);
+  overflow: hidden;
+}
+.mod__bar-inner {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: var(--color-student);
+  transition: width 0.4s var(--ease-pop);
+}
+
+.mod__meta {
+  text-align: center;
+  font-size: var(--font-micro);
+  color: var(--text-tertiary);
+  padding-bottom: var(--space-lg);
+}

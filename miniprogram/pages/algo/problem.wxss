@@ -1,0 +1,13 @@
+@import '../../styles/variables.wxss';
+@import '../../styles/mixins.wxss';
+
+.pd {
+  padding: 0 var(--space-md) var(--space-sm);
+}
+
+.pb__tip {
+  margin: var(--space-sm) var(--space-md) 0;
+  font-size: var(--font-micro);
+  color: var(--text-tertiary);
+  line-height: 1.6;
+}

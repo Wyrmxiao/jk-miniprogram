@@ -1,0 +1,27 @@
+@import '../../styles/variables.wxss';
+@import '../../styles/mixins.wxss';
+
+.pd {
+  padding: 0 var(--space-md) var(--space-sm);
+}
+
+.pb__tip {
+  margin: var(--space-sm) var(--space-md) 0;
+  font-size: var(--font-micro);
+  color: var(--text-tertiary);
+}
+
+.comment-box {
+  margin: 0 var(--space-md);
+  padding: var(--space-md);
+  background: var(--color-info-light);
+  border-radius: var(--radius-md);
+  font-size: var(--font-body);
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+.comment-box__by {
+  font-size: var(--font-caption);
+  color: var(--text-secondary);
+  margin-bottom: 4rpx;
+}
