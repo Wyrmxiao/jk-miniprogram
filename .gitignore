@@ -24,3 +24,4 @@ tools/shots/
 .DS_Store
 Thumbs.db
 *.log
+tools/.algo_title_cache.json
