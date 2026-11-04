@@ -1,7 +1,10 @@
 <view class="page">
   <view class="rolebar rolebar--student">
     <view class="rolebar__icon">学</view>
-    <view class="rolebar__text">学生端 · 记录学习过程，教师可见并可批注</view>
+    <view class="rolebar__body">
+      <view class="rolebar__label">写学习记录</view>
+      <view class="rolebar__desc">学生端 · 教师可见并可批注</view>
+    </view>
   </view>
 
   <view class="block">
