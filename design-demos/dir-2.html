@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=1440" />
+<title>jk-admin · 方向B · 深色玻璃</title>
+<style>
+  :root{
+    --bg:#0b0e14; --panel:rgba(22,27,38,.66); --line:rgba(255,255,255,.08);
+    --ink:#e8ebf2; --mut:#8b94a7; --fog:#6b8ca3; --fog2:#88a7bd;
+    --red:#e5685f; --grn:#7f9a75; --amb:#c08a55;
+    --sans:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    --mono:"SF Mono",Consolas,"Roboto Mono",ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:radial-gradient(1200px 600px at 80% -10%,rgba(107,140,163,.16),transparent),var(--bg);color:var(--ink);font-family:var(--sans);min-height:100vh;-webkit-font-smoothing:antialiased}
+  .app{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
+
+  .rail{padding:30px 22px;border-right:1px solid var(--line);background:rgba(255,255,255,.02);backdrop-filter:blur(8px)}
+  .brand{font-size:19px;font-weight:600;letter-spacing:.02em;display:flex;align-items:center;gap:10px}
+  .brand .mk{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--fog),#3f5a6e);box-shadow:0 0 18px rgba(107,140,163,.5)}
+  .brand small{display:block;font-size:12px;color:var(--mut);letter-spacing:.18em;margin-top:4px;font-weight:400}
+  .nav{margin-top:34px;display:flex;flex-direction:column;gap:3px}
+  .grp{font-size:12px;letter-spacing:.16em;color:var(--mut);margin:18px 0 6px}
+  .nav a{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;font-size:13.5px;color:var(--mut);text-decoration:none;border-radius:9px;transition:background .12s,color .12s,transform .12s}
+  .nav a:hover{background:rgba(255,255,255,.04);color:var(--ink);transform:translateX(2px)}
+  .nav a.on{background:linear-gradient(90deg,rgba(107,140,163,.22),rgba(107,140,163,.04));color:#fff;box-shadow:inset 2px 0 0 var(--fog)}
+  .badge{font-family:var(--mono);font-size:12px;background:var(--red);color:#fff;border-radius:8px;padding:2px 8px}
+
+  .main{padding:38px 50px 80px}
+  .top{display:flex;justify-content:space-between;align-items:flex-end;padding-bottom:22px;margin-bottom:38px}
+  .top h1{font-size:34px;font-weight:650;letter-spacing:.01em}
+  .top .sub{font-size:13px;color:var(--mut);margin-top:8px}
+  .who{font-size:13px;color:var(--mut)}
+  .who b{color:var(--ink);font-weight:600}
+
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:26px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px 24px;backdrop-filter:blur(10px);transition:transform .15s,border-color .15s,box-shadow .15s}
+  .stat:hover{transform:translateY(-3px);border-color:rgba(107,140,163,.4);box-shadow:0 12px 30px rgba(0,0,0,.35)}
+  .stat .n{font-family:var(--mono);font-size:42px;font-weight:600;line-height:1;letter-spacing:-.02em}
+  .stat .n.warn{color:var(--red)}
+  .stat .l{font-size:12px;color:var(--mut);margin-top:12px;letter-spacing:.04em}
+
+  .grid{display:grid;grid-template-columns:1.15fr 1fr;gap:16px;margin-bottom:16px}
+  .grid.third{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px 26px;backdrop-filter:blur(10px)}
+  .cap{font-size:12px;letter-spacing:.14em;color:var(--mut);text-transform:uppercase;margin-bottom:18px}
+  .cap b{color:var(--ink);font-weight:600}
+
+  .line{width:100%;height:190px}
+  .bars{display:flex;flex-direction:column;gap:13px;margin-top:6px}
+  .bar{display:grid;grid-template-columns:88px 1fr 34px;align-items:center;gap:12px;font-size:12.5px;color:var(--ink)}
+  .bar .track{height:7px;background:rgba(255,255,255,.07);border-radius:6px;overflow:hidden}
+  .bar .fill{height:100%;background:linear-gradient(90deg,var(--fog),var(--fog2));border-radius:6px;width:0;transition:width 1s cubic-bezier(.2,.8,.2,1)}
+  .bar .v{font-family:var(--mono);text-align:right;color:var(--mut)}
+  .donut-wrap{display:flex;align-items:center;gap:28px}
+  .legend{display:flex;flex-direction:column;gap:9px;font-size:12.5px}
+  .legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:9px}
+  .legend .v{font-family:var(--mono);color:var(--mut);margin-left:6px}
+
+  .ai{border:1px dashed rgba(107,140,163,.4);border-radius:16px;padding:20px 24px;display:flex;align-items:center;gap:14px;color:var(--mut);font-size:12.5px;background:rgba(107,140,163,.05)}
+  .ai .dot{width:9px;height:9px;border-radius:50%;background:var(--fog);box-shadow:0 0 10px var(--fog);animation:pulse 2.4s infinite}
+  @keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+  @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+  .stat,.card,.ai{animation:rise .5s both}
+  .card:nth-child(2),.ai{animation-delay:.07s}
+
+  .mask{position:fixed;inset:0;background:rgba(5,7,11,.55);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center}
+  .mask.show{display:flex;animation:fade .15s both}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .sheet{width:560px;background:rgba(20,25,36,.92);border:1px solid rgba(107,140,163,.35);border-radius:18px;padding:34px 38px;animation:scalein .12s cubic-bezier(.2,.9,.3,1.2) both;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+  @keyframes scalein{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+  .sheet h3{font-size:22px;margin-bottom:20px}
+  .kv{display:grid;grid-template-columns:72px 1fr;gap:8px 16px;font-size:13px;color:var(--mut);margin-bottom:18px}
+  .kv b{color:#5d6678;font-weight:400}
+  .kv span{color:var(--ink)}
+  .quote{border-left:2px solid var(--fog);padding:4px 0 4px 16px;font-size:13.5px;line-height:1.7;margin-bottom:20px;color:#cfd5e0}
+  .field{background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:13.5px;color:#cfd5e0;margin-bottom:20px;transition:border-color .12s}
+  .field:focus{border-color:var(--fog);outline:none}
+  .btns{display:flex;gap:12px;justify-content:flex-end}
+  .btn{border:none;background:linear-gradient(135deg,var(--fog),#4d6b80);color:#fff;padding:10px 22px;font-size:13px;border-radius:10px;cursor:pointer;transition:filter .12s,transform .12s}
+  .btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
+  .btn.ghost{background:transparent;color:var(--mut);border:1px solid var(--line)}
+  .btn.ghost:hover{color:var(--ink);background:rgba(255,255,255,.04)}
+  .open{color:var(--fog2);cursor:pointer;font-size:13px;border-bottom:1px solid rgba(136,167,189,.5)}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="rail">
+    <div class="brand"><span class="mk"></span>jk-admin<small>计科创新中心</small></div>
+    <nav class="nav">
+      <div class="grp">概览</div>
+      <a class="on" href="#">数据看板</a>
+      <div class="grp">内容</div>
+      <a href="#">反馈管理 <span class="badge">3</span></a>
+      <a href="#">用户管理</a>
+      <a href="#">实名审核</a>
+      <a href="#">竞赛管理</a>
+      <a href="#">指导文章</a>
+      <a href="#">公告管理</a>
+      <div class="grp">学习成长</div>
+      <a href="#">学习记录</a>
+      <a href="#">成果管理</a>
+      <a href="#">学习任务</a>
+      <div class="grp">项目与 AI</div>
+      <a href="#">项目管理</a>
+      <a href="#">智能体</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <div class="top">
+      <div><h1>数据看板</h1><div class="sub">竞赛运营全景 · 数据实时来自各业务集合</div></div>
+      <div class="who">冉老师<b> · admin</b></div>
+    </div>
+
+    <section class="stats">
+      <div class="stat"><div class="n">18</div><div class="l">竞赛总数</div></div>
+      <div class="stat"><div class="n">486</div><div class="l">用户总数</div></div>
+      <div class="stat"><div class="n warn">3</div><div class="l">待处理反馈</div></div>
+      <div class="stat"><div class="n warn">6</div><div class="l">实名待审</div></div>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <div class="cap"><b>学习记录趋势</b> · 近 30 天</div>
+        <svg class="line" viewBox="0 0 520 200" preserveAspectRatio="none">
+          <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="rgba(107,140,163,.35)"/><stop offset="1" stop-color="rgba(107,140,163,0)"/></linearGradient></defs>
+          <line x1="0" y1="160" x2="520" y2="160" stroke="rgba(255,255,255,.08)"/>
+          <polygon fill="url(#g)" points="0,150 20,142 40,148 60,130 80,134 100,118 120,124 140,108 160,112 180,96 200,104 220,88 240,92 260,76 280,84 300,70 320,80 340,64 360,58 380,66 400,52 420,60 440,48 460,40 480,46 500,34 520,30 520,160 0,160"/>
+          <polyline fill="none" stroke="#88a7bd" stroke-width="2" points="0,150 20,142 40,148 60,130 80,134 100,118 120,124 140,108 160,112 180,96 200,104 220,88 240,92 260,76 280,84 300,70 320,80 340,64 360,58 380,66 400,52 420,60 440,48 460,40 480,46 500,34 520,30"/>
+        </svg>
+      </div>
+      <div class="card">
+        <div class="cap"><b>竞赛状态分布</b></div>
+        <div class="donut-wrap">
+          <svg width="150" height="150" viewBox="0 0 150 150">
+            <circle cx="75" cy="75" r="58" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="16"/>
+            <circle cx="75" cy="75" r="58" fill="none" stroke="#88a7bd" stroke-width="16" stroke-dasharray="194 363" transform="rotate(-90 75 75)"/>
+            <circle cx="75" cy="75" r="58" fill="none" stroke="#6b8ca3" stroke-width="16" stroke-dasharray="121 363" stroke-dashoffset="-194" transform="rotate(-90 75 75)"/>
+            <circle cx="75" cy="75" r="58" fill="none" stroke="#e5685f" stroke-width="16" stroke-dasharray="121 363" stroke-dashoffset="-315" transform="rotate(-90 75 75)"/>
+          </svg>
+          <div class="legend">
+            <div><i style="background:#88a7bd"></i>报名中 <span class="v">8</span></div>
+            <div><i style="background:#6b8ca3"></i>进行中 <span class="v">5</span></div>
+            <div><i style="background:#e5685f"></i>已结束 <span class="v">5</span></div>
+            <div style="color:var(--mut)">共 18 全部竞赛</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid third">
+      <div class="card">
+        <div class="cap"><b>竞赛关注 TOP6</b> · my_contests</div>
+        <div class="bars">
+          <div class="bar"><span>蓝桥杯</span><div class="track"><div class="fill" data-w="100%"></div></div><span class="v">42</span></div>
+          <div class="bar"><span>天梯赛</span><div class="track"><div class="fill" data-w="74%"></div></div><span class="v">31</span></div>
+          <div class="bar"><span>ACM 校赛</span><div class="track"><div class="fill" data-w="57%"></div></div><span class="v">24</span></div>
+          <div class="bar"><span>挑战杯</span><div class="track"><div class="fill" data-w="43%"></div></div><span class="v">18</span></div>
+          <div class="bar"><span>服务外包</span><div class="track"><div class="fill" data-w="31%"></div></div><span class="v">13</span></div>
+          <div class="bar"><span>软件杯</span><div class="track"><div class="fill" data-w="21%"></div></div><span class="v">9</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="cap"><b>项目方向分布</b> · projects</div>
+        <div class="donut-wrap">
+          <svg width="150" height="150" viewBox="0 0 150 150">
+            <circle cx="75" cy="75" r="58" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="16"/>
+            <circle cx="75" cy="75" r="58" fill="none" stroke="#88a7bd" stroke-width="16" stroke-dasharray="174 363" transform="rotate(-90 75 75)"/>
+            <circle cx="75" cy="75" r="58" fill="none" stroke="#6b8ca3" stroke-width="16" stroke-dasharray="109 363" stroke-dashoffset="-174" transform="rotate(-90 75 75)"/>
+            <circle cx="75" cy="75" r="58" fill="none" stroke="#c08a55" stroke-width="16" stroke-dasharray="65 363" stroke-dashoffset="-283" transform="rotate(-90 75 75)"/>
+          </svg>
+          <div class="legend">
+            <div><i style="background:#88a7bd"></i>人工智能 <span class="v">8</span></div>
+            <div><i style="background:#6b8ca3"></i>算法竞赛 <span class="v">5</span></div>
+            <div><i style="background:#c08a55"></i>前后端/安全/嵌入 <span class="v">8</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ai"><span class="dot"></span>AI 学习分析 · 预留位（智能周报 / 学习趋势解读，不接任何模型）</section>
+
+    <p style="margin-top:40px;font-size:13px;color:var(--mut)">预览交互 → <span class="open" onclick="openModal()">反馈回复弹窗</span></p>
+  </main>
+</div>
+
+<div class="mask" id="mask" onclick="if(event.target===this)closeModal()">
+  <div class="sheet">
+    <h3>反馈详情</h3>
+    <div class="kv">
+      <b>提交人</b><span>张同学 · 学生</span>
+      <b>状态</b><span style="color:var(--red)">待处理</span>
+      <b>时间</b><span>2026-10-31 20:14</span>
+      <b>方式</b><span>微信</span>
+    </div>
+    <div class="quote">竞赛列表加载偶尔很慢，尤其是进入「竞赛」tab 第一次点开的时候，要等两三秒才出数据，希望优化一下。</div>
+    <div class="field" contenteditable="true">输入回复…（必填，0/500）</div>
+    <div class="btns">
+      <button class="btn ghost" onclick="closeModal()">取消</button>
+      <button class="btn" onclick="closeModal()">发送回复</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openModal(){document.getElementById('mask').classList.add('show')}
+  function closeModal(){document.getElementById('mask').classList.remove('show')}
+  requestAnimationFrame(()=>document.querySelectorAll('.bar .fill').forEach(f=>f.style.width=f.dataset.w));
+</script>
+</body>
+</html>

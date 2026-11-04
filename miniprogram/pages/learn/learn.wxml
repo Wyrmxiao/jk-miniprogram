@@ -23,6 +23,18 @@
       <view class="cell__chevron">›</view>
     </view>
 
+    <!-- 学习问答入口：学生提问 · 师生解答 -->
+    <view class="algo-entry pressable" hover-class="pressing" bindtap="goQa">
+      <view class="algo-entry__icon algo-entry__icon--qa">?</view>
+      <view class="algo-entry__body">
+        <view class="algo-entry__title">学习问答</view>
+        <view class="algo-entry__desc" wx:if="{{qaStat}}">{{qaStat.open > 0 ? '当前 ' + qaStat.open + ' 个问题待解决 · 你有 ' + qaStat.mine + ' 个提问' : '有问题就问，老师和同学一起解答'}}</view>
+        <view class="algo-entry__desc" wx:else>有问题就问，老师和同学一起解答</view>
+      </view>
+      <view class="algo-entry__go algo-entry__go--qa">GO</view>
+      <view class="cell__chevron">›</view>
+    </view>
+
     <view class="seg">
       <view class="seg__item {{tab === 'task' ? 'seg__item--on' : ''}}" data-tab="task" bindtap="switchTab">学习任务</view>
       <view class="seg__item {{tab === 'log' ? 'seg__item--on' : ''}}" data-tab="log" bindtap="switchTab">学习记录</view>

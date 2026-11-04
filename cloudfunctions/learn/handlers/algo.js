@@ -2,15 +2,21 @@
  * 算法训练域 · 业务处理器
  *
  * 题库（静态，随云函数部署）：
- *   data/algo_problems.json —— 820 题，构建脚本 tools/build_algo_problems.js
+ *   data/algo_problems.json  —— 820 题元数据，构建脚本 tools/build_algo_problems.js
+ *   data/algo_content.json   —— 按题 id 索引的内容包（完整题面 / 解题过程 / 涉及知识点），
+ *                              tools/build_algo_content.js；题面来自 LC GraphQL 与 CF 题面页
  * 数据库（ensure 自愈建表）：
- *   algo_records —— 打卡明细（题库标记 + 手动补记共用一张表）
- *   algo_stats   —— 聚合统计（每人一行，写入时增量更新）
+ *   algo_records          —— 打卡明细（题库标记 + 手动补记共用一张表）
+ *   algo_stats            —— 聚合统计（每人一行，写入时增量更新）
+ *   algo_favorites        —— 收藏 + 已掌握标志（每人对每题一行）
+ *   algo_problem_comments —— 题目留言（讨论区）
  *
  * 设计要点：
  *   - 统计与明细分离，页面不扫描全表
  *   - 删除记录必须反向扣减统计，连续天数按 byDate 重算兜底
  *   - 题目完成状态不单独建表，直接以 algo_records.problemId 反查
+ *   - 背题内容只读 → 静态 JSON；收藏/掌握/留言可写 → 数据库
+ *   - 内容包体积较大，单独走 algoProblemContent 接口按需取单题，不塞进列表响应
  */
 const cloud = require('wx-server-sdk');
 const { badRequest, notFound, forbidden } = require('../utils/response');
@@ -24,6 +30,49 @@ const _ = () => db().command;
 const BANK = require('../data/algo_problems.json');
 const BANK_INDEX = new Map(BANK.problems.map((p) => [p.id, p]));
 const BAND_KEYS = BANK.bands.map((b) => b.key);
+
+/** 内容包：题面 + 解题过程（知识点单独一份，避免 820 题重复存讲解） */
+let CONTENT = null;
+let KNOWLEDGE = null;
+
+function contentOf(id) {
+  if (!CONTENT) {
+    try {
+      CONTENT = require('../data/algo_content.json');
+    } catch (e) {
+      console.error('algo_content.json 未部署', e);
+      CONTENT = { items: {} };
+    }
+  }
+  return (CONTENT.items || {})[id] || null;
+}
+
+function knowledgeOf(refs) {
+  if (!KNOWLEDGE) {
+    try {
+      KNOWLEDGE = require('../data/algo_knowledge.json').items || {};
+    } catch (e) {
+      console.error('algo_knowledge.json 未部署', e);
+      KNOWLEDGE = {};
+    }
+  }
+  return (refs || []).map((r) => {
+    const k = KNOWLEDGE[r.key];
+    if (!k) return { key: r.key, name: r.name, why: r.why || '', missing: true };
+    return {
+      key: r.key,
+      name: k.name,
+      intro: k.intro,
+      signals: k.signals,
+      steps: k.steps,
+      code: k.code,
+      pitfalls: k.pitfalls,
+      complexity: k.complexity,
+      related: k.related,
+      why: r.why || ''
+    };
+  });
+}
 
 /** 按 (知识点 × 档位) 预分组，模块页与题单页共用 */
 const CELLS = (() => {
@@ -227,6 +276,8 @@ async function algoProblemDetail(params, ctx) {
   const p = BANK_INDEX.get(id);
   if (!p) throw notFound('题目不存在');
 
+  const c = contentOf(id);
+
   const mineRes = await db()
     .collection('algo_records')
     .where({ openid: ctx.openid, problemId: id })
@@ -246,10 +297,61 @@ async function algoProblemDetail(params, ctx) {
       tags: p.tags || [],
       tagNames: (p.tags || []).map((k) => (BANK.tags.find((t) => t.key === k) || {}).name || k),
       url: p.url,
-      solved: p.solved || 0
+      solved: p.solved || 0,
+      // 内容可用性：前端据此决定是否显示「查看题面与解析」入口
+      hasContent: !!(c && c.statementHtml),
+      solutionType: c && c.solution ? c.solution.type : ''
     },
     myRecords: mineRes.data,
     done: mineRes.data.length > 0
+  };
+}
+
+/**
+ * 题目内容（完整题面 + 解题过程 + 涉及的知识点）
+ *
+ * 单独接口的原因：一题题面 HTML 常有 2-6KB，列表页与详情页首屏都不该背这个体积。
+ * 学生点「查看题面与解析」时才请求，且内容只读、静态，天然适合缓存。
+ *
+ * params: { id, sections? }
+ *   sections 可选，用于只取部分内容（'statement' | 'solution' | 'knowledge'），
+ *   默认全量返回。背题模式下可先只取 statement，点开再看 solution。
+ */
+async function algoProblemContent(params, ctx) {
+  ctx.requireLogin();
+  const { id, sections } = params || {};
+  const p = BANK_INDEX.get(id);
+  if (!p) throw notFound('题目不存在');
+
+  const c = contentOf(id);
+  if (!c) {
+    return {
+      id,
+      available: false,
+      statementHtml: '',
+      knowledge: knowledgeOf((p.tags || []).map((key) => ({
+        key,
+        name: (BANK.tags.find((t) => t.key === key) || {}).name || key
+      }))),
+      solution: null,
+      meta: {}
+    };
+  }
+
+  const want = (s) => !sections || !Array.isArray(sections) || sections.includes(s);
+  return {
+    id,
+    available: !!c.statementHtml,
+    statementHtml: want('statement') ? c.statementHtml : '',
+    knowledge: want('knowledge') ? knowledgeOf(c.knowledgeRefs) : [],
+    solution: want('solution') ? c.solution : null,
+    meta: want('statement') ? c.meta : {},
+    title: c.title,
+    titleEn: c.titleEn,
+    source: c.source,
+    pid: c.pid,
+    rating: c.rating,
+    band: c.band
   };
 }
 
@@ -674,6 +776,7 @@ module.exports = {
   algoProblemModules,
   algoProblemList,
   algoProblemDetail,
+  algoProblemContent,
   algoMarkProblem,
   algoCheckIn,
   algoRecords,

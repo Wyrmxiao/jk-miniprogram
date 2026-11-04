@@ -105,15 +105,17 @@
         <view class="empty__emoji">✏️</view>
         <view>还没有记录，去题库刷第一题吧</view>
       </view>
-      <view wx:else wx:for="{{records}}" wx:key="_id" class="cell pressable" hover-class="pressing" data-id="{{item._id}}" bindtap="goRecord">
-        <view class="rec__dot rec__dot--{{item.passed ? 'pass' : 'fail'}}">{{item.passed ? '✓' : '○'}}</view>
-        <view class="cell__body">
-          <view class="cell__title text-ellipsis">{{item.title}}</view>
-          <view class="cell__desc">{{item.dateText}} · {{item.difficulty}}{{item.tagsText ? ' · ' + item.tagsText : ''}}</view>
+      <block wx:else>
+        <view wx:for="{{records}}" wx:key="_id" class="cell pressable" hover-class="pressing" data-id="{{item._id}}" bindtap="goRecord">
+          <view class="rec__dot rec__dot--{{item.passed ? 'pass' : 'fail'}}">{{item.passed ? '✓' : '○'}}</view>
+          <view class="cell__body">
+            <view class="cell__title text-ellipsis">{{item.title}}</view>
+            <view class="cell__desc">{{item.dateText}} · {{item.difficulty}}{{item.tagsText ? ' · ' + item.tagsText : ''}}</view>
+          </view>
+          <view wx:if="{{item.hasComment}}" class="tag tag-primary">评</view>
+          <view class="cell__chevron">›</view>
         </view>
-        <view wx:if="{{item.hasComment}}" class="tag tag-primary">评</view>
-        <view class="cell__chevron">›</view>
-      </view>
+      </block>
     </view>
   </block>
 

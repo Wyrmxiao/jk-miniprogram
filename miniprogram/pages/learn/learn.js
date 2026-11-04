@@ -1,5 +1,5 @@
 // pages/learn/learn.js
-const { learn } = require('../../services/index');
+const { learn, qa } = require('../../services/index');
 const { isTeacher, isVerified } = require('../../utils/auth');
 
 const DIRECTIONS = [
@@ -45,13 +45,30 @@ Page({
     submissions: [],
 
     // 算法训练入口
-    algoStat: null
+    algoStat: null,
+    // 学习问答入口
+    qaStat: null
   },
 
   onShow() {
     this.setData({ isVerified: isVerified(), isTeacher: isTeacher() });
     this.loadData();
     this.loadAlgoStat();
+    this.loadQaStat();
+  },
+
+  /** 问答入口状态（静默，失败不提示） */
+  async loadQaStat() {
+    if (!isVerified()) {
+      this.setData({ qaStat: null });
+      return;
+    }
+    try {
+      const s = await qa.stats();
+      this.setData({ qaStat: { open: s.open || 0, mine: s.mine || 0 } });
+    } catch (e) {
+      this.setData({ qaStat: null });
+    }
   },
 
   /** 算法训练入口状态（静默，失败不提示） */
@@ -80,6 +97,10 @@ Page({
 
   goAlgo() {
     wx.navigateTo({ url: '/pages/algo/algo' });
+  },
+
+  goQa() {
+    wx.navigateTo({ url: '/pages/learn/qa' });
   },
 
   onPullDownRefresh() {

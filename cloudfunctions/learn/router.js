@@ -4,6 +4,7 @@
  */
 const learn = require('./handlers/learn');
 const algo = require('./handlers/algo');
+const qa = require('./handlers/qa');
 
 module.exports = {
   templates: learn.templates,
@@ -28,6 +29,7 @@ module.exports = {
   algoProblemModules: algo.algoProblemModules,
   algoProblemList: algo.algoProblemList,
   algoProblemDetail: algo.algoProblemDetail,
+  algoProblemContent: algo.algoProblemContent,
   algoMarkProblem: algo.algoMarkProblem,
   algoCheckIn: algo.algoCheckIn,
   algoRecords: algo.algoRecords,
@@ -38,5 +40,15 @@ module.exports = {
   algoStats: algo.algoStats,
   algoSetGoal: algo.algoSetGoal,
   algoTeacherOverview: algo.algoTeacherOverview,
-  algoRecalc: algo.algoRecalc
+  algoRecalc: algo.algoRecalc,
+  // 学习问答（学生提问 → 师生解答 → 采纳 / 标记解决）
+  qaList: qa.qaList,
+  qaStats: qa.qaStats,
+  qaDetail: qa.qaDetail,
+  qaAsk: qa.qaAsk,
+  qaAnswer: qa.qaAnswer,
+  qaAccept: qa.qaAccept,
+  qaSetStatus: qa.qaSetStatus,
+  qaRemoveQuestion: qa.qaRemoveQuestion,
+  qaRemoveAnswer: qa.qaRemoveAnswer
 };

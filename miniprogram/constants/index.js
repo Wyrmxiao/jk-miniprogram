@@ -180,6 +180,26 @@ const ALGO_TAG_TEXT = ALGO_TAGS.reduce((m, t) => {
 /** 算法训练 · 手动补记平台建议 */
 const ALGO_PLATFORMS = ['洛谷', '牛客', '力扣', 'Codeforces', 'AtCoder', '其他'];
 
+/** 学习问答 · 分类（与后端 handlers/qa.js CATEGORIES 一致） */
+const QA_CATEGORIES = [
+  { key: 'algorithm', name: '算法题' },
+  { key: 'course', name: '课程学习' },
+  { key: 'project', name: '项目开发' },
+  { key: 'contest', name: '竞赛备赛' },
+  { key: 'other', name: '其他' }
+];
+
+const QA_CATEGORY_TEXT = QA_CATEGORIES.reduce((m, t) => {
+  m[t.key] = t.name;
+  return m;
+}, {});
+
+/** 学习问答 · 状态 */
+const QA_STATUS_TEXT = {
+  open: '待解决',
+  solved: '已解决'
+};
+
 /** 后端服务域：与云函数目录名一一对应，新增域需同步后端 */
 const DOMAIN = {
   AUTH: 'auth',
@@ -224,6 +244,9 @@ module.exports = {
   ALGO_TAGS,
   ALGO_TAG_TEXT,
   ALGO_PLATFORMS,
+  QA_CATEGORIES,
+  QA_CATEGORY_TEXT,
+  QA_STATUS_TEXT,
   DOMAIN,
   STORAGE_KEY
 };

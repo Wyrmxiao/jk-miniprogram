@@ -4,6 +4,7 @@
  */
 const { badRequest } = require('../utils/response');
 const { callLLM, saveConversation } = require('../services/llm');
+const { COACH_PROMPT, buildProblemContext } = require('../prompts/errichto-coach');
 
 /** 系统提示词：定义助手身份与边界 */
 const SYSTEM_PROMPT =
@@ -79,6 +80,39 @@ async function reviewLog(params, ctx) {
   return { review: res.content };
 }
 
+/**
+ * 算法教练 · Errichto 视角
+ *
+ * 场景：学生在题目详情页或背题页发问，比如「这题为什么要用双指针」
+ * 「我卡了两小时了」「动态规划到底怎么练」。
+ *
+ * 设计要点（改动前请先读 prompts/errichto-coach.js 的文件头）：
+ *   1. 系统提示词只有约 1100 token，知识上下文按题注入约 130 token，
+ *      留足空间给对话历史和输出，适合小程序高频短问答。
+ *   2. problem 是可选的。学生从题目页进来会带上，纯方法论提问不带。
+ *   3. 不查数据库。题库以静态 JSON 随 learn 云函数部署，这里只接收前端传入的题目元信息，
+ *      避免在 agent 域再引一次 820 题的数据文件。
+ */
+async function algoCoach(params, ctx) {
+  ctx.requireLogin();
+  const { message = '', problem = null, history: hist = [] } = params || {};
+  if (!message) throw badRequest('请输入你的问题');
+
+  // 按题注入知识点训练要点，控制在 200 token 内
+  const problemCtx = buildProblemContext(problem);
+
+  const messages = [
+    { role: 'system', content: COACH_PROMPT },
+    ...(problemCtx ? [{ role: 'system', content: problemCtx }] : []),
+    ...hist.slice(-6).map((h) => ({ role: h.role, content: h.content })),
+    { role: 'user', content: message }
+  ];
+
+  const res = await callLLM(messages, { temperature: 0.7 });
+  await saveConversation(ctx.openid, 'algoCoach', messages, res.content);
+  return { reply: res.content };
+}
+
 /** 会话历史 */
 async function history(params, ctx) {
   ctx.requireLogin();
@@ -105,5 +139,6 @@ module.exports = {
   suggestRoadmap,
   contestAdvice,
   reviewLog,
+  algoCoach,
   history
 };

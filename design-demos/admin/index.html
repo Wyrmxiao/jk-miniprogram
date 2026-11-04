@@ -1,0 +1,805 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>jk-admin · 计科创新中心</title>
+<style>
+:root{
+  --bg:#f2f1ee; --surface:#fdfcfa; --tone:#eae9e6; --tone-2:#e0dfdc;
+  --ink:#4a4640; --ink-2:#6d675e;
+  --primary:#6b8ca3; --primary-d:#55748a;
+  --ok:#7f9a75; --warn:#c08a55; --danger:#b9807f; --info:#8d84ab;
+  --r:16px; --ease:cubic-bezier(.2,.8,.2,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  background:var(--bg);color:var(--ink);
+  font:15px/1.6 "PingFang SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  font-variant-numeric:tabular-nums;
+}button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:6px}
+
+/* ---------- 骨架 ---------- */
+.app{display:grid;grid-template-columns:224px 1fr;min-height:100dvh}
+.app[hidden]{display:none}
+
+.rail{padding:26px 16px;background:var(--surface);display:flex;flex-direction:column;gap:26px}
+.brand{display:flex;align-items:center;gap:10px;padding:0 8px;cursor:pointer}
+.brand i{width:26px;height:26px;border-radius:9px;background:var(--primary);display:block}
+.brand b{font-size:16px;font-weight:600;letter-spacing:-.01em}
+.brand span{display:block;font-size:13px;color:var(--ink-2);font-weight:400;margin-top:1px}
+
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav a{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:10px 12px;border-radius:11px;font-size:14.5px;color:var(--ink-2);
+  text-decoration:none;transition:background .16s var(--ease),color .16s var(--ease);
+}
+.nav a:hover{background:var(--tone);color:var(--ink)}
+.nav a[aria-current="page"]{background:var(--tone);color:var(--ink);font-weight:600}
+.nav em{font-style:normal;font-size:13px;background:var(--danger);color:#fff;border-radius:8px;padding:1px 7px}
+.me{margin-top:auto;padding:0 8px;display:flex;align-items:center;gap:10px}
+.me i{width:30px;height:30px;border-radius:50%;background:var(--tone-2);display:grid;place-items:center;font-size:13px;font-style:normal;color:var(--ink-2)}
+.me b{font-size:13.5px;font-weight:600}.me span{font-size:13px;color:var(--ink-2)}
+
+.main{padding:32px 44px 72px;max-width:1180px}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:26px}
+.bar h1{font-size:26px;font-weight:600;letter-spacing:-.02em}
+.bar p{font-size:13px;color:var(--ink-2);margin-top:3px}
+
+/* ---------- 焦点块：唯一的"今天" ---------- */
+.focus{
+  background:var(--surface);border-radius:22px;padding:40px 44px;
+  display:flex;align-items:center;gap:34px;margin-bottom:16px;min-height:230px;
+}
+.focus__n{font-size:108px;font-weight:600;line-height:.9;letter-spacing:-.05em;color:var(--primary-d)}
+.focus__t{flex:1}
+.focus__t b{display:block;font-size:22px;font-weight:600;letter-spacing:-.01em;margin-bottom:6px}
+.focus__t span{font-size:14px;color:var(--ink-2)}
+.btn{
+  background:var(--primary-d);color:#fff;border-radius:11px;padding:10px 18px;
+  font-size:13.5px;font-weight:500;transition:transform .16s var(--ease),background .16s var(--ease);
+}
+.btn:hover{background:var(--primary)}
+.btn:active{transform:scale(.97)}
+.btn--ghost{background:var(--tone);color:var(--ink)}
+.btn--ghost:hover{background:var(--tone-2)}
+
+/* ---------- 卡片与栅格 ---------- */
+.grid{display:grid;gap:14px;margin-bottom:14px}
+.g2{grid-template-columns:1.4fr 1fr}
+.g3{grid-template-columns:1fr 1fr 1fr}
+.card{background:var(--surface);border-radius:var(--r);padding:22px 24px;min-width:0}
+.card h2{font-size:13.5px;font-weight:600;margin-bottom:16px;display:flex;justify-content:space-between;align-items:baseline}
+.card h2 span{font-size:13px;color:var(--ink-2);font-weight:400}
+
+/* 图表 */
+.chart{width:100%;height:172px;display:block;overflow:visible}
+.chart path.line{fill:none;stroke:var(--primary);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.1s var(--ease) .12s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.chart path.area{fill:var(--primary);opacity:.09;animation:fadein .6s ease .5s both}
+@keyframes fadein{from{opacity:0}to{opacity:.09}}
+.axis{display:flex;justify-content:space-between;font-size:13px;color:var(--ink-2);margin-top:6px}
+
+.bars{display:flex;flex-direction:column;gap:12px}
+.bar-row{display:grid;grid-template-columns:76px 1fr 30px;align-items:center;gap:12px;font-size:13px}
+.bar-row .track{height:8px;background:var(--tone);border-radius:6px;overflow:hidden}
+.bar-row .fill{height:100%;background:var(--primary);border-radius:6px;width:0;transition:width .9s var(--ease)}
+.bar-row var{font-style:normal;font-size:13px;color:var(--ink-2);text-align:right}
+
+.donut{display:flex;align-items:center;gap:22px}
+.donut svg{flex:none}
+.donut circle[data-arc]{animation:arc .9s var(--ease) both}
+@keyframes arc{from{stroke-dasharray:0 999}}
+.legend{display:flex;flex-direction:column;gap:8px;font-size:13px}
+.legend i{width:9px;height:9px;border-radius:3px;display:inline-block;margin-right:8px}
+.legend b{font-weight:400;color:var(--ink-2);margin-left:6px}
+
+.ai{background:var(--tone);border-radius:var(--r);padding:18px 22px;display:flex;align-items:center;gap:12px;font-size:13px;color:var(--ink-2)}
+.ai i{width:8px;height:8px;border-radius:50%;background:var(--primary);animation:breathe 2.6s var(--ease) infinite}
+@keyframes breathe{0%,100%{opacity:.35}50%{opacity:1}}
+
+/* ---------- 视图切换动画 ---------- */
+.view{animation:viewin .34s var(--ease) both}
+@keyframes viewin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.rise{animation:rise .5s var(--ease) both;animation-delay:calc(var(--i,0) * 65ms)}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* ---------- 分段控件 ---------- */
+.seg{display:inline-flex;background:var(--tone);border-radius:11px;padding:3px;gap:2px;margin-bottom:16px}
+.seg button{padding:7px 15px;border-radius:9px;font-size:13.5px;color:var(--ink-2);transition:background .18s var(--ease),color .18s var(--ease)}
+.seg button[aria-selected="true"]{background:var(--surface);color:var(--ink);font-weight:600}
+
+/* ---------- 表格 ---------- */
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-weight:500;font-size:13px;color:var(--ink-2);padding:0 14px 10px;white-space:nowrap}
+td{padding:13px 14px;vertical-align:middle}
+tbody tr{border-radius:10px;transition:background .15s var(--ease)}
+tbody tr:hover{background:var(--tone)}
+td b{font-weight:600}
+.muted{color:var(--ink-2)}
+.tag{display:inline-block;font-size:13px;padding:2px 9px;border-radius:7px;white-space:nowrap}
+.t-ok{background:rgba(127,154,117,.16);color:#5a7350}
+.t-warn{background:rgba(192,138,85,.16);color:#96682f}
+.t-danger{background:rgba(185,128,127,.17);color:#8f5b5a}
+.t-info{background:rgba(141,132,171,.16);color:#6a618a}
+.t-mute{background:var(--tone-2);color:var(--ink-2)}
+.act{font-size:13px;color:var(--primary-d);padding:2px 0;margin-right:12px;transition:color .15s}
+.act:hover{color:var(--primary);text-decoration:underline}
+.act--danger{color:#8f5b5a}
+
+/* ---------- 行内展开（替代弹窗） ---------- */
+.xp{display:grid;grid-template-rows:0fr;transition:grid-template-rows .34s var(--ease)}
+.xp>div{overflow:hidden}
+tr.open .xp{grid-template-rows:1fr}
+.xp-body{background:var(--tone);border-radius:12px;padding:16px 18px;margin:2px 0 12px}
+.xp-body p{font-size:13.5px;line-height:1.7;margin-bottom:12px}
+.xp-form{display:flex;gap:10px;align-items:flex-start}
+.xp-form textarea{
+  flex:1;background:var(--surface);border:0;border-radius:10px;padding:11px 13px;
+  font:inherit;font-size:13.5px;color:var(--ink);resize:vertical;min-height:64px;
+}
+.xp-form textarea::placeholder{color:var(--ink-2)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:13px;margin-bottom:12px}
+.kv dt{color:var(--ink-2)}.kv dd{margin:0}
+
+/* ---------- 抽屉 ---------- */
+.scrim{position:fixed;inset:0;background:rgba(74,70,64,.24);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .28s var(--ease),visibility .28s;z-index:40}
+.scrim.on{opacity:1;visibility:visible;pointer-events:auto}
+.drawer{
+  position:fixed;top:0;right:0;bottom:0;width:min(520px,92vw);background:var(--bg);
+  z-index:41;transform:translateX(100%);transition:transform .36s var(--ease);
+  box-shadow:-24px 0 60px rgba(74,70,64,.14);padding:26px 30px;overflow:auto; /* taste-skill-ignore: 真实抽屉浮层 */
+}
+.drawer.on{transform:none}
+.drawer h2{font-size:20px;font-weight:600;margin-bottom:4px}
+.drawer .sub{font-size:13px;color:var(--ink-2);margin-bottom:22px}
+.drawer .close{position:absolute;top:22px;right:24px;font-size:20px;color:var(--ink-2);line-height:1}
+.tl{display:flex;flex-direction:column;gap:14px;margin-top:6px}
+.tl li{list-style:none;display:grid;grid-template-columns:64px 1fr;gap:12px;font-size:13.5px}
+.tl time{color:var(--ink-2);font-size:13px}
+
+/* ---------- 登录 ---------- */
+.login{min-height:100dvh;display:grid;place-items:center;background:var(--bg)}
+.login[hidden]{display:none}
+.login__box{width:340px;animation:viewin .5s var(--ease) both}
+.login__box>*{animation:rise .55s var(--ease) both}
+.login__box>*:nth-child(1){--i:0}.login__box>*:nth-child(2){--i:1}
+.login__box>*:nth-child(3){--i:2}.login__box>*:nth-child(4){--i:2}
+.login__box>*:nth-child(5){--i:3}.login__box>*:nth-child(6){--i:4}.login__box>*:nth-child(7){--i:4}.login__box>*:nth-child(8){--i:5}
+.login__box h1{font-size:34px;font-weight:600;letter-spacing:-.03em;margin-bottom:6px}
+.login__box p{font-size:13.5px;color:var(--ink-2);margin-bottom:26px}
+.login__box label{display:block;font-size:13px;color:var(--ink-2);margin-bottom:6px}
+.login__box input{
+  width:100%;background:var(--surface);border:0;border-radius:11px;padding:12px 14px;
+  font:inherit;font-size:14px;color:var(--ink);margin-bottom:14px;
+}
+.login__box .btn{width:100%;margin-top:8px}
+.err{font-size:13px;color:#8f5b5a;margin-top:12px;opacity:0;transition:opacity .2s}
+.err.on{opacity:1}
+
+/* ---------- 空状态 / 表单 ---------- */
+.empty{padding:40px 0;text-align:center;font-size:13.5px;color:var(--ink-2)}
+.form{max-width:400px;display:flex;flex-direction:column;gap:14px}
+.form label{font-size:13px;color:var(--ink-2);display:block;margin-bottom:6px}
+.form input{width:100%;background:var(--surface);border:0;border-radius:11px;padding:12px 14px;font:inherit;font-size:14px}
+
+@media (max-width:900px){
+  table{font-size:13px;table-layout:fixed;width:100%}
+  td,th{white-space:normal;word-break:break-word}
+  th,td{padding-left:8px;padding-right:8px}
+  .card{padding:16px}
+  .focus{padding:26px;gap:18px;min-height:0}
+  .focus__n{font-size:64px}
+  .focus__t b{font-size:18px}
+  .app{grid-template-columns:1fr}
+  .rail{flex-direction:row;overflow:auto;padding:14px 16px;gap:16px;align-items:center}
+  .nav{flex-direction:row;gap:4px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .nav a{padding:8px 12px;white-space:nowrap}
+  .me{margin:0;display:none}
+  .main{padding:22px 20px 60px}
+  .g2,.g3{grid-template-columns:1fr}
+  .focus{flex-wrap:wrap;gap:14px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-delay:0ms!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+
+<!-- 登录 -->
+<section class="login" id="login">
+  <div class="login__box">
+    <h1>jk-admin</h1>
+    <p>计科创新中心 · 竞赛管理后台</p>
+    <label for="ac">账号</label>
+    <input id="ac" value="冉老师" autocomplete="username" />
+    <label for="pw">密码</label>
+    <input id="pw" type="password" value="········" autocomplete="current-password" />
+    <button class="btn" id="doLogin">登录</button>
+    <p class="err" id="err">账号或密码错误，请重试</p>
+    <p style="font-size:13px;color:var(--ink-2);margin-top:22px">仅 role=admin 可登录 · 忘记密码请联系开发者重置</p>
+  </div>
+</section>
+
+<!-- 主应用 -->
+<div class="app" id="app" hidden>
+  <aside class="rail">
+    <div class="brand" title="计科创新中心 竞赛管理后台"><i></i><b>jk-admin</b></div>
+    <nav class="nav" id="nav"></nav>
+    <div class="me"><i>冉</i><div><b>冉老师</b><span>admin</span></div></div>
+  </aside>
+  <main class="main">
+    <div class="bar"><div><h1 id="ttl"></h1><p id="sub"></p></div><div id="tools"></div></div>
+    <div id="view"></div>
+  </main>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer"><button class="close" data-act="close">×</button><div id="dbody"></div></aside>
+
+<script>
+/* ============================================================
+   数据：全部来自小程序真实集合（与 v1 设计稿一致）
+   ============================================================ */
+const D = {
+  feedback:[
+    {n:'张同学',r:'学生',c:'微信',s:'待处理',t:'10-31 20:14',x:'竞赛列表加载偶尔很慢，尤其是进入「竞赛」tab 第一次点开的时候，要等两三秒才出数据，希望优化一下。'},
+    {n:'李同学',r:'学生',c:'QQ 邮箱',s:'待处理',t:'10-30 14:02',x:'建议增加按级别筛选竞赛的功能，A/B/C 类混在一起找起来比较费时间。'},
+    {n:'王同学',r:'学生',c:'电话',s:'待处理',t:'10-28 09:41',x:'蓝桥杯页面的官网链接打不开，换成 leetcode 那个地址试试。'},
+    {n:'赵同学',r:'学生',c:'微信',s:'已回复',t:'10-27 18:33',x:'学习记录上传图片经常失败，一张 3MB 的图要等很久。'},
+    {n:'孙同学',r:'学生',c:'微信',s:'已回复',t:'10-25 11:20',x:'希望能看到自己累计参加了几次比赛。'}
+  ],
+  verify:[
+    {n:'陈六',no:'20240166',y:'2024',m:'计算机科学',t:'10-31 19:22',s:'待审核'},
+    {n:'刘七',no:'20240102',y:'2024',m:'软件工程',t:'10-31 15:08',s:'待审核'},
+    {n:'周八',no:'20240231',y:'2024',m:'人工智能',t:'10-30 21:47',s:'待审核'},
+    {n:'郑十',no:'20250110',y:'2025',m:'数据科学',t:'10-30 09:15',s:'待审核'},
+    {n:'冯十一',no:'20230288',y:'2023',m:'网络工程',t:'10-29 16:40',s:'待审核'},
+    {n:'韩十二',no:'20240077',y:'2024',m:'软件工程',t:'10-29 08:02',s:'待审核'},
+    {n:'吴九',no:'20230999',y:'2023',m:'网络工程',t:'10-29 11:30',s:'已拒绝',why:'学号与姓名不匹配，请核对后重新提交'}
+  ],
+  contests:[
+    {n:'蓝桥杯大赛',lv:'A',s:'已发布',d:'2026-12-01 ~ 2027-01-15',f:42},
+    {n:'天梯赛',lv:'B',s:'已发布',d:'2027-02-10 ~ 2027-03-20',f:31},
+    {n:'ACM 校赛',lv:'D',s:'已发布',d:'2026-10-01 ~ 2026-10-20',f:24},
+    {n:'挑战杯（旧）',lv:'A',s:'已下架',d:'2026-03-01 ~ 2026-04-10',f:18}
+  ],
+  announces:[
+    {n:'蓝桥杯校内选拔通知',ty:'通知',c:'蓝桥杯大赛',v:326,by:'冉老师',t:'10-30',pin:1},
+    {n:'天梯赛报名截止提醒',ty:'通知',c:'天梯赛',v:198,by:'李老师',t:'10-28'},
+    {n:'ACM 校赛获奖公示',ty:'赛事公告',c:'ACM 校赛',v:142,by:'王老师',t:'10-25'},
+    {n:'旧版报名指引（过期）',ty:'通知',c:'—',v:89,by:'李老师',t:'09-12',off:1}
+  ],
+  guides:[
+    {n:'蓝桥杯备考路线',c:'蓝桥杯大赛',by:'李老师',t:'10-12',a:2},
+    {n:'天梯赛组队攻略',c:'天梯赛',by:'王老师',t:'10-08',a:0},
+    {n:'ACM 入门指南',c:'ACM 校赛',by:'李老师',t:'09-30',a:1},
+    {n:'挑战杯申报要点',c:'挑战杯',by:'张老师',t:'09-22',a:3}
+  ],
+  logs:[
+    {n:'Vue 组件通信总结',by:'张三',t:'2026-10-30',tag:'前端 · 笔记',s:'已批注'},
+    {n:'动态规划入门',by:'李四',t:'2026-10-30',tag:'算法',s:'待批注'},
+    {n:'Redis 缓存实践',by:'王五',t:'2026-10-29',tag:'后端',s:'已批注'},
+    {n:'Nmap 扫描笔记',by:'赵六',t:'2026-10-28',tag:'网络安全',s:'待批注'}
+  ],
+  results:[
+    {n:'蓝桥杯省赛',ty:'获奖',lv:'二等奖',by:'张三',t:'2026-04-18'},
+    {n:'校园二手交易平台',ty:'项目',lv:'—',by:'李四',t:'2026-03-30'},
+    {n:'CET-6 证书',ty:'证书',lv:'—',by:'王五',t:'2026-02-25'},
+    {n:'天梯赛国赛',ty:'获奖',lv:'三等奖',by:'赵六',t:'2026-05-12'}
+  ],
+  tasks:[
+    {n:'第一周算法打卡',by:'李老师',due:'11-05',sub:'12 / 8',s:'进行中'},
+    {n:'项目立项书提交',by:'王老师',due:'11-12',sub:'6 / 0',s:'进行中'},
+    {n:'九月学习总结',by:'李老师',due:'10-01',sub:'34 / 34',s:'已关闭'}
+  ],
+  users:[
+    {n:'张三',no:'20220101',m:'计算机科学 · 2022',r:'学生',s:'已通过'},
+    {n:'李四',no:'20220288',m:'软件工程 · 2022',r:'学生',s:'已通过'},
+    {n:'微信用户_8a2f',no:'—',m:'—',r:'游客',s:'待审核'},
+    {n:'王老师',no:'T0007',m:'—',r:'教师',s:'已通过'},
+    {n:'赵五',no:'20230512',m:'数据科学 · 2023',r:'游客',s:'未认证'}
+  ],
+  projects:[
+    {n:'校园二手交易平台',star:1,by:'李四',dir:'前端开发',s:'已完成',up:6,cm:12},
+    {n:'图像识别垃圾分类',by:'张三',dir:'人工智能',s:'进行中',up:4,cm:3},
+    {n:'算法可视化小程序',by:'王五',dir:'算法竞赛',s:'获奖作品',up:8,cm:21},
+    {n:'宿舍报修系统构想',by:'赵六',dir:'后端开发',s:'构思中',up:1,cm:0}
+  ]
+};
+
+const TOP6 = [['蓝桥杯',42],['天梯赛',31],['ACM 校赛',24],['挑战杯',18],['服务外包',13],['软件杯',9]];
+const TREND = [2,3,3,4,3,5,4,6,5,7,6,5,8,7,9,8,10,9,11,10,12,11,13,12,14,13,15,14,16,15];
+
+/* ============================================================
+   小工具
+   ============================================================ */
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (s) => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+
+/** 状态 → 色调 */
+function tone(s){
+  if(/待|进行中|构思中/.test(s)) return /反馈|实名/.test(s) ? 't-danger' : 't-warn';
+  if(/已通过|已发布|已完成|已批注|获奖/.test(s)) return 't-ok';
+  if(/已拒绝|已下架/.test(s)) return 't-mute';
+  if(/待审核|待批注/.test(s)) return 't-warn';
+  return 't-mute';
+}
+
+/** 折线：pathLength=1 让描线动画与数据长度无关 */
+function lineChart(data){
+  const w = 560, h = 150, max = Math.max(...data) * 1.15;
+  const pts = data.map((v,i)=>[i/(data.length-1)*w, h - v/max*h]);
+  const d = pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+  return `<svg class="chart" viewBox="0 0 ${w} ${h+14}" preserveAspectRatio="none" aria-label="学习记录趋势，近 30 天上升">
+    <path class="area" d="${d} L${w} ${h+14} L0 ${h+14} Z"/>
+    <path class="line" pathLength="1" d="${d}"/>
+  </svg>`;
+}
+
+/** 环形：total 分段 */
+function donut(parts, size = 132){
+  const r = size/2 - 14, c = 2*Math.PI*r, sum = parts.reduce((a,p)=>a+p[1],0);
+  let off = 0;
+  const arcs = parts.map(([label,val,color])=>{
+    const len = val/sum*c, seg = `<circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none"
+      stroke="${color}" stroke-width="14" stroke-linecap="butt"
+      stroke-dasharray="${len.toFixed(1)} ${(c-len).toFixed(1)}" stroke-dashoffset="${(-off).toFixed(1)}"
+      transform="rotate(-90 ${size/2} ${size/2})" data-arc/>`;
+    off += len; return seg;
+  }).join('');
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" aria-hidden="true">${arcs}</svg>`;
+}
+
+function legend(parts){
+  return parts.map(([l,v,c])=>`<div><i style="background:${c}"></i>${l}<b>${v}</b></div>`).join('');
+}
+
+function barRows(rows){
+  const max = Math.max(...rows.map(r=>r[1]));
+  return rows.map(([l,v])=>`<div class="bar-row"><span>${l}</span>
+    <div class="track"><div class="fill" data-w="${(v/max*100).toFixed(1)}%"></div></div>
+    <var>${v}</var></div>`).join('');
+}
+
+/* ============================================================
+   视图定义：7 个，替代原来的 14 个
+   ============================================================ */
+const NAV = [
+  ['today','概览'],
+  ['queue','待办','9'],
+  ['content','内容'],
+  ['growth','成长'],
+  ['people','用户'],
+  ['projects','项目'],
+  ['settings','账号设置']
+];
+
+const VIEW = {
+
+  /* 1 · 概览：只有一个主角——今天该处理什么 */
+  today: {
+    ttl:'概览', sub:'',
+    render: () => `
+      <div class="focus rise" style="--i:0">
+        <div class="focus__n" data-count="9">9</div>
+        <div class="focus__t"><b>件待处理</b><span>3 条学生反馈，6 份实名申请。今天是 11 月 1 日。</span></div>
+        <button class="btn" data-go="queue">去处理</button>
+      </div>
+
+      <div class="grid g2">
+        <div class="card rise" style="--i:1">
+          <h2>学习记录趋势<span>近 30 天</span></h2>
+          ${lineChart(TREND)}
+          <div class="axis"><span>10-02</span><span>10-17</span><span>10-31</span></div>
+        </div>
+        <div class="card rise" style="--i:2">
+          <h2>竞赛状态分布<span>共 18 项</span></h2>
+          <div class="donut">
+            ${donut([['报名中',8,'#6b8ca3'],['进行中',5,'#8d84ab'],['已结束',5,'#b9807f']])}
+            <div class="legend">${legend([['报名中',8,'#6b8ca3'],['进行中',5,'#8d84ab'],['已结束',5,'#b9807f']])}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid g2">
+        <div class="card rise" style="--i:3">
+          <h2>竞赛关注 TOP6<span>my_contests 计数</span></h2>
+          <div class="bars">${barRows(TOP6)}</div>
+        </div>
+        <div class="card rise" style="--i:4">
+          <h2>内容与用户<span>全站</span></h2>
+          <div class="bars">${barRows([['用户',486],['学习记录',132],['成果',57],['公告',25],['指导文章',14]])}</div>
+        </div>
+      </div>
+
+      <div class="ai rise" style="--i:5"><i></i>AI 学习分析 · 预留位</div>
+    `
+  },
+
+  /* 2 · 待办：反馈 + 实名，行内展开，没有弹窗 */
+  queue: {
+    ttl:'待办', sub:'反馈回复与实名审核 · 处理完自动离开列表',
+    render: () => `
+      <div class="seg" role="tablist">
+        <button role="tab" aria-selected="true" data-tab="fb">学生反馈 · 3</button>
+        <button role="tab" aria-selected="false" data-tab="vf">实名审核 · 6</button>
+      </div>
+      <div id="qbody" class="view"></div>
+    `
+  },
+
+  /* 3 · 内容：竞赛 / 公告 / 指导文章 */
+  content: {
+    ttl:'内容', sub:'竞赛信息、公告、教师端发布的指导文章',
+    render: () => `
+      <div class="seg" role="tablist">
+        <button role="tab" aria-selected="true" data-tab="ct">竞赛 · 18</button>
+        <button role="tab" aria-selected="false" data-tab="an">公告 · 25</button>
+        <button role="tab" aria-selected="false" data-tab="gd">指导文章 · 14</button>
+      </div>
+      <div id="cbody" class="view"></div>
+    `
+  },
+
+  /* 4 · 成长：学习记录 / 成果 / 学习任务 */
+  growth: {
+    ttl:'成长', sub:'学生成长数据 · 批注与批阅在教师端小程序完成',
+    render: () => `
+      <div class="seg" role="tablist">
+        <button role="tab" aria-selected="true" data-tab="lg">学习记录 · 132</button>
+        <button role="tab" aria-selected="false" data-tab="rs">成果 · 57</button>
+        <button role="tab" aria-selected="false" data-tab="tk">学习任务 · 20</button>
+      </div>
+      <div id="gbody" class="view"></div>
+    `
+  },
+
+  /* 5 · 用户：表格 + 成长档案抽屉 */
+  people: {
+    ttl:'用户', sub:'全部用户 · 查看成长档案 · 调整角色',
+    render: () => `
+      <div class="card">
+        <table><thead><tr>
+          <th>姓名</th><th>学号 / 工号</th><th>专业 · 年级</th><th>角色</th><th>认证</th><th></th>
+        </tr></thead><tbody>
+        ${D.users.map(u=>`<tr>
+          <td><b>${u.n}</b></td>
+          <td class="muted">${u.no}</td>
+          <td class="muted">${u.m}</td>
+          <td>${u.r}</td>
+          <td><span class="tag ${tone(u.s)}">${u.s}</span></td>
+          <td style="text-align:right"><button class="act" data-profile="${u.n}">成长档案</button><button class="act" data-act="role">改角色</button></td>
+        </tr>`).join('')}
+        </tbody></table>
+      </div>
+    `
+  },
+
+  /* 6 · 项目 */
+  projects: {
+    ttl:'项目', sub:'学生项目 · 推荐、查看详情、清理进展与留言',
+    render: () => `
+      <div class="card">
+        <table><thead><tr>
+          <th>项目</th><th>负责人</th><th>方向</th><th>阶段</th><th>动态</th><th></th>
+        </tr></thead><tbody>
+        ${D.projects.map(p=>`<tr>
+          <td><b>${p.n}</b>${p.star?' <span class="tag t-warn">推荐</span>':''}</td>
+          <td class="muted">${p.by}</td>
+          <td class="muted">${p.dir}</td>
+          <td><span class="tag ${tone(p.s)}">${p.s}</span></td>
+          <td class="muted">进展 ${p.up} · 留言 ${p.cm}</td>
+          <td style="text-align:right"><button class="act" data-project="${p.n}">详情</button><button class="act act--danger" data-act="del">删除</button></td>
+        </tr>`).join('')}
+        </tbody></table>
+      </div>
+    `
+  },
+
+  /* 7 · 账号设置 */
+  settings: {
+    ttl:'账号设置', sub:'仅修改网页后台登录密码，不影响小程序登录',
+    render: () => `
+      <div class="card">
+        <form class="form" id="pwform">
+          <div><label for="p0">原密码</label><input id="p0" type="password" value="········" /></div>
+          <div><label for="p1">新密码（至少 8 位）</label><input id="p1" type="password" placeholder="建议含字母与数字" /></div>
+          <div><label for="p2">确认新密码</label><input id="p2" type="password" /></div>
+          <div><button class="btn" type="submit">保存修改</button></div>
+        </form>
+      </div>
+    `
+  }
+};
+
+/* ============================================================
+   表格渲染（三处复用同一套，省掉重复代码）
+   ============================================================ */
+function table(head, rows){
+  return `<div class="card"><table><thead><tr>${head.map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+    <tbody>${rows}</tbody></table></div>`;
+}
+
+function feedbackRows(){
+  return D.feedback.map((f,i)=>`
+    <tr data-row="${i}">
+      <td style="width:100%">
+        <div style="display:flex;align-items:center;gap:12px;cursor:pointer" data-toggle="${i}">
+          <b style="flex:none;width:64px">${f.n}</b>
+          <span class="muted" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${f.x}</span>
+          <span class="tag ${f.s==='待处理'?'t-danger':'t-ok'}" style="flex:none">${f.s}</span>
+          <span class="muted" style="flex:none;width:88px;text-align:right">${f.t}</span>
+        </div>
+        <div class="xp"><div><div class="xp-body">
+          <dl class="kv">
+            <dt>提交人</dt><dd>${f.n} · ${f.r}</dd>
+            <dt>联系方式</dt><dd>${f.c}</dd>
+            <dt>时间</dt><dd>2026-${f.t}</dd>
+          </dl>
+          <p>${f.x}</p>
+          <div class="xp-form">
+            <textarea placeholder="输入回复…（必填，0/500）">${f.s==='已回复'?'已收到，我们会尽快排查并优化，感谢反馈。':''}</textarea>
+            <button class="btn" data-answered="${i}">发送回复</button>
+          </div>
+        </div></div></div>
+      </td>
+    </tr>`).join('');
+}
+
+function verifyRows(){
+  return D.verify.map((v,i)=>`
+    <tr data-row="${i}">
+      <td style="width:100%">
+        <div style="display:flex;align-items:center;gap:12px;cursor:pointer" data-toggle="${i}">
+          <b style="flex:none;width:64px">${v.n}</b>
+          <span class="muted" style="flex:none;width:92px">${v.no}</span>
+          <span class="muted" style="flex:1">${v.y} · ${v.m}</span>
+          <span class="tag ${v.s==='待审核'?'t-warn':'t-mute'}" style="flex:none">${v.s}</span>
+          <span class="muted" style="flex:none;width:88px;text-align:right">${v.t}</span>
+        </div>
+        <div class="xp"><div><div class="xp-body">
+          ${v.s==='待审核'
+            ? `<p>核对学生证与学号是否一致。通过后自动升级为「学生」角色。</p>
+               <div style="display:flex;gap:10px"><button class="btn" data-review="ok" data-name="${v.n}">通过</button>
+               <button class="btn btn--ghost" data-review="no" data-name="${v.n}">拒绝</button></div>`
+            : `<p class="muted">拒绝理由：${v.why}</p>`}
+        </div></div></div>
+      </td>
+    </tr>`).join('');
+}
+
+const BODY = {
+  fb: () => table(['反馈'], [feedbackRows()]),
+  vf: () => table(['实名申请'], [verifyRows()]),
+
+  ct: () => table(['竞赛名称','级别','状态','报名时间','关注',''], D.contests.map(c=>`<tr>
+    <td><b>${c.n}</b></td><td><span class="tag t-info">${c.lv} 类</span></td>
+    <td><span class="tag ${tone(c.s)}">${c.s}</span></td>
+    <td class="muted">${c.d}</td><td class="muted">${c.f}</td>
+    <td style="text-align:right"><button class="act" data-act="edit">编辑</button><button class="act" data-act="onoff">${c.s==='已下架'?'上架':'下架'}</button></td>
+  </tr>`).join('')),
+
+  an: () => table(['标题','类型','关联竞赛','浏览','发布人','时间',''], D.announces.map(a=>`<tr>
+    <td><b>${a.n}</b>${a.pin?' <span class="tag t-warn">置顶</span>':''}${a.off?' <span class="tag t-mute">已下架</span>':''}</td>
+    <td class="muted">${a.ty}</td><td class="muted">${a.c}</td><td class="muted">${a.v}</td>
+    <td class="muted">${a.by}</td><td class="muted">${a.t}</td>
+    <td style="text-align:right"><button class="act" data-act="edit">编辑</button><button class="act" data-act="onoff">${a.off?'上架':'下架'}</button></td>
+  </tr>`).join('')),
+
+  gd: () => table(['标题','关联竞赛','作者','发布时间','附件',''], D.guides.map(g=>`<tr>
+    <td><b>${g.n}</b></td><td class="muted">${g.c}</td><td class="muted">${g.by}</td>
+    <td class="muted">${g.t}</td><td class="muted">${g.a} 个</td>
+    <td style="text-align:right"><button class="act act--danger" data-act="del">删除</button></td>
+  </tr>`).join('')),
+
+  lg: () => table(['标题','作者','学习日期','标签','批注',''], D.logs.map(l=>`<tr>
+    <td><b>${l.n}</b></td><td class="muted">${l.by}</td><td class="muted">${l.t}</td>
+    <td class="muted">${l.tag}</td><td><span class="tag ${tone(l.s)}">${l.s}</span></td>
+    <td style="text-align:right"><button class="act" data-act="read">查看</button></td>
+  </tr>`).join('')),
+
+  rs: () => table(['标题','类型','等次','学生','日期'], D.results.map(r=>`<tr>
+    <td><b>${r.n}</b></td><td class="muted">${r.ty}</td><td class="muted">${r.lv}</td>
+    <td class="muted">${r.by}</td><td class="muted">${r.t}</td>
+  </tr>`).join('')),
+
+  tk: () => table(['任务','布置人','截止','提交 / 已批','状态',''], D.tasks.map(t=>`<tr>
+    <td><b>${t.n}</b></td><td class="muted">${t.by}</td><td class="muted">${t.due}</td>
+    <td class="muted">${t.sub}</td><td><span class="tag ${tone(t.s)}">${t.s}</span></td>
+    <td style="text-align:right"><button class="act" data-act="read">查看提交</button>${t.s==='进行中'?'<button class="act act--danger" data-act="close-task">关闭</button>':''}</td>
+  </tr>`).join(''))
+};
+
+/* ============================================================
+   渲染与交互
+   ============================================================ */
+let route = 'today';
+
+function renderNav(){
+  $('#nav').innerHTML = NAV.map(([k,l,c])=>
+    `<a href="#" data-route="${k}" ${k===route?'aria-current="page"':''}>${l}${c?`<em>${c}</em>`:''}</a>`
+  ).join('');
+}
+
+function go(k){
+  route = k;
+  const v = VIEW[k];
+  $('#ttl').textContent = v.ttl;
+  $('#sub').textContent = v.sub;
+  $('#view').innerHTML = v.render();
+  $('#view').classList.remove('view');
+  void $('#view').offsetWidth;       // 重启动画
+  $('#view').classList.add('view');
+  renderNav();
+  requestAnimationFrame(afterMount);
+}
+
+/** 挂载后：数字滚动、条形入场、首个 tab */
+function afterMount(){
+  document.querySelectorAll('[data-count]').forEach(el=>{
+    const to = +el.dataset.count, t0 = performance.now(), dur = 700;
+    (function step(t){
+      const p = Math.min(1,(t-t0)/dur), e = 1-Math.pow(1-p,3);
+      el.textContent = Math.round(to*e);
+      if(p<1) requestAnimationFrame(step);
+    })(t0);
+  });
+  document.querySelectorAll('.bar-row .fill').forEach(f=>{ f.style.width = f.dataset.w; });
+  const first = $('.seg button');
+  if(first) tab(first.dataset.tab);
+}
+
+function tab(key){
+  const seg = $('.seg');
+  if(seg) [...seg.children].forEach(b=>b.setAttribute('aria-selected', b.dataset.tab===key));
+  const map = {fb:'#qbody',vf:'#qbody',ct:'#cbody',an:'#cbody',gd:'#cbody',lg:'#gbody',rs:'#gbody',tk:'#gbody'};
+  const host = $(map[key]);
+  if(!host) return;
+  host.innerHTML = BODY[key]();
+  host.classList.remove('view'); void host.offsetWidth; host.classList.add('view');
+}
+
+/* 抽屉 */
+function drawer(html){
+  $('#dbody').innerHTML = html;
+  $('#drawer').classList.add('on');
+  $('#scrim').classList.add('on');
+}
+function closeDrawer(){
+  $('#drawer').classList.remove('on');
+  $('#scrim').classList.remove('on');
+}
+$('#scrim').addEventListener('click', closeDrawer);
+
+/* 事件委托：全站只挂 1 个点击监听 */
+document.addEventListener('click', (e)=>{
+  const t = e.target.closest('[data-route],[data-go],[data-tab],[data-toggle],[data-answered],[data-review],[data-profile],[data-project],[data-act]');
+  if(!t) return;
+  if(t.dataset.route){ e.preventDefault(); go(t.dataset.route); return; }
+  if(t.dataset.go){ go(t.dataset.go); return; }
+  if(t.dataset.tab){ tab(t.dataset.tab); return; }
+
+  if(t.dataset.toggle !== undefined){
+    const tr = t.closest('tr');
+    const wasOpen = tr.classList.contains('open');
+    tr.parentElement.querySelectorAll('tr.open').forEach(r=>r.classList.remove('open'));
+    if(!wasOpen) tr.classList.add('open');
+    return;
+  }
+  if(t.dataset.answered){               // 红 → 绿
+    const tr = t.closest('tr');
+    const chip = tr.querySelector('.tag');
+    chip.textContent = '已回复';
+    chip.className = 'tag t-ok';
+    tr.classList.remove('open');
+    return;
+  }
+  if(t.dataset.review){                 // 通过 → 离开列表
+    const tr = t.closest('tr');
+    tr.style.transition = 'opacity .3s';
+    tr.style.opacity = '0';
+    setTimeout(()=>tr.remove(), 300);
+    return;
+  }
+  if(t.dataset.profile){ profile(t.dataset.profile); return; }
+  if(t.dataset.project){ project(t.dataset.project); return; }
+
+  switch(t.dataset.act){
+    case 'close': closeDrawer(); break;
+    case 'role': drawer('<h2>调整角色</h2><p class="sub">学生 → 教师会同步把认证状态设为已通过</p><div class="seg" style="margin:0"><button aria-selected="true">学生</button><button>教师</button><button>管理员</button></div>'); break;
+    case 'del': case 'onoff': case 'edit': case 'read': case 'close-task':
+      drawer(`<h2>${ {del:'删除确认',onoff:'上下架',edit:'编辑',read:'详情',['close-task']:'关闭任务'}[t.dataset.act] }</h2><p class="sub">演示未接真实接口，落地时对接云函数。</p>`); break;
+  }
+});
+
+/* 成长档案抽屉 */
+function profile(name){
+  drawer(`
+    <h2>${name} 的成长档案</h2>
+    <p class="sub">按 openid 聚合自各业务集合 · 全只读</p>
+    <div class="card" style="margin-bottom:14px">
+      <h2>学习记录趋势<span>近 30 天</span></h2>
+      ${lineChart(TREND.slice(8))}
+    </div>
+    <div class="card" style="margin-bottom:14px">
+      <h2>成果时间线</h2>
+      <ul class="tl">
+        <li><time>2026-04</time><span>蓝桥杯省赛 · 二等奖</span></li>
+        <li><time>2026-03</time><span>校园二手交易平台 · 结项</span></li>
+        <li><time>2026-03</time><span>天梯赛 · 参赛</span></li>
+        <li><time>2025-12</time><span>CET-4 证书</span></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>竞赛关注 / 参与项目</h2>
+      <div class="bars">${barRows([['蓝桥杯',3],['天梯赛',2],['ACM 校赛',1]])}</div>
+      <ul class="tl" style="margin-top:16px">
+        <li><time>进行中</time><span>图像识别垃圾分类</span></li>
+      </ul>
+    </div>
+  `);
+}
+
+/* 项目详情抽屉 */
+function project(name){
+  drawer(`
+    <h2>${name}</h2>
+    <p class="sub">李四 · 前端开发 · 已完成</p>
+    <div class="card" style="margin-bottom:14px">
+      <h2>简介</h2>
+      <p style="font-size:13.5px;line-height:1.75">一个面向本校学生的闲置物品交易平台，支持发布、搜索、私信沟通与线下交易确认。已上线试运行，日均 30 单左右。</p>
+    </div>
+    <div class="card" style="margin-bottom:14px">
+      <h2>进展时间线</h2>
+      <ul class="tl">
+        <li><time>10-20</time><span>完成支付对接联调 · 李四</span></li>
+        <li><time>10-08</time><span>消息模块重构完成 · 陈七</span></li>
+        <li><time>09-25</time><span>首个可演示版本 · 李四</span></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>留言</h2>
+      <ul class="tl">
+        <li><time>10-21</time><span>这个项目能加图书漂流功能吗 · 匿名</span></li>
+        <li><time>10-15</time><span>求一份技术栈文档，想参考学习 · 孙一</span></li>
+      </ul>
+    </div>
+  `);
+}
+
+/* 登录 */
+$('#doLogin').addEventListener('click', ()=>{
+  $('#login').hidden = true;
+  $('#app').hidden = false;
+  go('today');
+});
+/* 点击 logo 可回登录页 */
+document.querySelector('.brand').addEventListener('click', ()=>{
+  $('#app').hidden = true;
+  $('#login').hidden = false;
+});
+$('#pw').addEventListener('keydown', (e)=>{ if(e.key==='Enter') $('#doLogin').click(); });
+
+/* 默认进看板；#login 看登录页（便于评审与截图） */
+(function boot(){
+  const h = location.hash.replace('#','');
+  if(h === 'login') return;
+  $('#login').hidden = true;
+  $('#app').hidden = false;
+  go(VIEW[h] ? h : 'today');
+})();
+
+$('#view').addEventListener('submit', (e)=>{
+  e.preventDefault();
+  drawer('<h2>密码已更新</h2><p class="sub">下次登录请使用新密码。此演示未接入真实接口。</p>');
+});
+</script>
+</body>
+</html>

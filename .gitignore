@@ -24,4 +24,10 @@ tools/shots/
 .DS_Store
 Thumbs.db
 *.log
+
+# ===== 可再生缓存与过程产物（本地保留，不入库）=====
 tools/.algo_title_cache.json
+tools/.algo_lc_stmt_cache.json
+tools/.cf_stmt_cache.json
+.pdfread/
+design-demos/admin/.taste-skill/

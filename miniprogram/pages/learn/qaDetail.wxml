@@ -1,0 +1,102 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="state">加载中…</view>
+  <block wx:else>
+    <block wx:if="{{q}}">
+      <view class="qhead">
+        <view class="qhead__top">
+          <text class="qhead__cat">{{q.categoryText}}</text>
+          <text class="badge badge--{{q.status === 'solved' ? 'reviewed' : 'todo'}}">{{q.statusText}}</text>
+        </view>
+        <view class="qhead__title">{{q.title}}</view>
+        <view class="qhead__meta">
+          <text>{{q.authorName}}</text>
+          <text wx:if="{{q.isTeacherAuthor}}" class="qhead__role">教师</text>
+          <text class="qhead__dot">·</text>
+          <text>{{q.timeText}}</text>
+          <text class="qhead__dot">·</text>
+          <text>{{q.viewCount}} 次查看</text>
+        </view>
+        <view class="qhead__content">{{q.content}}</view>
+        <view wx:if="{{q.problemTitle}}" class="qhead__problem">相关题目 · {{q.problemTitle}}</view>
+        <view wx:if="{{q.tags.length}}" class="qhead__tags">
+          <text wx:for="{{q.tags}}" wx:for-item="tag" wx:key="*this" class="tag">{{tag}}</text>
+        </view>
+      </view>
+
+      <view wx:if="{{q.canManage}}" class="acts">
+        <view class="acts__btn pressable" hover-class="pressing" bindtap="toggleStatus">
+          {{q.status === 'solved' ? '重新打开' : '标记已解决'}}
+        </view>
+        <view class="acts__btn acts__btn--danger pressable" hover-class="pressing" bindtap="removeQuestion">删除问题</view>
+      </view>
+
+      <view class="ans-title">
+        <text class="ans-title__n">{{total}}</text>
+        <text>个回答</text>
+        <text wx:if="{{q.status === 'solved'}}" class="ans-title__done">问题已解决</text>
+      </view>
+
+      <view wx:if="{{answers.length === 0}}" class="state state--empty">
+        <view class="state__emoji">✍️</view>
+        <view>还没有人回答，来写下第一个解答吧</view>
+      </view>
+
+      <view wx:else class="ans-list">
+        <view wx:for="{{answers}}" wx:key="_id" class="ans {{item.accepted ? 'ans--accepted' : ''}}">
+          <view wx:if="{{item.accepted}}" class="ans__accepted">✓ 已采纳</view>
+          <view class="ans__head">
+            <view class="ans__avatar">{{item.authorName[0] || '同'}}</view>
+            <view class="ans__who">
+              <view class="ans__name">
+                {{item.authorName}}
+                <text wx:if="{{item.isTeacher}}" class="ans__role">教师</text>
+                <text wx:elif="{{item.isMine}}" class="ans__self">我</text>
+              </view>
+              <view class="ans__time">{{item.timeText}}</view>
+            </view>
+          </view>
+          <view class="ans__content">{{item.content}}</view>
+          <view class="ans__foot">
+            <text wx:if="{{item.canAccept}}" class="ans__act ans__act--primary" data-id="{{item._id}}" catchtap="acceptAnswer">采纳这个回答</text>
+            <text wx:if="{{item.canDelete}}" class="ans__act" data-id="{{item._id}}" catchtap="removeAnswer">删除</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="bottom-gap"></view>
+    </block>
+    <view wx:else class="state state--empty">
+      <view class="state__emoji">🔍</view>
+      <view>问题不存在或已被删除</view>
+    </view>
+  </block>
+
+  <view wx:if="{{q && !showReply && !keyboardUp}}" class="footer">
+    <view class="footer__ph pressable" hover-class="pressing" bindtap="openReply">{{q.status === 'solved' ? '补充一个不同的解法…' : '写下你的解答，帮同学一把…'}}</view>
+    <view class="footer__send pressable" hover-class="pressing" bindtap="openReply">回答</view>
+  </view>
+
+  <!-- ===== 弹层：写回答 ===== -->
+  <view wx:if="{{showReply}}" class="mask" bindtap="closeReply">
+    <view class="sheet" catchtap="noop">
+      <view class="sheet__grip"></view>
+      <view class="sheet__title">写下你的解答</view>
+      <view class="sheet__tip">讲清楚思路，比只给一个答案更有帮助</view>
+      <textarea
+        class="field field--area"
+        value="{{draft}}"
+        placeholder="先说结论，再说为什么，最后给出代码或步骤"
+        maxlength="2000"
+        bindinput="onDraftInput"
+        bindkeyboardheightchange="onKeyboardHeightChange"
+        auto-height
+        cursor-spacing="240"
+        focus="{{showReply}}"
+      />
+      <view class="counter">{{draft.length}}/2000</view>
+      <view class="btn btn-block btn-primary pressable {{canSend ? '' : 'btn-disabled'}}" hover-class="pressing" bindtap="sendReply">
+        {{sending ? '发送中…' : '发布回答'}}
+      </view>
+    </view>
+  </view>
+</view>

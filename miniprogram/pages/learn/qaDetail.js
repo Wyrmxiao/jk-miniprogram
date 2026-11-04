@@ -1,0 +1,148 @@
+// pages/learn/qaDetail.js —— 问题详情：完整描述 + 师生回答 + 采纳 / 标记解决
+const { qa } = require('../../services/index');
+const { QA_CATEGORY_TEXT, QA_STATUS_TEXT } = require('../../constants/index');
+const { fromNow, confirm } = require('../../utils/util');
+
+Page({
+  data: {
+    id: '',
+    loading: true,
+    q: null,
+    answers: [],
+    total: 0,
+
+    // 回答弹层
+    showReply: false,
+    draft: '',
+    canSend: false,
+    sending: false,
+    keyboardUp: false
+  },
+
+  onLoad(options) {
+    this.setData({ id: (options && options.id) || '' });
+  },
+
+  onShow() {
+    this.load();
+  },
+
+  onPullDownRefresh() {
+    this.load().then(() => wx.stopPullDownRefresh());
+  },
+
+  async load() {
+    if (!this.data.id) return;
+    try {
+      const res = await qa.detail({ id: this.data.id });
+      const q = res.question || {};
+      q.statusText = QA_STATUS_TEXT[q.status] || q.status;
+      q.categoryText = QA_CATEGORY_TEXT[q.category] || '其他';
+      q.timeText = fromNow(q.createdAt);
+
+      const answers = (res.answers || []).map((a) =>
+        Object.assign({}, a, { timeText: fromNow(a.createdAt) })
+      );
+
+      this.setData({
+        q,
+        answers,
+        total: res.total || 0,
+        loading: false
+      });
+    } catch (e) {
+      this.setData({ loading: false });
+    }
+  },
+
+  // ============ 回答 ============
+  openReply() {
+    this.setData({ showReply: true, draft: '', canSend: false, keyboardUp: false });
+  },
+
+  closeReply() {
+    this.setData({ showReply: false, keyboardUp: false });
+  },
+
+  onDraftInput(e) {
+    const draft = e.detail.value;
+    this.setData({ draft, canSend: draft.trim().length >= 2 });
+  },
+
+  onKeyboardHeightChange(e) {
+    this.setData({ keyboardUp: (e.detail && e.detail.height) > 0 });
+  },
+
+  async sendReply() {
+    if (!this.data.canSend || this.data.sending) return;
+    this.setData({ sending: true });
+    try {
+      await qa.answer({ questionId: this.data.id, content: this.data.draft.trim() });
+      this.setData({ showReply: false, sending: false, draft: '', canSend: false });
+      wx.showToast({ title: '已回答', icon: 'success' });
+      this.load();
+    } catch (e) {
+      this.setData({ sending: false });
+    }
+  },
+
+  // ============ 采纳 / 解决状态 ============
+  async acceptAnswer(e) {
+    const id = e.currentTarget.dataset.id;
+    const yes = await confirm('采纳这个回答后，问题会标记为已解决。', '采纳回答');
+    if (!yes) return;
+    try {
+      await qa.accept({ questionId: this.data.id, answerId: id });
+      wx.showToast({ title: '已采纳', icon: 'success' });
+      this.load();
+    } catch (e) {
+      /* request 层已提示 */
+    }
+  },
+
+  async toggleStatus() {
+    const q = this.data.q;
+    if (!q || !q.canManage) return;
+    const to = q.status === 'solved' ? 'open' : 'solved';
+    const yes = await confirm(
+      to === 'solved' ? '标记为已解决？线下已讲清楚的问题可以这样做。' : '重新打开这个问题，继续征集回答？',
+      to === 'solved' ? '标记已解决' : '重新打开'
+    );
+    if (!yes) return;
+    try {
+      await qa.setStatus({ id: this.data.id, status: to });
+      wx.showToast({ title: to === 'solved' ? '已解决' : '已重新打开', icon: 'success' });
+      this.load();
+    } catch (e) {
+      /* request 层已提示 */
+    }
+  },
+
+  // ============ 删除 ============
+  async removeQuestion() {
+    const yes = await confirm('删除后问题和所有回答都不再显示，且无法恢复。', '删除问题');
+    if (!yes) return;
+    try {
+      await qa.removeQuestion({ id: this.data.id });
+      wx.showToast({ title: '已删除', icon: 'success' });
+      wx.navigateBack();
+    } catch (e) {
+      /* request 层已提示 */
+    }
+  },
+
+  async removeAnswer(e) {
+    const yes = await confirm('确定删除这条回答？', '删除回答');
+    if (!yes) return;
+    try {
+      await qa.removeAnswer({ id: e.currentTarget.dataset.id });
+      wx.showToast({ title: '已删除', icon: 'success' });
+      this.load();
+    } catch (e) {
+      /* request 层已提示 */
+    }
+  },
+
+  /** 弹层占位：catchtap 阻止事件冒泡到遮罩 */
+  noop() {}
+});

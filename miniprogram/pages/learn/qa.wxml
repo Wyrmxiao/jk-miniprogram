@@ -1,0 +1,166 @@
+<view class="page">
+  <view class="hero">
+    <view class="hero__title">学习问答</view>
+    <view class="hero__sub">提出你的问题 · 老师和同学一起帮你解决</view>
+  </view>
+
+  <view wx:if="{{!isVerified}}" class="unverified">
+    <view class="unverified__title">完成实名认证后使用问答功能</view>
+    <view class="btn btn-block pressable" hover-class="pressing" bindtap="goRealname">去认证</view>
+  </view>
+
+  <block wx:else>
+    <view class="stats">
+      <view class="stats__item">
+        <view class="stats__n stats__n--open">{{stats.open}}</view>
+        <view class="stats__label">待解决</view>
+      </view>
+      <view class="stats__sep"></view>
+      <view class="stats__item">
+        <view class="stats__n stats__n--done">{{stats.solved}}</view>
+        <view class="stats__label">已解决</view>
+      </view>
+      <view class="stats__sep"></view>
+      <view class="stats__item">
+        <view class="stats__n">{{stats.mine}}</view>
+        <view class="stats__label">我的提问</view>
+      </view>
+    </view>
+
+    <view class="search">
+      <input
+        class="search__input"
+        value="{{searchWord}}"
+        placeholder="搜索问题标题、内容或提问人"
+        confirm-type="search"
+        bindinput="onSearchInput"
+        bindconfirm="doSearch"
+        cursor-spacing="120"
+      />
+      <view wx:if="{{searchWord}}" class="search__clear" bindtap="clearSearch">×</view>
+      <view class="search__go pressable" hover-class="pressing" bindtap="doSearch">搜索</view>
+    </view>
+
+    <scroll-view class="seg seg--scroll" scroll-x>
+      <view class="seg__inner">
+        <view
+          wx:for="{{scopes}}"
+          wx:key="key"
+          class="seg__item {{scope === item.key ? 'seg__item--on' : ''}}"
+          data-key="{{item.key}}"
+          bindtap="onScope"
+        >{{item.name}}</view>
+      </view>
+    </scroll-view>
+
+    <scroll-view class="cats" scroll-x>
+      <view class="cats__inner">
+        <view
+          wx:for="{{categories}}"
+          wx:key="key"
+          class="cat {{category === item.key ? 'cat--on' : ''}}"
+          data-key="{{item.key}}"
+          bindtap="onCategory"
+        >{{item.name}}</view>
+      </view>
+    </scroll-view>
+
+    <view wx:if="{{loading}}" class="state">加载中…</view>
+    <view wx:elif="{{list.length === 0}}" class="state state--empty">
+      <view class="state__emoji">💬</view>
+      <view>这里还没有问题</view>
+      <view class="state__tip">点右下角的按钮，把你的疑问提出来</view>
+    </view>
+    <block wx:else>
+      <view class="list">
+        <view
+          wx:for="{{list}}"
+          wx:key="_id"
+          class="qcard pressable"
+          hover-class="pressing"
+          data-id="{{item._id}}"
+          bindtap="goDetail"
+        >
+          <view class="qcard__top">
+            <text class="qcard__cat">{{item.categoryText}}</text>
+            <text class="badge badge--{{item.status === 'solved' ? 'reviewed' : 'todo'}}">{{item.statusText}}</text>
+          </view>
+          <view class="qcard__title">{{item.title}}</view>
+          <view class="qcard__summary">{{item.summary}}</view>
+          <view wx:if="{{item.problemTitle}}" class="qcard__problem">相关题目 · {{item.problemTitle}}</view>
+          <view class="qcard__foot">
+            <text class="qcard__author">{{item.authorName}}<text wx:if="{{item.isTeacherAuthor}}" class="qcard__role">教师</text></text>
+            <text class="qcard__answer {{item.status === 'solved' ? 'qcard__answer--done' : ''}}">{{item.answerText}}</text>
+            <text class="qcard__time">{{item.timeText}}</text>
+          </view>
+        </view>
+      </view>
+      <view wx:if="{{hasMore}}" class="more" bindtap="loadMore">{{loadingMore ? '加载中…' : '加载更多'}}</view>
+      <view wx:else class="more more--end">共 {{total}} 个问题</view>
+    </block>
+  </block>
+
+  <view wx:if="{{isVerified && !showAsk && !keyboardUp}}" class="fab pressable" hover-class="pressing" bindtap="openAsk">
+    <text class="fab__plus">+</text>
+    <text class="fab__text">提问</text>
+  </view>
+
+  <!-- ===== 弹层：提出新问题 ===== -->
+  <view wx:if="{{showAsk}}" class="mask" bindtap="closeAsk">
+    <view class="sheet" catchtap="noop">
+      <view class="sheet__grip"></view>
+      <view class="sheet__title">提出一个问题</view>
+      <view class="sheet__tip">说清楚你卡在哪一步，更容易得到有用的回答</view>
+
+      <view class="form-label">问题分类</view>
+      <view class="opts">
+        <text
+          wx:for="{{askCats}}"
+          wx:key="key"
+          class="opt {{item.on ? 'opt--on' : ''}}"
+          data-key="{{item.key}}"
+          bindtap="onAskCategory"
+        >{{item.name}}</text>
+      </view>
+
+      <view class="form-label">标题</view>
+      <input
+        class="field"
+        value="{{askForm.title}}"
+        placeholder="一句话说清你的问题，例如：DP 状态为什么这样定义"
+        maxlength="80"
+        bindinput="onAskTitle"
+        bindkeyboardheightchange="onKeyboardHeightChange"
+        cursor-spacing="120"
+      />
+
+      <view class="form-label">详细描述</view>
+      <textarea
+        class="field field--area"
+        value="{{askForm.content}}"
+        placeholder="题目是什么、你试过哪些思路、具体卡在哪里"
+        maxlength="3000"
+        bindinput="onAskContent"
+        bindkeyboardheightchange="onKeyboardHeightChange"
+        auto-height
+        cursor-spacing="240"
+      />
+      <view class="counter">{{askForm.content.length}}/3000 · 至少 10 字</view>
+
+      <view class="form-label">相关题目（选填）</view>
+      <input
+        class="field"
+        value="{{askForm.problemTitle}}"
+        placeholder="如：两数之和 / cf:4:A"
+        maxlength="80"
+        bindinput="onAskProblem"
+        bindkeyboardheightchange="onKeyboardHeightChange"
+        cursor-spacing="120"
+      />
+
+      <view class="btn btn-block btn-primary pressable {{canAsk ? '' : 'btn-disabled'}}" hover-class="pressing" bindtap="submitAsk">
+        {{asking ? '发布中…' : '发布问题'}}
+      </view>
+    </view>
+  </view>
+</view>
