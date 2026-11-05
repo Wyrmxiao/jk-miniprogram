@@ -21,6 +21,8 @@ Page({
   },
 
   onShow() {
+    const tabBar = this.getTabBar && this.getTabBar();
+    if (tabBar) tabBar.setData({ active: 0 });
     const profile = getProfile();
     this.setData({
       profile,

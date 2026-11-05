@@ -1,8 +1,13 @@
 <view class="page">
+  <view class="blobs">
+    <view class="blob blob--1"></view>
+    <view class="blob blob--2"></view>
+    <view class="blob blob--3"></view>
+  </view>
   <!-- 大标题头部 -->
   <view class="hero">
     <view class="hero__title">用户与权限</view>
-    <view class="hero__sub">共 {{total}} 位 · 可分配学生 / 教师 / 管理员</view>
+    <view class="hero__sub">共 {{total}} 位用户</view>
     <input
       class="hero__search"
       placeholder="搜索姓名 / 学号"
@@ -10,7 +15,7 @@
       value="{{keyword}}"
       confirm-type="search"
       bindconfirm="onSearch"
-      cursor-spacing="80"
+      cursor-spacing="120"
     />
   </view>
 
@@ -19,10 +24,10 @@
     <view
       wx:for="{{tabs}}"
       wx:key="key"
-      class="seg__item {{tab === item.key ? 'seg__item--on' : ''}}"
+      class="seg__item {{tab === item.key ? 'seg__item--on' : ''}} pressable"
       data-key="{{item.key}}"
       bindtap="switchTab"
-    >{{item.text}}</view>
+     hover-class="pressing">{{item.text}}</view>
   </view>
 
   <!-- 列表 -->

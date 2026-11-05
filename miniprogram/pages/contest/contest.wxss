@@ -1,8 +1,8 @@
 /* pages/contest/contest.wxss —— Apple 风格赛事库 */
 .page {
   min-height: 100vh;
-  padding-bottom: var(--space-xl);
-  background: var(--bg-page);
+  padding-bottom: calc(200rpx + env(safe-area-inset-bottom));
+  background: transparent;
 }
 
 /* ===== 筛选 chips（白底胶囊） ===== */
@@ -20,6 +20,7 @@
   font-size: var(--font-caption);
   color: var(--text-secondary);
   transition: transform 0.12s var(--ease-press);
+  min-height: 80rpx;
 }
 .chip--on {
   background: var(--color-primary);
@@ -31,18 +32,18 @@
 /* ===== 赛事卡片 ===== */
 .list { padding: 0 var(--space-lg); }
 .card {
-  margin-bottom: var(--space-md);
+  margin: 0 0 var(--space-md);
   padding: var(--space-lg);
   background: var(--bg-card);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
 }
-.card__head { flex-direction: row; align-items: flex-start; justify-content: space-between; }
-.card__name { flex: 1; margin-right: var(--space-sm); font-size: var(--font-body); font-weight: 600; color: var(--text-primary); line-height: 1.5; }
-.card__tags { flex-direction: row; flex-wrap: wrap; margin-top: var(--space-sm); }
+.card__head { display: flex; flex-direction: row; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; }
+.card__name { flex: 1; margin-right: var(--space-sm); font-size: var(--font-body); font-weight: 560; color: var(--text-primary); line-height: 1.5; }
+.card__tags { display: flex; flex-direction: row; flex-wrap: wrap; margin-top: var(--space-sm); }
 .card__tags .tag { margin-right: var(--space-sm); }
 
-.card__time {
+.card__time { display: flex;
   flex-direction: row;
   align-items: center;
   margin-top: var(--space-md);
@@ -75,9 +76,9 @@
 .fav {
   flex-shrink: 0;
   margin-right: var(--space-sm);
-  width: 64rpx;
-  height: 64rpx;
-  line-height: 64rpx;
+  width: 88rpx;
+  height: 88rpx;
+  line-height: 88rpx;
   text-align: center;
   font-size: 36rpx;
   color: var(--text-tertiary);

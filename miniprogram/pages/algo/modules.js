@@ -1,72 +1,113 @@
 /**
- * 算法训练 · 知识点模块选择
- * 14 模块 × 5 档位矩阵，一次拉取后本地切换档位
+ * 算法训练 · 题库导航
+ * 平台 → 难度 → 知识点，三层筛选都在首屏完成。
  */
 const { learn } = require('../../services/index');
-const { ALGO_BANDS } = require('../../constants/index');
+const { ALGO_BANDS, ALGO_SOURCES } = require('../../constants/index');
 
 Page({
   data: {
-    bands: ALGO_BANDS,
-    bandIndex: 0,
+    sources: [{ key: '', name: '全部平台', short: '全部' }].concat(ALGO_SOURCES),
+    difficulties: [{ key: '', name: '全部' }].concat(ALGO_BANDS),
+    sourceKey: '',
+    bandKey: '',
+    query: '',
     modules: [],
-    loading: true,
-    builtAtText: ''
+    view: [],
+    platforms: [],
+    total: 0,
+    done: 0,
+    progress: 0,
+    next: null,
+    loading: true
   },
 
-  onLoad() {
+  onLoad(options) {
+    this.setData({ sourceKey: (options && options.source) || '' });
     this.load();
   },
 
   async load() {
+    this.setData({ loading: true });
     try {
-      const res = await learn.algoProblemModules({});
-      const modules = (res.modules || []).map((m) => ({
-        key: m.key,
-        name: m.name,
-        bands: m.bands,
-        total: m.total,
-        done: m.done
-      }));
+      const res = await learn.algoProblemModules({ source: this.data.sourceKey });
+      const total = res.total || 0;
+      const done = res.done || 0;
       this.setData({
-        modules,
-        builtAtText: res.builtAt ? res.builtAt.slice(0, 10) : '',
+        modules: res.modules || [],
+        platforms: res.platforms || [],
+        total,
+        done,
+        progress: total ? Math.round((done / total) * 100) : 0,
+        next: res.next || null,
         loading: false
       });
-      this.applyBand();
+      this.applyFilters();
     } catch (e) {
       this.setData({ loading: false });
     }
   },
 
-  /** 切换档位：纯本地重算，不重复请求 */
-  switchBand(e) {
-    this.setData({ bandIndex: Number(e.currentTarget.dataset.index) }, () => this.applyBand());
+  selectSource(e) {
+    const sourceKey = e.currentTarget.dataset.key || '';
+    if (sourceKey === this.data.sourceKey) return;
+    this.setData({ sourceKey }, () => this.load());
   },
 
-  applyBand() {
-    const b = ALGO_BANDS[this.data.bandIndex].key;
+  selectBand(e) {
+    this.setData({ bandKey: e.currentTarget.dataset.key || '' }, () => this.applyFilters());
+  },
+
+  applyFilters() {
+    const band = this.data.bandKey;
     const view = this.data.modules.map((m) => {
-      const cell = m.bands[b] || { total: 0, done: 0 };
+      const cell = band ? (m.bands[band] || { total: 0, done: 0 }) : m;
       return {
         key: m.key,
         name: m.name,
-        done: cell.done,
-        total: cell.total,
-        pct: cell.total ? Math.round((cell.done / cell.total) * 100) : 0,
-        empty: cell.total === 0
+        done: cell.done || 0,
+        total: cell.total || 0,
+        pct: cell.total ? Math.round((cell.done / cell.total) * 100) : 0
       };
-    });
+    }).filter((m) => m.total > 0);
     this.setData({ view });
   },
 
-  goProblems(e) {
-    const { key, empty } = e.currentTarget.dataset;
-    if (empty) {
-      wx.showToast({ title: '本档暂无题目', icon: 'none' });
+  onQuery(e) {
+    this.setData({ query: e.detail.value });
+  },
+
+  submitSearch() {
+    const query = this.data.query.trim();
+    if (!query) {
+      wx.showToast({ title: '输入题号或题目名称', icon: 'none' });
       return;
     }
-    const band = ALGO_BANDS[this.data.bandIndex].key;
-    wx.navigateTo({ url: `/pages/algo/problems?tag=${key}&band=${band}` });
+    this.goList({ keyword: query });
+  },
+
+  goAll() {
+    this.goList({});
+  },
+
+  goProblems(e) {
+    this.goList({ tag: e.currentTarget.dataset.key });
+  },
+
+  goNext() {
+    if (!this.data.next) return;
+    wx.navigateTo({ url: `/pages/algo/problem?id=${this.data.next.id}` });
+  },
+
+  goList(extra) {
+    const params = Object.assign({
+      source: this.data.sourceKey,
+      band: this.data.bandKey
+    }, extra || {});
+    const query = Object.keys(params)
+      .filter((k) => params[k])
+      .map((k) => `${k}=${encodeURIComponent(params[k])}`)
+      .join('&');
+    wx.navigateTo({ url: `/pages/algo/problems${query ? `?${query}` : ''}` });
   }
 });

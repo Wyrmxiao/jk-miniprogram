@@ -1,4 +1,9 @@
 <view class="page">
+  <view class="blobs">
+    <view class="blob blob--1"></view>
+    <view class="blob blob--2"></view>
+    <view class="blob blob--3"></view>
+  </view>
   <!-- ===== 学生：学号实名认证 ===== -->
   <view wx:if="{{!isTeacher}}">
     <view wx:if="{{application && application.status === 'pending'}}" class="card status-card">
@@ -22,24 +27,24 @@
       <view class="form-row">
         <text class="form-row__label">学号</text>
         <input class="form-row__input" placeholder="请输入学号" type="number"
-          value="{{form.studentId}}" data-field="studentId" bindinput="onInput" cursor-spacing="80" />
+          value="{{form.studentId}}" data-field="studentId" bindinput="onInput" cursor-spacing="120" />
       </view>
       <view class="form-row">
         <text class="form-row__label">姓名</text>
         <input class="form-row__input" placeholder="请输入真实姓名"
-          value="{{form.realName}}" data-field="realName" bindinput="onInput" cursor-spacing="80" />
+          value="{{form.realName}}" data-field="realName" bindinput="onInput" cursor-spacing="120" />
       </view>
       <view class="form-row">
         <text class="form-row__label">年级</text>
         <input class="form-row__input" placeholder="如 2024级"
-          value="{{form.grade}}" data-field="grade" bindinput="onInput" cursor-spacing="80" />
+          value="{{form.grade}}" data-field="grade" bindinput="onInput" cursor-spacing="120" />
       </view>
       <view class="form-row">
         <text class="form-row__label">专业</text>
         <input class="form-row__input" placeholder="如 计算机科学与技术"
-          value="{{form.major}}" data-field="major" bindinput="onInput" cursor-spacing="80" />
+          value="{{form.major}}" data-field="major" bindinput="onInput" cursor-spacing="120" />
       </view>
-      <view class="btn btn-block" bindtap="submit">{{submitting ? '提交中…' : '提交认证'}}</view>
+      <view class="btn btn-block pressable" bindtap="submit" hover-class="pressing">{{submitting ? '提交中…' : '提交认证'}}</view>
     </view>
   </view>
 
@@ -56,19 +61,19 @@
       <view class="form-row">
         <text class="form-row__label">姓名</text>
         <input class="form-row__input" placeholder="请输入真实姓名"
-          value="{{form.realName}}" data-field="realName" bindinput="onInput" cursor-spacing="80" />
+          value="{{form.realName}}" data-field="realName" bindinput="onInput" cursor-spacing="120" />
       </view>
       <view class="form-row">
         <text class="form-row__label">职称/身份</text>
         <input class="form-row__input" placeholder="如 讲师 / 副教授（可选）"
-          value="{{form.title}}" data-field="title" bindinput="onInput" cursor-spacing="80" />
+          value="{{form.title}}" data-field="title" bindinput="onInput" cursor-spacing="120" />
       </view>
       <view class="form-row">
         <text class="form-row__label">联系电话</text>
         <input class="form-row__input" placeholder="便于学生联系（可选）"
-          value="{{form.phone}}" data-field="phone" bindinput="onInput" cursor-spacing="80" />
+          value="{{form.phone}}" data-field="phone" bindinput="onInput" cursor-spacing="120" />
       </view>
-      <view class="btn btn-block" bindtap="submitProfile">{{submitting ? '保存中…' : '完善资料'}}</view>
+      <view class="btn btn-block pressable" bindtap="submitProfile" hover-class="pressing">{{submitting ? '保存中…' : '完善资料'}}</view>
     </view>
 
     <view class="section-title">待审核实名申请</view>
@@ -79,10 +84,10 @@
         <view class="pending-item__name">{{item.realName}} · {{item.studentId}}</view>
         <view class="pending-item__meta">{{item.grade}} {{item.major}} · {{item.timeText}}</view>
         <view class="pending-item__actions">
-          <view class="mini-btn mini-btn--ok"
-            data-id="{{item._id}}" data-approved="true" bindtap="review">通过</view>
-          <view class="mini-btn mini-btn--no"
-            data-id="{{item._id}}" data-approved="false" bindtap="review">驳回</view>
+          <view class="mini-btn mini-btn--ok pressable"
+            data-id="{{item._id}}" data-approved="true" bindtap="review" hover-class="pressing">通过</view>
+          <view class="mini-btn mini-btn--no pressable"
+            data-id="{{item._id}}" data-approved="false" bindtap="review" hover-class="pressing">驳回</view>
         </view>
       </view>
     </view>

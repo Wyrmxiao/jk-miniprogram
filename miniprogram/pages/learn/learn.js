@@ -51,6 +51,8 @@ Page({
   },
 
   onShow() {
+    const tabBar = this.getTabBar && this.getTabBar();
+    if (tabBar) tabBar.setData({ active: 1 });
     this.setData({ isVerified: isVerified(), isTeacher: isTeacher() });
     this.loadData();
     this.loadAlgoStat();

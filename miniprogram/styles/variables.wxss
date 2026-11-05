@@ -1,77 +1,99 @@
-/* 设计变量：莫兰迪色板（低饱和灰蒙色）+ 字阶 + 间距 + 圆角 + 阴影
-   页面禁止硬编码颜色，一律引用此处变量。
-   莫兰迪原则：所有色都「掺了灰」——雾蓝/鼠尾草绿/焦糖杏/干燥玫瑰/燕麦白，
-   饱和度压低、明度居中，视觉柔和安静；白字可读性靠「深一档」的同色系保证。 */
+/* 方向 A · Liquid Glass 悬浮层 — 设计令牌 */
 page {
-  /* ===== 品牌色（莫兰迪雾蓝） ===== */
-  --color-primary: #6b8ca3;
-  --color-primary-light: rgba(107, 140, 163, 0.12);
-  --color-primary-dark: #55748a;
+  /* ===== A 的核心色 ===== */
+  --color-primary: #3B5BFF;
+  --color-primary-light: rgba(59, 91, 255, 0.10);
+  --color-primary-dark: #2A45E0;
+  --color-accent-grad: linear-gradient(135deg, #3B5BFF 0%, #7C5CFF 58%, #A855F7 100%);
+  --color-purple: #7C5CFF;
+  --color-violet: #A855F7;
 
-  /* ===== 语义色（莫兰迪） ===== */
-  --color-success: #7f9a75;
-  --color-success-light: rgba(127, 154, 117, 0.14);
-  --color-warning: #c08a55;
-  --color-warning-light: rgba(192, 138, 85, 0.16);
-  --color-danger: #b9807f;
-  --color-danger-light: rgba(185, 128, 127, 0.14);
-  --color-info: #8d84ab;
-  --color-info-light: rgba(141, 132, 171, 0.14);
+  /* ===== 状态色 ===== */
+  --color-success: #248a3d;
+  --color-success-light: #edf8ef;
+  --color-warning: #f59e0b;
+  --color-warning-light: #fffbeb;
+  --color-danger: #ef4444;
+  --color-danger-light: #fef2f2;
+  --color-info: #8b5cf6;
+  --color-info-light: #f5f3ff;
 
-  /* ===== 角色色：学生成长绿 / 教师职能蓝 ===== */
-  --color-student: #7f9a75;
-  --color-student-deep: #637c5a;
-  --color-teacher: #6b8ca3;
-  --color-teacher-deep: #55748a;
+  /* ===== 兼容角色控件 ===== */
+  --color-student: var(--color-primary);
+  --color-student-deep: var(--color-primary-dark);
+  --color-teacher: var(--color-primary);
+  --color-teacher-deep: var(--color-primary-dark);
 
-  /* ===== 竞赛级别色（莫兰迪） ===== */
-  --level-a: #b9807f;
-  --level-b: #c08a55;
-  --level-c: #6b8ca3;
-  --level-d: #9d988e;
+  /* ===== 竞赛级别 ===== */
+  --level-a: var(--color-danger);
+  --level-b: var(--color-warning);
+  --level-c: var(--color-primary);
+  --level-d: #9ca3af;
 
-  /* ===== 文字（暖灰系，非纯黑） ===== */
-  --text-primary: #4a4640;
-  --text-secondary: rgba(74, 70, 64, 0.62);
-  --text-tertiary: rgba(74, 70, 64, 0.38);
+  /* ===== 文字 ===== */
+  --text-primary: #0E0E12;
+  --text-secondary: #5C5C68;
+  --text-tertiary: #9A9AA6;
+  --text-quaternary: var(--text-tertiary);
   --text-inverse: #ffffff;
 
-  /* ===== 背景与分割（燕麦白/暖白） ===== */
-  --bg-page: #f4f1ec;
-  --bg-card: #fffdf9;
-  --bg-block: rgba(120, 112, 100, 0.08);
-  --bg-elevated: #fffdf9;
-  --border-color: rgba(120, 112, 100, 0.14);
-  --border-light: rgba(120, 112, 100, 0.07);
+  /* ===== 背景 ===== */
+  --bg-page: #F7F8FC;
+  --bg-page-grad: linear-gradient(180deg, #F7F8FC 0%, #F2F3FA 100%);
+  --bg-card: rgba(255, 255, 255, 0.52);
+  --bg-card-strong: rgba(255, 255, 255, 0.74);
+  --bg-block: rgba(255, 255, 255, 0.38);
+  --bg-elevated: rgba(255, 255, 255, 0.88);
+  --glass-bg: rgba(255, 255, 255, 0.52);
+  --glass-border: rgba(255, 255, 255, 0.92);
+  --border-color: rgba(210, 212, 225, 0.5);
+  --border-light: rgba(255, 255, 255, 0.85);
 
-  /* ===== 间距（8 的倍数） ===== */
+  /* ===== 间距 ===== */
   --space-xs: 8rpx;
-  --space-sm: 16rpx;
-  --space-md: 24rpx;
-  --space-lg: 32rpx;
-  --space-xl: 48rpx;
+  --space-sm: 18rpx;
+  --space-md: 28rpx;
+  --space-lg: 36rpx;
+  --space-xl: 56rpx;
 
   /* ===== 字阶 ===== */
   --font-micro: 22rpx;
-  --font-caption: 24rpx;
-  --font-body: 28rpx;
-  --font-headline: 32rpx;
-  --font-title: 40rpx;
-  --font-large: 48rpx;
+  --font-caption: 28rpx;
+  --font-body: 32rpx;
+  --font-headline: 40rpx;
+  --font-title: 54rpx;
+  --font-large: 72rpx;
+  --font-display: 92rpx;
+
+  /* ===== 字距 ===== */
+  --tracking-normal: 0.6rpx;
+  --tracking-title: 1.5rpx;
+  --tracking-wide: 3rpx;
+
+  /* ===== 行高 ===== */
+  --leading-title: 1.18;
+  --leading-normal: 1.6;
+  --leading-body: 1.8;
+  --leading-compact: 1.35;
 
   /* ===== 圆角 ===== */
-  --radius-sm: 8rpx;
-  --radius-md: 16rpx;
-  --radius-lg: 24rpx;
-  --radius-sheet: 28rpx;
+  --radius-sm: 22rpx;
+  --radius-md: 36rpx;
+  --radius-lg: 52rpx;
+  --radius-sheet: 60rpx;
   --radius-pill: 999rpx;
 
-  /* ===== 阴影（暖调，单层柔和） ===== */
-  --shadow-card: 0 8rpx 24rpx rgba(90, 82, 70, 0.07);
-  --shadow-float: 0 16rpx 48rpx rgba(90, 82, 70, 0.14);
+  /* ===== A 的阴影：内高光 + 外柔影 ===== */
+  --shadow-card: inset 0 2rpx 0 rgba(255,255,255,0.95), 0 16rpx 48rpx rgba(38,52,110,0.10), 0 2rpx 6rpx rgba(38,52,110,0.05);
+  --shadow-soft: inset 0 2rpx 0 rgba(255,255,255,0.95), 0 12rpx 36rpx rgba(38,52,110,0.11), 0 2rpx 4rpx rgba(38,52,110,0.06);
+  --shadow-float: 0 24rpx 64rpx rgba(30,42,90,0.18), 0 2rpx 0 rgba(255,255,255,.9) inset;
 
   /* ===== 动效 ===== */
-  --ease-press: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  /* 年轻化俏皮回弹（按压/入场用） */
-  --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-press: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-press: 180ms;
+  --duration-normal: 320ms;
+  --duration-spring: 520ms;
 }

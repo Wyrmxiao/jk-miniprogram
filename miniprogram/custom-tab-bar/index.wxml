@@ -1,0 +1,21 @@
+<view class="dock-wrap">
+  <view class="dock">
+    <view
+      wx:for="{{list}}"
+      wx:key="pagePath"
+      class="dock__item {{active === index ? 'dock__item--on' : ''}} pressable"
+      hover-class="pressing"
+      data-index="{{index}}"
+      bindtap="onTap"
+    >
+      <view class="dock__icon-wrap">
+        <image
+          class="dock__icon"
+          src="{{active === index ? item.activeIcon : item.icon}}"
+          mode="aspectFit"
+        />
+      </view>
+      <text class="dock__label">{{item.text}}</text>
+    </view>
+  </view>
+</view>

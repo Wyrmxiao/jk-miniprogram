@@ -41,7 +41,7 @@
 .recite-bar__body { flex: 1; min-width: 0; }
 .recite-bar__title {
   font-size: var(--font-body);
-  font-weight: 600;
+  font-weight: 560;
   color: var(--color-primary-dark);
 }
 .recite-bar__desc {
@@ -128,7 +128,7 @@
 .codebox__text {
   display: block;
   font-family: Menlo, Consolas, monospace;
-  font-size: 22rpx;
+  font-size: var(--font-micro);
   line-height: 1.65;
   color: var(--text-primary);
   white-space: pre;
@@ -170,10 +170,11 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--space-md) 0;
+  flex-wrap: wrap;
 }
 .kcard__name {
   font-size: var(--font-body);
-  font-weight: 600;
+  font-weight: 560;
   color: var(--text-primary);
 }
 .kcard__chevron {

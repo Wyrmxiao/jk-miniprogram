@@ -1,4 +1,9 @@
 <view class="page">
+  <view class="blobs">
+    <view class="blob blob--1"></view>
+    <view class="blob blob--2"></view>
+    <view class="blob blob--3"></view>
+  </view>
   <view wx:if="{{loading}}" class="state-empty">加载中…</view>
 
   <block wx:elif="{{problem}}">
@@ -22,9 +27,9 @@
 
       <block wx:elif="{{content}}">
         <view class="seg content-seg">
-          <view class="seg__item {{tab === 'statement' ? 'seg__item--on' : ''}}" data-tab="statement" bindtap="onTab">完整题面</view>
-          <view class="seg__item {{tab === 'solution' ? 'seg__item--on' : ''}}" data-tab="solution" bindtap="onTab">解题过程</view>
-          <view class="seg__item {{tab === 'knowledge' ? 'seg__item--on' : ''}}" data-tab="knowledge" bindtap="onTab">知识点</view>
+          <view class="seg__item {{tab === 'statement' ? 'seg__item--on' : ''}} pressable" data-tab="statement" bindtap="onTab" hover-class="pressing">完整题面</view>
+          <view class="seg__item {{tab === 'solution' ? 'seg__item--on' : ''}} pressable" data-tab="solution" bindtap="onTab" hover-class="pressing">解题过程</view>
+          <view class="seg__item {{tab === 'knowledge' ? 'seg__item--on' : ''}} pressable" data-tab="knowledge" bindtap="onTab" hover-class="pressing">知识点</view>
         </view>
 
         <!-- 背题模式：解析默认收起 -->
@@ -32,7 +37,6 @@
           <view class="recite-bar__icon">◌</view>
           <view class="recite-bar__body">
             <view class="recite-bar__title">背题模式：解析已收起</view>
-            <view class="recite-bar__desc">先自己想一遍，卡住了再点开看。</view>
           </view>
           <view class="recite-bar__go">点开 ›</view>
         </view>
@@ -48,7 +52,7 @@
           </view>
           <view class="group">
             <view class="btn btn-plain btn-block pressable" hover-class="pressing" bindtap="copyLink">去官方做题（复制链接）</view>
-            <view class="pb__tip">个人主体小程序无法内嵌外部网页，请在浏览器中打开；完成后回到题单页点「通过」。</view>
+            <view class="pb__tip">复制链接到浏览器做题，完成后返回标记「通过」。</view>
           </view>
         </block>
 
@@ -97,7 +101,7 @@
             </view>
             <view class="group">
               <view class="group__title">涉及的知识点</view>
-              <view class="pb__tip">点开上方「知识点」标签，可看每个知识点的识别信号、参考代码与易错点。</view>
+              <view class="pb__tip">点击知识点查看讲解和代码。</view>
             </view>
           </block>
         </block>
@@ -138,12 +142,12 @@
         <view
           wx:for="{{problem.tagNames}}"
           wx:key="*this"
-          class="opt opt--on"
+          class="opt opt--on pressable"
           data-tag="{{problem.tags[index]}}"
           bindtap="goTagProblems"
-        >{{item}}</view>
+         hover-class="pressing">{{item}}</view>
       </view>
-      <view class="pb__tip">这道题的完整题面还在补充中，可以先点下方按钮去官方做题。</view>
+      <view class="pb__tip">题面待补充，可前往官网做题。</view>
       <view class="btn btn-primary btn-block pressable" hover-class="pressing" bindtap="copyLink">复制题目链接，去官方做题</view>
     </view>
 

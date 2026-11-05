@@ -75,18 +75,19 @@
     }
   },
   "window": {
-    "navigationBarBackgroundColor": "#f4f1ec",
+    "navigationBarBackgroundColor": "#F7F8FC",
     "navigationBarTitleText": "计科创新中心",
     "navigationBarTextStyle": "black",
-    "backgroundColor": "#f4f1ec",
+    "backgroundColor": "#F7F8FC",
     "backgroundTextStyle": "dark",
     "enablePullDownRefresh": false
   },
   "tabBar": {
-    "color": "#9d988e",
-    "selectedColor": "#6b8ca3",
-    "backgroundColor": "#fffdf9",
-    "borderStyle": "black",
+    "custom": true,
+    "color": "#9A9AA6",
+    "selectedColor": "#3B5BFF",
+    "backgroundColor": "#F7F8FC",
+    "borderStyle": "white",
     "list": [
       {
         "pagePath": "pages/index/index",

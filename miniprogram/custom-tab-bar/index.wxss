@@ -1,0 +1,65 @@
+/* 悬浮胶囊 Dock · 方向 A */
+.dock-wrap {
+  position: fixed;
+  left: 24rpx;
+  right: 24rpx;
+  bottom: calc(18rpx + env(safe-area-inset-bottom));
+  z-index: 200;
+  pointer-events: none;
+}
+.dock {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14rpx 18rpx;
+  background: rgba(255, 255, 255, 0.62);
+  -webkit-backdrop-filter: blur(32px) saturate(200%);
+  backdrop-filter: blur(32px) saturate(200%);
+  border: 1rpx solid rgba(255, 255, 255, 0.9);
+  border-radius: 60rpx;
+  box-shadow: 0 24rpx 64rpx rgba(30, 42, 90, 0.18), 0 2rpx 0 rgba(255, 255, 255, 0.9) inset;
+  pointer-events: auto;
+}
+.dock__item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4rpx;
+  padding: 12rpx 0;
+  border-radius: 44rpx;
+  transition: background 0.3s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* 组件样式隔离，全局 .pressing 不生效，这里自带一份 */
+.dock__item.pressing {
+  transform: scale(0.94);
+  opacity: 0.8;
+}
+.dock__item--on {
+  background: linear-gradient(135deg, rgba(59, 91, 255, 0.12), rgba(168, 85, 247, 0.12));
+}
+.dock__item--on .dock__icon {
+  transform: translateY(-2rpx) scale(1.08);
+}
+.dock__icon-wrap {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dock__icon {
+  width: 44rpx;
+  height: 44rpx;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.dock__label {
+  font-size: 20rpx;
+  color: #9A9AA6;
+  letter-spacing: 0.6rpx;
+  transition: color 0.3s ease;
+}
+.dock__item--on .dock__label {
+  color: #3B5BFF;
+  font-weight: 600;
+}

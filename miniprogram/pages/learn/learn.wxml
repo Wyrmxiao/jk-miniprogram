@@ -1,7 +1,12 @@
 <view class="page">
+  <!-- 方向 A 光斑背景 -->
+  <view class="blobs">
+    <view class="blob blob--1"></view>
+    <view class="blob blob--2"></view>
+    <view class="blob blob--3"></view>
+  </view>
   <view class="hero">
     <view class="hero__title">学习</view>
-    <view class="hero__sub">{{isTeacher ? '布置任务 · 查看与批阅学生学习过程' : '记录学习过程 · 完成老师布置的任务'}}</view>
   </view>
 
   <!-- 未认证引导 -->
@@ -16,10 +21,8 @@
       <view class="algo-entry__icon">∑</view>
       <view class="algo-entry__body">
         <view class="algo-entry__title">算法训练</view>
-        <view class="algo-entry__desc" wx:if="{{algoStat}}">{{algoStat.total > 0 ? '连续 ' + algoStat.streak + ' 天 · 累计 ' + algoStat.total + ' 题' + (algoStat.todayDone ? ' · 今日已完成' : ' · 今天还没刷') : '从入门题开始你的第一次刷题'}}</view>
-        <view class="algo-entry__desc" wx:else>820 道精选题 · 按知识点与难度分层</view>
+        <view class="algo-entry__desc" wx:if="{{algoStat}}">{{algoStat.total > 0 ? '连续 ' + algoStat.streak + ' 天 · 累计 ' + algoStat.total + ' 题' + (algoStat.todayDone ? ' · 今日已完成' : '') : '开始练习'}}</view>
       </view>
-      <view class="algo-entry__go">{{algoStat && algoStat.todayDone ? '✓' : 'GO'}}</view>
       <view class="cell__chevron">›</view>
     </view>
 
@@ -28,16 +31,14 @@
       <view class="algo-entry__icon algo-entry__icon--qa">?</view>
       <view class="algo-entry__body">
         <view class="algo-entry__title">学习问答</view>
-        <view class="algo-entry__desc" wx:if="{{qaStat}}">{{qaStat.open > 0 ? '当前 ' + qaStat.open + ' 个问题待解决 · 你有 ' + qaStat.mine + ' 个提问' : '有问题就问，老师和同学一起解答'}}</view>
-        <view class="algo-entry__desc" wx:else>有问题就问，老师和同学一起解答</view>
+        <view class="algo-entry__desc" wx:if="{{qaStat}}">{{qaStat.open > 0 ? '当前 ' + qaStat.open + ' 个问题待解决 · 你有 ' + qaStat.mine + ' 个提问' : '查看问题'}}</view>
       </view>
-      <view class="algo-entry__go algo-entry__go--qa">GO</view>
       <view class="cell__chevron">›</view>
     </view>
 
     <view class="seg">
-      <view class="seg__item {{tab === 'task' ? 'seg__item--on' : ''}}" data-tab="task" bindtap="switchTab">学习任务</view>
-      <view class="seg__item {{tab === 'log' ? 'seg__item--on' : ''}}" data-tab="log" bindtap="switchTab">学习记录</view>
+      <view class="seg__item {{tab === 'task' ? 'seg__item--on' : ''}} pressable" data-tab="task" bindtap="switchTab" hover-class="pressing">学习任务</view>
+      <view class="seg__item {{tab === 'log' ? 'seg__item--on' : ''}} pressable" data-tab="log" bindtap="switchTab" hover-class="pressing">学习记录</view>
     </view>
 
     <!-- ===== 学习任务 ===== -->

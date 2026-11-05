@@ -1,12 +1,14 @@
 <view class="page">
-  <view class="rolebar rolebar--student">
-    <view class="rolebar__icon">学</view>
-    <view class="rolebar__text">学生端 · 记录学习过程，教师可见并可批注</view>
+  <view class="blobs">
+    <view class="blob blob--1"></view>
+    <view class="blob blob--2"></view>
+    <view class="blob blob--3"></view>
   </view>
+  <view class="hero"><view class="hero__title">学习记录</view></view>
 
   <view class="block">
     <view class="block__title">今天学了什么</view>
-    <input class="field" placeholder="标题，如：完成动态规划专题" value="{{form.title}}" data-field="title" bindinput="onField" cursor-spacing="120" />
+    <input class="field" placeholder="记录标题" value="{{form.title}}" data-field="title" bindinput="onField" cursor-spacing="120" />
     <textarea
       class="field field--area"
       placeholder="记录学习内容、遇到的问题与下一步计划"

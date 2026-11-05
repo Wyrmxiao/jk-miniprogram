@@ -1,7 +1,12 @@
 <view class="page">
+  <view class="blobs">
+    <view class="blob blob--1"></view>
+    <view class="blob blob--2"></view>
+    <view class="blob blob--3"></view>
+  </view>
   <view class="hero">
-    <view wx:if="{{mode === 'student'}}" class="rolebar rolebar--student" bindtap="goBack">
-      <view class="rolebar__text">← 返回</view>
+    <view wx:if="{{mode === 'student'}}" class="hero__back pressable" bindtap="goBack" hover-class="pressing">
+      <view class="hero__back-text">← 返回</view>
     </view>
     <view class="hero__title">{{mode === 'student' ? viewName : '算法训练'}}</view>
     <view class="hero__sub">{{stats ? '连续 ' + stats.streak + ' 天 · 累计 ' + stats.total + ' 题' : '每日刷题 · 记录成长'}}</view>
@@ -12,8 +17,8 @@
   </view>
 
   <view wx:if="{{isTeacher && !viewOpenid}}" class="seg algo__seg">
-    <view class="seg__item {{mode !== 'students' ? 'seg__item--on' : ''}}" data-mode="mine" bindtap="switchMode">我的训练</view>
-    <view class="seg__item {{mode === 'students' ? 'seg__item--on' : ''}}" data-mode="students" bindtap="switchMode">学生训练</view>
+    <view class="seg__item {{mode !== 'students' ? 'seg__item--on' : ''}} pressable" data-mode="mine" bindtap="switchMode" hover-class="pressing">我的训练</view>
+    <view class="seg__item {{mode === 'students' ? 'seg__item--on' : ''}} pressable" data-mode="students" bindtap="switchMode" hover-class="pressing">学生训练</view>
   </view>
 
   <!-- 未认证引导 -->
@@ -137,11 +142,11 @@
       </view>
 
       <view class="opts">
-        <view wx:for="{{bands}}" wx:key="key" class="opt {{diffIndex === index ? 'opt--on' : ''}}" data-index="{{index}}" bindtap="onDiffTap">{{item.name}}</view>
+        <view wx:for="{{bands}}" wx:key="key" class="opt {{diffIndex === index ? 'opt--on' : ''}} pressable" data-index="{{index}}" bindtap="onDiffTap" hover-class="pressing">{{item.name}}</view>
       </view>
 
       <view class="opts">
-        <view wx:for="{{tagChips}}" wx:key="key" class="opt {{tagSel[item.key] ? 'opt--on' : ''}}" data-key="{{item.key}}" bindtap="toggleTag">{{item.name}}</view>
+        <view wx:for="{{tagChips}}" wx:key="key" class="opt {{tagSel[item.key] ? 'opt--on' : ''}} pressable" data-key="{{item.key}}" bindtap="toggleTag" hover-class="pressing">{{item.name}}</view>
       </view>
 
       <view class="field">
@@ -159,7 +164,7 @@
           <view class="row__label">已通过</view>
           <view class="switch-row__desc">记录以自觉为准，不做判题校验</view>
         </view>
-        <switch checked="{{form.passed}}" bindchange="onPassed" color="#6b8ca3" />
+        <switch checked="{{form.passed}}" bindchange="onPassed" color="#007aff" />
       </view>
 
       <view class="field field--area">

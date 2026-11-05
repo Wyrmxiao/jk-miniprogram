@@ -1,5 +1,6 @@
 // pages/learn/qaDetail.js —— 问题详情：完整描述 + 师生回答 + 采纳 / 标记解决
 const { qa } = require('../../services/index');
+const { refreshLogin } = require('../../utils/request');
 const { QA_CATEGORY_TEXT, QA_STATUS_TEXT } = require('../../constants/index');
 const { fromNow, confirm } = require('../../utils/util');
 
@@ -15,8 +16,10 @@ Page({
     showReply: false,
     draft: '',
     canSend: false,
+    replyHint: '请填写回答内容',
     sending: false,
-    keyboardUp: false
+    keyboardUp: false,
+    sheetPad: ''
   },
 
   onLoad(options) {
@@ -57,33 +60,86 @@ Page({
 
   // ============ 回答 ============
   openReply() {
-    this.setData({ showReply: true, draft: '', canSend: false, keyboardUp: false });
+    this.setData({
+      showReply: true,
+      draft: '',
+      canSend: false,
+      replyHint: '请填写回答内容',
+      keyboardUp: false,
+      sheetPad: ''
+    });
   },
 
   closeReply() {
-    this.setData({ showReply: false, keyboardUp: false });
+    wx.hideKeyboard();
+    this.setData({ showReply: false, keyboardUp: false, sheetPad: '' });
   },
 
   onDraftInput(e) {
     const draft = e.detail.value;
-    this.setData({ draft, canSend: draft.trim().length >= 2 });
+    const n = String(draft || '').trim().length;
+    this.setData({
+      draft,
+      canSend: n >= 2,
+      replyHint: n >= 2 ? '' : '回答至少 2 个字'
+    });
   },
 
   onKeyboardHeightChange(e) {
-    this.setData({ keyboardUp: (e.detail && e.detail.height) > 0 });
+    const h = Number(e.detail && e.detail.height) || 0;
+    this.setData({
+      keyboardUp: h > 0,
+      sheetPad: h > 0 ? `padding-bottom:${h + 16}px;` : ''
+    });
   },
 
   async sendReply() {
-    if (!this.data.canSend || this.data.sending) return;
-    this.setData({ sending: true });
-    try {
-      await qa.answer({ questionId: this.data.id, content: this.data.draft.trim() });
-      this.setData({ showReply: false, sending: false, draft: '', canSend: false });
-      wx.showToast({ title: '已回答', icon: 'success' });
-      this.load();
-    } catch (e) {
-      this.setData({ sending: false });
+    if (this.data.sending) return;
+    if (!this.data.canSend) {
+      wx.showToast({ title: this.data.replyHint || '请填写回答内容', icon: 'none' });
+      return;
     }
+
+    wx.hideKeyboard();
+    this.setData({ sending: true, keyboardUp: false, sheetPad: '' });
+    const content = this.data.draft.trim();
+
+    try {
+      await qa.answer({ questionId: this.data.id, content });
+      this.onReplySuccess();
+    } catch (err) {
+      let last = err;
+      if (err && err.code === 403) {
+        try {
+          await refreshLogin();
+          await qa.answer({ questionId: this.data.id, content });
+          this.onReplySuccess();
+          return;
+        } catch (e2) {
+          last = e2;
+        }
+      }
+      this.setData({ sending: false });
+      wx.showToast({
+        title: String((last && last.message) || '发送失败，请稍后重试').slice(0, 20),
+        icon: 'none',
+        duration: 2600
+      });
+    }
+  },
+
+  onReplySuccess() {
+    this.setData({
+      showReply: false,
+      sending: false,
+      draft: '',
+      canSend: false,
+      replyHint: '请填写回答内容',
+      keyboardUp: false,
+      sheetPad: ''
+    });
+    wx.showToast({ title: '已回答', icon: 'success' });
+    this.load();
   },
 
   // ============ 采纳 / 解决状态 ============

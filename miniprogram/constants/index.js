@@ -137,19 +137,18 @@ const MY_CONTEST_STATUS_TEXT = {
   finished: '已完赛'
 };
 
-/** 算法训练 · 难度档位（对应 CF rating 区间，与题库 algo_problems.json 一致） */
+/** 算法训练 · 学生端统一难度（牛客 / LeetCode 映射为三档） */
 const ALGO_BANDS = [
-  { key: 'entry', name: '入门', range: '800-1000' },
-  { key: 'basic', name: '基础', range: '1100-1300' },
-  { key: 'improve', name: '提高', range: '1400-1600' },
-  { key: 'advanced', name: '进阶', range: '1700-1900' },
-  { key: 'challenge', name: '挑战', range: '2000-2200' }
+  { key: 'entry', name: '简单', range: '基础语法与单一知识点' },
+  { key: 'basic', name: '中等', range: '组合知识点与常见模型' },
+  { key: 'improve', name: '困难', range: '综合设计与进阶模型' }
 ];
 
 const ALGO_BAND_TEXT = {
-  entry: '入门',
-  basic: '基础',
-  improve: '提高',
+  entry: '简单',
+  basic: '中等',
+  improve: '困难',
+  // 兼容历史 Codeforces 记录
   advanced: '进阶',
   challenge: '挑战'
 };
@@ -177,8 +176,14 @@ const ALGO_TAG_TEXT = ALGO_TAGS.reduce((m, t) => {
   return m;
 }, {});
 
+/** 算法训练 · 内置题库平台 */
+const ALGO_SOURCES = [
+  { key: 'nowcoder', name: '牛客网', short: '牛客', color: 'green' },
+  { key: 'leetcode', name: 'LeetCode', short: '力扣', color: 'orange' }
+];
+
 /** 算法训练 · 手动补记平台建议 */
-const ALGO_PLATFORMS = ['洛谷', '牛客', '力扣', 'Codeforces', 'AtCoder', '其他'];
+const ALGO_PLATFORMS = ['牛客网', 'LeetCode', '洛谷', '其他'];
 
 /** 学习问答 · 分类（与后端 handlers/qa.js CATEGORIES 一致） */
 const QA_CATEGORIES = [
@@ -243,6 +248,7 @@ module.exports = {
   ALGO_BAND_TEXT,
   ALGO_TAGS,
   ALGO_TAG_TEXT,
+  ALGO_SOURCES,
   ALGO_PLATFORMS,
   QA_CATEGORIES,
   QA_CATEGORY_TEXT,

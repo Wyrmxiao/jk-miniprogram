@@ -3,11 +3,11 @@
 import os
 from PIL import Image, ImageDraw
 
-BASE = r"E:\移通工作\26-27上\微信小程序-三纲\demo\jk\miniprogram\assets\icons"
+BASE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "miniprogram", "assets", "icons")
 S = 4           # 超采样倍数
 SIZE = 81
-C_NORMAL = (157, 152, 142, 255)   # 莫兰迪暖灰（未选中）
-C_ACTIVE = (107, 140, 163, 255)   # 莫兰迪雾蓝（选中）
+C_NORMAL = (142, 142, 147, 255)   # iOS 系统灰（未选中）
+C_ACTIVE = (0, 122, 255, 255)     # iOS 系统蓝（选中）
 
 os.makedirs(BASE, exist_ok=True)
 

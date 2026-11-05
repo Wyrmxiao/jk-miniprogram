@@ -3,7 +3,7 @@
 
 /* 状态卡（ tinted 横幅 ） */
 .status-card { text-align: center; padding: var(--space-xl) var(--space-lg); }
-.status-card__title { font-size: var(--font-headline); font-weight: 600; color: var(--color-primary); }
+.status-card__title { font-size: var(--font-headline); font-weight: 560; color: var(--color-primary); }
 .status-card--ok .status-card__title { color: var(--color-success); }
 .status-card--no .status-card__title { color: var(--color-danger); }
 .status-card__desc { margin-top: var(--space-sm); font-size: var(--font-caption); color: var(--text-secondary); line-height: 1.6; }
@@ -27,14 +27,14 @@
 .pending-item:last-child { border-bottom: none; }
 .pending-item__name { font-size: var(--font-body); color: var(--text-primary); font-weight: 500; }
 .pending-item__meta { margin-top: 6rpx; font-size: var(--font-caption); color: var(--text-secondary); }
-.pending-item__actions { flex-direction: row; margin-top: var(--space-md); }
+.pending-item__actions { display: flex; flex-direction: row; margin-top: var(--space-md); }
 
-.mini-btn {
+.mini-btn { display: inline-flex; align-items: center; justify-content: center;
   padding: 12rpx 40rpx;
   border-radius: var(--radius-pill);
   font-size: var(--font-caption);
   font-weight: 500;
   margin-right: var(--space-sm);
-}
+ min-height: 80rpx;}
 .mini-btn--ok { background: var(--color-primary); color: #fff; }
 .mini-btn--no { background: var(--bg-block); color: var(--text-secondary); }

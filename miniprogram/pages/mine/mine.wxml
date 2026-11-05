@@ -1,4 +1,11 @@
 <view class="page">
+  <!-- 方向 A 光斑背景 -->
+  <view class="blobs">
+    <view class="blob blob--1"></view>
+    <view class="blob blob--2"></view>
+    <view class="blob blob--3"></view>
+  </view>
+  <view class="hero"><view class="hero__title">我的</view></view>
   <!-- 个人信息卡 -->
   <view class="profile">
     <view class="profile__avatar">{{profile && profile.realName ? profile.realName[0] : (profile ? '同' : '客')}}</view>
@@ -10,7 +17,7 @@
       </view>
       <view wx:if="{{profile.studentId}}" class="profile__id">学号 {{profile.studentId}}</view>
     </view>
-    <view wx:else class="profile__info" bindtap="goLogin">
+    <view wx:else class="profile__info pressable" bindtap="goLogin" hover-class="pressing">
       <view class="profile__name">未登录</view>
       <view class="profile__meta">点击使用微信登录</view>
     </view>
@@ -19,10 +26,8 @@
   <!-- 资料完善引导（学生认证 / 教师完善资料） -->
   <view wx:if="{{profile && !isVerified}}" class="group">
     <view class="cell pressable" hover-class="pressing" bindtap="goRealname">
-      <view class="cell__icon cell__icon--{{isTeacher ? 'blue' : 'green'}}">{{isTeacher ? '✏️' : '🪪'}}</view>
       <view class="cell__body">
         <view class="cell__title">{{isTeacher ? '完善个人资料' : '学号实名认证'}}</view>
-        <view class="cell__desc">{{isTeacher ? '填写姓名与联系方式，便于学生联系' : '认证后可使用学习记录与任务'}}</view>
       </view>
       <text class="cell__chevron">›</text>
     </view>
@@ -32,10 +37,9 @@
   <view wx:if="{{isLogin}}" class="group">
     <view class="group__title">我关注的赛事</view>
     <view wx:if="{{myContests.length === 0}}" class="cell pressable" hover-class="pressing" bindtap="goContest">
-      <view class="cell__icon cell__icon--orange">🏆</view>
       <view class="cell__body">
         <view class="cell__title">还没有关注赛事</view>
-        <view class="cell__desc">在赛事库点「关注」，报名时间到了不错过</view>
+        <view class="cell__desc">去赛事库关注赛事</view>
       </view>
       <text class="cell__chevron">›</text>
     </view>
@@ -59,42 +63,32 @@
   <view wx:if="{{isTeacher}}" class="group">
     <view class="group__title">教师工作台</view>
     <view class="cell pressable" hover-class="pressing" bindtap="goPublishAnnounce">
-      <view class="cell__icon cell__icon--blue">📣</view>
       <view class="cell__body">
         <view class="cell__title">发布公告</view>
-        <view class="cell__desc">通知或赛事公告，学生端立即可见</view>
       </view>
       <text class="cell__chevron">›</text>
     </view>
     <view class="cell pressable" hover-class="pressing" bindtap="goPublishTask">
-      <view class="cell__icon cell__icon--orange">📝</view>
       <view class="cell__body">
         <view class="cell__title">布置任务</view>
-        <view class="cell__desc">给学生下发学习任务并批阅</view>
       </view>
       <text class="cell__chevron">›</text>
     </view>
     <view class="cell pressable" hover-class="pressing" bindtap="goManageContest">
-      <view class="cell__icon cell__icon--purple">🏆</view>
       <view class="cell__body">
         <view class="cell__title">赛事维护</view>
-        <view class="cell__desc">编辑报名时间、开赛时间与赛事信息</view>
       </view>
       <text class="cell__chevron">›</text>
     </view>
     <view class="cell pressable" hover-class="pressing" bindtap="goRealname">
-      <view class="cell__icon cell__icon--green">✅</view>
       <view class="cell__body">
         <view class="cell__title">认证审核</view>
-        <view class="cell__desc">审核学生实名申请</view>
       </view>
       <text class="cell__chevron">›</text>
     </view>
     <view class="cell pressable" hover-class="pressing" bindtap="goMyAnnouncements">
-      <view class="cell__icon cell__icon--red">📢</view>
       <view class="cell__body">
         <view class="cell__title">我的公告</view>
-        <view class="cell__desc">查看或删除已发布</view>
       </view>
       <text class="cell__chevron">›</text>
     </view>
@@ -110,7 +104,6 @@
       </view>
     </view>
     <view class="cell pressable" hover-class="pressing" bindtap="rerunInit">
-      <view class="cell__icon cell__icon--blue">⚙️</view>
       <view class="cell__body">
         <view class="cell__title">系统初始化</view>
         <view class="cell__desc">建配置与指定管理员</view>
@@ -118,7 +111,6 @@
       <text class="cell__chevron">›</text>
     </view>
     <view class="cell pressable" hover-class="pressing" bindtap="forceReseed">
-      <view class="cell__icon cell__icon--orange">📥</view>
       <view class="cell__body">
         <view class="cell__title">重导竞赛库</view>
         <view class="cell__desc">按 83 号文覆盖导入</view>
@@ -126,7 +118,6 @@
       <text class="cell__chevron">›</text>
     </view>
     <view class="cell pressable" hover-class="pressing" bindtap="goUsers">
-      <view class="cell__icon cell__icon--purple">👥</view>
       <view class="cell__body">
         <view class="cell__title">用户与权限</view>
         <view class="cell__desc">查看全部用户，分配学生 / 教师 / 管理员</view>
@@ -138,7 +129,6 @@
   <!-- 通用 -->
   <view class="group">
     <view class="cell pressable" hover-class="pressing" bindtap="goAgreement">
-      <view class="cell__icon cell__icon--gray">📄</view>
       <view class="cell__body">
         <view class="cell__title">用户隐私保护指引</view>
       </view>

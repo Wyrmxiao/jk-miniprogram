@@ -1,9 +1,10 @@
 <view class="page">
-  <!-- 角色条 -->
-  <view class="rolebar rolebar--student">
-    <view class="rolebar__label">学生端 · 项目档案</view>
-    <view class="rolebar__desc">把你的学习与竞赛经历沉淀为项目，持续记录进展</view>
+  <view class="blobs">
+    <view class="blob blob--1"></view>
+    <view class="blob blob--2"></view>
+    <view class="blob blob--3"></view>
   </view>
+  <view class="hero"><view class="hero__title">{{id ? '编辑项目' : '新建项目'}}</view></view>
 
   <view class="block">
     <view class="block__title">基本信息</view>
@@ -18,7 +19,7 @@
     />
     <textarea
       class="field field--area"
-      placeholder="一句话简介：这个项目做了什么"
+      placeholder="项目简介"
       maxlength="120"
       value="{{form.summary}}"
       data-field="summary"
@@ -54,7 +55,7 @@
     <view class="block__title">成果与团队</view>
     <textarea
       class="field field--area"
-      placeholder="项目成果（可选）：完成了什么、拿了什么奖、学到了什么"
+      placeholder="项目成果（选填）"
       maxlength="2000"
       value="{{form.outcome}}"
       data-field="outcome"
@@ -75,7 +76,7 @@
     <view class="block__label">关联竞赛（可选）</view>
     <picker mode="selector" range="{{contestNames}}" value="{{contestIndex}}" bindchange="onContestPick">
       <view class="picker {{form.competitionName ? 'picker--on' : ''}}">
-        {{form.competitionName || '选择要参加/参加过的竞赛'}}
+        {{form.competitionName || '选择关联竞赛'}}
       </view>
     </picker>
   </view>

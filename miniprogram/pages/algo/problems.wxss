@@ -45,13 +45,14 @@
   color: var(--text-tertiary);
 }
 
-.prob__btn {
+.prob__btn { display: inline-flex; align-items: center; justify-content: center;
   padding: 8rpx 26rpx;
   border-radius: var(--radius-pill);
   background: var(--color-student);
   color: #fff;
   font-size: var(--font-caption);
   flex-shrink: 0;
+  min-height: 80rpx;
 }
 .prob__btn--doing {
   opacity: 0.6;

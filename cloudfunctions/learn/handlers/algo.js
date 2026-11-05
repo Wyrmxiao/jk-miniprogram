@@ -2,9 +2,9 @@
  * 算法训练域 · 业务处理器
  *
  * 题库（静态，随云函数部署）：
- *   data/algo_problems.json  —— 820 题元数据，构建脚本 tools/build_algo_problems.js
- *   data/algo_content.json   —— 按题 id 索引的内容包（完整题面 / 解题过程 / 涉及知识点），
- *                              tools/build_algo_content.js；题面来自 LC GraphQL 与 CF 题面页
+ *   data/algo_problems.json  —— 原始题库快照
+ *   data/algo_content.json   —— 原始中文题面与题解内容包
+ *   data/algo_curated.js     —— 学生端精选白名单与牛客题目；只上线有中文题面和逐题代码的题
  * 数据库（ensure 自愈建表）：
  *   algo_records          —— 打卡明细（题库标记 + 手动补记共用一张表）
  *   algo_stats            —— 聚合统计（每人一行，写入时增量更新）
@@ -26,10 +26,33 @@ const db = () => cloud.database();
 const now = () => db().serverDate();
 const _ = () => db().command;
 
-/** 内置题库快照 */
-const BANK = require('../data/algo_problems.json');
+/** 学生端只展示牛客 + LeetCode 中文精选题。 */
+const RAW_BANK = require('../data/algo_problems.json');
+const CURATED = require('../data/algo_curated');
+const LC_ALLOW = new Set(CURATED.leetcodeIds);
+const ACTIVE_PROBLEMS = RAW_BANK.problems
+  .filter((p) => p.source === 'leetcode' && LC_ALLOW.has(p.id))
+  .concat(CURATED.problems);
+const ACTIVE_TAG_KEYS = new Set(ACTIVE_PROBLEMS.flatMap((p) => p.tags || []));
+const BANK = {
+  version: '2.0.0',
+  builtAt: RAW_BANK.builtAt,
+  sources: ['nowcoder', 'leetcode'],
+  bands: [
+    { key: 'entry', name: '简单' },
+    { key: 'basic', name: '中等' },
+    { key: 'improve', name: '困难' }
+  ],
+  tags: RAW_BANK.tags.filter((t) => ACTIVE_TAG_KEYS.has(t.key)),
+  total: ACTIVE_PROBLEMS.length,
+  problems: ACTIVE_PROBLEMS
+};
 const BANK_INDEX = new Map(BANK.problems.map((p) => [p.id, p]));
 const BAND_KEYS = BANK.bands.map((b) => b.key);
+
+function sourceName(source) {
+  return source === 'nowcoder' ? '牛客网' : source === 'leetcode' ? 'LeetCode' : source;
+}
 
 /** 内容包：题面 + 解题过程（知识点单独一份，避免 820 题重复存讲解） */
 let CONTENT = null;
@@ -44,7 +67,14 @@ function contentOf(id) {
       CONTENT = { items: {} };
     }
   }
-  return (CONTENT.items || {})[id] || null;
+  const base = (CONTENT.items || {})[id] || null;
+  const override = (CURATED.content || {})[id] || null;
+  if (!base) return override;
+  if (!override) return base;
+  return Object.assign({}, base, override, {
+    meta: Object.assign({}, base.meta || {}, override.meta || {}),
+    solution: override.solution || base.solution
+  });
 }
 
 function knowledgeOf(refs) {
@@ -214,17 +244,20 @@ async function myProblemRecords(openid, ids = null) {
  * 题库（静态数据 + 完成态合并）
  * ============================================================ */
 
-/** 模块页：14 知识点 × 5 档位矩阵 + 我的进度 */
+/** 题库首页：平台、难度、知识点三维统计 + 下一道未完成题 */
 async function algoProblemModules(params, ctx) {
   ctx.requireLogin();
+  const { source = '' } = params || {};
+  if (source && !BANK.sources.includes(source)) throw badRequest('平台无效');
   const doneMap = await myProblemRecords(ctx.openid);
+  const sourceProblems = source ? BANK.problems.filter((p) => p.source === source) : BANK.problems;
 
   const modules = BANK.tags.map((t) => {
     const bands = {};
     let total = 0;
     let done = 0;
     for (const b of BANK.bands) {
-      const list = CELLS.get(`${t.key}|${b.key}`) || [];
+      const list = (CELLS.get(`${t.key}|${b.key}`) || []).filter((p) => !source || p.source === source);
       const d = list.reduce((n, p) => n + (doneMap[p.id] ? 1 : 0), 0);
       bands[b.key] = { total: list.length, done: d };
       total += list.length;
@@ -233,19 +266,69 @@ async function algoProblemModules(params, ctx) {
     return { key: t.key, name: t.name, bands, total, done };
   });
 
-  return { modules, bands: BANK.bands, builtAt: BANK.builtAt };
+  const platforms = BANK.sources.map((key) => {
+    const list = BANK.problems.filter((p) => p.source === key);
+    return {
+      key,
+      name: sourceName(key),
+      total: list.length,
+      done: list.reduce((n, p) => n + (doneMap[p.id] ? 1 : 0), 0)
+    };
+  });
+  const difficulties = BANK.bands.map((b) => {
+    const list = sourceProblems.filter((p) => p.band === b.key);
+    return {
+      key: b.key,
+      name: b.name,
+      total: list.length,
+      done: list.reduce((n, p) => n + (doneMap[p.id] ? 1 : 0), 0)
+    };
+  });
+  const next = sourceProblems.find((p) => !doneMap[p.id]) || null;
+  return {
+    modules,
+    platforms,
+    difficulties,
+    total: sourceProblems.length,
+    done: sourceProblems.reduce((n, p) => n + (doneMap[p.id] ? 1 : 0), 0),
+    next: next ? {
+      id: next.id,
+      pid: next.pidDisplay || next.pid,
+      title: next.titleCn || next.title,
+      source: next.source,
+      sourceName: sourceName(next.source),
+      band: next.band,
+      bandName: (BANK.bands.find((b) => b.key === next.band) || {}).name || next.band
+    } : null,
+    bands: BANK.bands,
+    builtAt: BANK.builtAt
+  };
 }
 
-/** 题单页：某知识点某档位的题目列表（带我的完成态） */
+/** 题单页：按平台 / 知识点 / 难度 / 关键词 / 完成状态组合筛选。 */
 async function algoProblemList(params, ctx) {
   ctx.requireLogin();
-  const { tag = '', band = '', page = 1, size = 50 } = params || {};
-  const cell = CELLS.get(`${tag}|${band}`);
-  if (!cell) throw badRequest('知识点或档位无效');
+  const {
+    tag = '', band = '', source = '', keyword = '', status = '', page = 1, size = 50
+  } = params || {};
+  if (tag && !BANK.tags.some((t) => t.key === tag)) throw badRequest('知识点无效');
+  if (band && !BAND_KEYS.includes(band)) throw badRequest('难度无效');
+  if (source && !BANK.sources.includes(source)) throw badRequest('平台无效');
+
+  const kw = String(keyword || '').trim().toLowerCase();
+  let filtered = BANK.problems.filter((p) =>
+    (!tag || (p.tags || []).includes(tag)) &&
+    (!band || p.band === band) &&
+    (!source || p.source === source) &&
+    (!kw || [p.pidDisplay || p.pid, p.title, p.titleCn]
+      .some((v) => String(v || '').toLowerCase().includes(kw)))
+  );
+  const allDoneMap = await myProblemRecords(ctx.openid, filtered.map((p) => p.id));
+  if (status === 'done') filtered = filtered.filter((p) => allDoneMap[p.id]);
+  if (status === 'todo') filtered = filtered.filter((p) => !allDoneMap[p.id]);
 
   const start = (page - 1) * size;
-  const pageItems = cell.slice(start, start + size);
-  const doneMap = await myProblemRecords(ctx.openid, pageItems.map((p) => p.id));
+  const pageItems = filtered.slice(start, start + size);
 
   const list = pageItems.map((p) => ({
     id: p.id,
@@ -253,19 +336,25 @@ async function algoProblemList(params, ctx) {
     title: p.title,
     titleCn: p.titleCn || '',
     source: p.source,
+    sourceName: sourceName(p.source),
     rating: p.rating || 0,
+    band: p.band,
+    bandName: (BANK.bands.find((b) => b.key === p.band) || {}).name || p.band,
+    tags: p.tags || [],
+    tagNames: (p.tags || []).map((k) => (BANK.tags.find((t) => t.key === k) || {}).name || k),
     url: p.url,
     solved: p.solved || 0,
-    done: !!doneMap[p.id]
+    done: !!allDoneMap[p.id]
   }));
 
   return {
-    total: cell.length,
+    total: filtered.length,
     page,
     size,
     list,
-    tagName: (BANK.tags.find((t) => t.key === tag) || {}).name || tag,
-    bandName: (BANK.bands.find((b) => b.key === band) || {}).name || band
+    tagName: tag ? ((BANK.tags.find((t) => t.key === tag) || {}).name || tag) : '全部知识点',
+    bandName: band ? ((BANK.bands.find((b) => b.key === band) || {}).name || band) : '全部难度',
+    sourceName: source ? sourceName(source) : '全部平台'
   };
 }
 
@@ -292,14 +381,16 @@ async function algoProblemDetail(params, ctx) {
       title: p.title,
       titleCn: p.titleCn || '',
       source: p.source,
+      sourceName: sourceName(p.source),
       rating: p.rating || 0,
       band: p.band,
+      bandName: (BANK.bands.find((b) => b.key === p.band) || {}).name || p.band,
       tags: p.tags || [],
       tagNames: (p.tags || []).map((k) => (BANK.tags.find((t) => t.key === k) || {}).name || k),
       url: p.url,
       solved: p.solved || 0,
       // 内容可用性：前端据此决定是否显示「查看题面与解析」入口
-      hasContent: !!(c && c.statementHtml),
+      hasContent: !!(c && c.statementHtml && c.solution && c.solution.code),
       solutionType: c && c.solution ? c.solution.type : ''
     },
     myRecords: mineRes.data,
@@ -349,6 +440,7 @@ async function algoProblemContent(params, ctx) {
     title: c.title,
     titleEn: c.titleEn,
     source: c.source,
+    sourceName: sourceName(c.source || p.source),
     pid: c.pid,
     rating: c.rating,
     band: c.band
@@ -373,7 +465,7 @@ async function algoMarkProblem(params, ctx) {
       problemId,
       title: p.titleCn || p.title,
       titleEn: p.title,
-      platform: p.source === 'codeforces' ? 'Codeforces' : '力扣',
+      platform: sourceName(p.source),
       pid: p.pidDisplay || p.pid,
       difficulty: p.band,
       rating: p.rating || 0,

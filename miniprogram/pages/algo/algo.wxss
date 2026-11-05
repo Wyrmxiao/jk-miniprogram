@@ -44,7 +44,7 @@
   height: 100%;
   border-radius: var(--radius-pill);
   background: var(--color-primary);
-  transition: width 0.4s var(--ease-pop);
+  transition: width 0.4s var(--ease-press);
 }
 
 /* ===== 统计三卡 ===== */
@@ -64,7 +64,7 @@
 .algo__card-num {
   font-size: var(--font-large);
   font-weight: 500;
-  color: var(--color-primary);
+  color: var(--text-primary);
 }
 .algo__card-label {
   margin-top: 4rpx;
@@ -87,7 +87,7 @@
 }
 .heat--0 { background: var(--bg-block); }
 .heat--1 { background: var(--color-primary-light); }
-.heat--2 { background: #9db8c9; }
+.heat--2 { background: #99c7ff; }
 .heat--3 { background: var(--color-primary); }
 .heat--4 { background: var(--color-primary-dark); }
 .heat__legend {
@@ -127,7 +127,7 @@
   height: 100%;
   border-radius: var(--radius-pill);
   background: var(--color-student);
-  transition: width 0.4s var(--ease-pop);
+  transition: width 0.4s var(--ease-press);
 }
 .tagrow__num {
   width: 56rpx;

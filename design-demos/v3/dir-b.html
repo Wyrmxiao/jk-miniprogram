@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>方向 B · 圆体数据流 — 计科创新中心</title>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: #050506; font-family: "SF Pro Rounded", ui-rounded, -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; -webkit-font-smoothing: antialiased; }
+  @keyframes draw { from { stroke-dashoffset: 1000; } }
+  @keyframes popIn { from { opacity: 0; transform: translateY(10px) scale(.97); } to { opacity: 1; transform: none; } }
+  @keyframes glow { 0%,100% { opacity: .5; } 50% { opacity: .9; } }
+  .press { transition: transform .3s cubic-bezier(.3,1.4,.5,1); }
+  .press:active { transform: scale(.955); }
+  .sc::-webkit-scrollbar { width: 0; height: 0; }
+  .sc::-webkit-scrollbar { display: none; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="react">
+const iosFrameStyles = {
+  wrapper: { display: 'inline-block', padding: 12, background: '#000', borderRadius: 62, boxShadow: '0 0 0 1.5px rgba(255,255,255,.10), 0 40px 100px rgba(0,0,0,.7)', position: 'relative' },
+  screen: { position: 'relative', borderRadius: 50, overflow: 'hidden' },
+  statusBar: { position: 'absolute', top: 0, left: 0, right: 0, height: 54, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 32px', fontSize: 16, fontWeight: 600, zIndex: 20, pointerEvents: 'none' },
+  dynamicIsland: { position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)', width: 124, height: 36, background: '#000', borderRadius: 999, zIndex: 30 },
+  statusIcons: { display: 'flex', alignItems: 'center', gap: 6 },
+  signalIcon: { display: 'flex', alignItems: 'flex-end', gap: 2, height: 12 },
+  signalBar: { width: 3, background: 'currentColor', borderRadius: 1 },
+  batteryIcon: { width: 26, height: 12, border: '1.5px solid currentColor', borderRadius: 3, padding: 1, position: 'relative', opacity: .8 },
+  batteryCap: { position: 'absolute', top: 3, right: -3, width: 2, height: 6, background: 'currentColor', borderRadius: '0 1px 1px 0' },
+  content: { position: 'absolute', top: 54, left: 0, right: 0, bottom: 34, overflow: 'auto' },
+  homeIndicator: { position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)', width: 140, height: 5, background: 'rgba(255,255,255,.55)', borderRadius: 999, zIndex: 10 },
+};
+function IosFrame({ children, width = 393, height = 852, time = '9:41', battery = 82 }) {
+  return (
+    <div style={iosFrameStyles.wrapper}>
+      <div style={{ ...iosFrameStyles.screen, width, height, background: '#08080B' }}>
+        <div style={{ ...iosFrameStyles.statusBar, color: '#fff' }}>
+          <span>{time}</span>
+          <div style={iosFrameStyles.statusIcons}>
+            <div style={iosFrameStyles.signalIcon}>{[4, 6, 9, 11].map((h, i) => <div key={i} style={{ ...iosFrameStyles.signalBar, height: h }} />)}</div>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none" style={{ color: '#fff' }}>
+              <path d="M8 11.5a1 1 0 100-2 1 1 0 000 2z" fill="currentColor" />
+              <path d="M3 7.5a7 7 0 0110 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+              <path d="M1 4.5a11 11 0 0114 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity=".7" />
+            </svg>
+            <div style={iosFrameStyles.batteryIcon}><div style={{ width: battery + '%', height: '100%', background: 'currentColor', borderRadius: 1 }} /><div style={iosFrameStyles.batteryCap} /></div>
+          </div>
+        </div>
+        <div style={iosFrameStyles.dynamicIsland} />
+        <div style={iosFrameStyles.content} className="sc">{children}</div>
+        <div style={iosFrameStyles.homeIndicator} />
+      </div>
+    </div>
+  );
+}
+
+const B = {
+  bg: '#08080B',
+  card: '#14141A',
+  card2: '#1C1C24',
+  lime: '#C8FF3D',
+  limeGrad: 'linear-gradient(120deg,#C8FF3D 0%,#6BFFA8 100%)',
+  violet: '#9D7CFF',
+  white: '#F4F4F6',
+  dim: '#8A8A96',
+  dimmer: '#5A5A66',
+  hair: 'rgba(255,255,255,.07)',
+};
+
+const Num = ({ children, size = 40, color = B.white, dim }) => (
+  <div style={{ fontSize: size, fontWeight: 800, letterSpacing: '-0.055em', color: dim ? B.dimmer : color, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{children}</div>
+);
+
+function Ring({ pct = 72, size = 132, stroke = 11, grad = ['#C8FF3D', '#6BFFA8'], track = 'rgba(255,255,255,.07)', children }) {
+  const r = (size - stroke) / 2, c = 2 * Math.PI * r;
+  const id = 'rg' + size + Math.round(pct);
+  return (
+    <div style={{ position: 'relative', width: size, height: size }}>
+      <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
+        <circle cx={size / 2} cy={size / 2} r={r} stroke={track} strokeWidth={stroke} fill="none" />
+        <circle cx={size / 2} cy={size / 2} r={r} stroke={`url(#${id})`} strokeWidth={stroke} fill="none" strokeLinecap="round"
+          strokeDasharray={c} strokeDashoffset={c * (1 - pct / 100)}
+          style={{ animation: `draw 1.5s cubic-bezier(.22,1,.36,1) both`, transition: 'stroke-dashoffset .6s' }} />
+        <defs><linearGradient id={id} x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor={grad[0]} /><stop offset="1" stopColor={grad[1]} /></linearGradient></defs>
+      </svg>
+      <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>{children}</div>
+    </div>
+  );
+}
+
+const Card = ({ children, style, onClick, pad = 18, r = 26, variant = 'dark' }) => (
+  <div onClick={onClick} className="press" style={{
+    background: variant === 'dark' ? B.card : B.card2,
+    borderRadius: r, padding: pad,
+    border: '1px solid ' + B.hair,
+    cursor: onClick ? 'pointer' : 'default',
+    boxShadow: variant === 'dark' ? '0 2px 0 rgba(255,255,255,.03) inset, 0 18px 40px rgba(0,0,0,.35)' : 'none',
+    ...style,
+  }}>{children}</div>
+);
+
+const TabBar = ({ active, onChange }) => {
+  const items = [['home', '今天'], ['learn', '训练'], ['contest', '赛事'], ['project', '项目'], ['mine', '我']];
+  return (
+    <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: '34px 18px 26px', background: 'linear-gradient(180deg, rgba(8,8,11,0) 0%, rgba(8,8,11,.86) 34%, #08080B 58%)', zIndex: 40 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
+        {items.map(([k, label]) => {
+          const on = active === k;
+          return (
+            <div key={k} onClick={() => onChange(k)} className="press" style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, padding: '6px 14px' }}>
+              <div style={{
+                width: on ? 34 : 26, height: 5, borderRadius: 999,
+                background: on ? B.limeGrad : 'rgba(255,255,255,.16)',
+                transition: 'all .38s cubic-bezier(.3,1.4,.5,1)',
+              }} />
+              <span style={{ fontSize: 11, fontWeight: on ? 750 : 550, color: on ? B.lime : B.dimmer, letterSpacing: '0.02em' }}>{label}</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+const Head = ({ kicker, title, right }) => (
+  <div style={{ padding: '8px 22px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+    <div>
+      {kicker && <div style={{ fontSize: 12, fontWeight: 700, color: B.dimmer, letterSpacing: '0.02em', marginBottom: 6 }}>{kicker}</div>}
+      <div style={{ fontSize: 30, fontWeight: 800, letterSpacing: '-0.045em', color: B.white, lineHeight: 1.1 }}>{title}</div>
+    </div>
+    {right}
+  </div>
+);
+
+/* ===== 屏 1 · 今天（数据心脏） ===== */
+function ScreenToday({ go }) {
+  const bars = [42, 68, 35, 88, 72, 54, 26];
+  const days = ['一', '二', '三', '四', '五', '六', '日'];
+  return (
+    <div style={{ paddingBottom: 110 }}>
+      <Head kicker="周三 11 · 05" title="今天" right={
+        <div className="press" style={{ width: 40, height: 40, borderRadius: 14, background: B.card, border: '1px solid ' + B.hair, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+          <div style={{ width: 15, height: 2, background: B.dim, borderRadius: 2, boxShadow: '0 5px 0 ' + B.dim + ', 0 -5px 0 ' + B.dim }} />
+        </div>
+      } />
+
+      <div style={{ padding: '20px 18px 0' }}>
+        <Card pad={22} r={30} style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+          <Ring pct={72} size={126} stroke={11}>
+            <Num size={30}>3/4</Num>
+            <div style={{ fontSize: 10.5, color: B.dim, marginTop: 4, letterSpacing: '0.02em' }}>今日题量</div>
+          </Ring>
+          <div style={{ flex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+              <Num size={44}>7</Num>
+              <span style={{ fontSize: 13, color: B.dim, fontWeight: 600 }}>天连续</span>
+            </div>
+            <div style={{ marginTop: 14, display: 'flex', alignItems: 'flex-end', gap: 5, height: 40 }}>
+              {bars.map((h, i) => (
+                <div key={i} style={{ flex: 1, height: h + '%', borderRadius: 4, background: i === 3 ? B.limeGrad : 'rgba(255,255,255,.10)', transition: 'height .5s' }} />
+              ))}
+            </div>
+            <div style={{ marginTop: 6, display: 'flex', gap: 5 }}>
+              {days.map((d, i) => <span key={i} style={{ flex: 1, textAlign: 'center', fontSize: 9, color: i === 3 ? B.lime : B.dimmer }}>{d}</span>)}
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      <div style={{ padding: '24px 22px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+        <span style={{ fontSize: 16, fontWeight: 750, color: B.white, letterSpacing: '-0.02em' }}>今天的流程</span>
+        <span style={{ fontSize: 12, color: B.dimmer }}>3 件事</span>
+      </div>
+
+      <div style={{ padding: '0 18px', position: 'relative' }}>
+        <div style={{ position: 'absolute', left: 33, top: 14, bottom: 24, width: 1.5, background: 'linear-gradient(180deg,' + B.lime + ',rgba(255,255,255,.08))', opacity: .5 }} />
+        {[
+          { t: '08:40', n: '每日一题 · 两数之和', s: '已完成', done: true, go: 'problem' },
+          { t: '14:00', n: '提交「二分查找」专题', s: '剩 3 天', done: false },
+          { t: '19:30', n: '算法训练营直播', s: '待开始', done: false },
+        ].map((it, i) => (
+          <div key={i} onClick={() => it.go && go(it.go)} style={{ display: 'flex', gap: 14, marginBottom: 14, cursor: it.go ? 'pointer' : 'default' }} className="press">
+            <div style={{ width: 14, height: 14, borderRadius: 999, marginTop: 17, flexShrink: 0, marginLeft: 8,
+              background: it.done ? B.lime : B.bg, border: '2.5px solid ' + (it.done ? B.lime : 'rgba(255,255,255,.2)'),
+              boxShadow: it.done ? '0 0 14px rgba(200,255,61,.55)' : 'none' }} />
+            <Card pad={15} r={22} style={{ flex: 1 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <div style={{ fontSize: 10.5, color: B.dimmer, fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{it.t}</div>
+                  <div style={{ fontSize: 13.5, fontWeight: 650, color: it.done ? B.dim : B.white, marginTop: 4, letterSpacing: '-0.01em', textDecoration: it.done ? 'line-through' : 'none' }}>{it.n}</div>
+                </div>
+                <span style={{ fontSize: 10.5, fontWeight: 700, color: it.done ? B.lime : B.violet, background: it.done ? 'rgba(200,255,61,.10)' : 'rgba(157,124,255,.12)', padding: '4px 9px', borderRadius: 999, flexShrink: 0 }}>{it.s}</span>
+              </div>
+            </Card>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ===== 屏 2 · 训练 ===== */
+function ScreenTrain({ go }) {
+  return (
+    <div style={{ paddingBottom: 110 }}>
+      <Head kicker="累计 820 题" title="训练" right={
+        <div style={{ padding: '6px 12px', borderRadius: 999, background: 'rgba(200,255,61,.10)', border: '1px solid rgba(200,255,61,.25)' }}>
+          <span style={{ fontSize: 11.5, fontWeight: 750, color: B.lime }}>第 4 期</span>
+        </div>
+      } />
+
+      <div style={{ padding: '18px 18px 0' }}>
+        <Card pad={20} r={30}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <div style={{ fontSize: 12, color: B.dim, fontWeight: 600 }}>本周通过</div>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginTop: 6 }}>
+                <Num size={46} color={B.lime}>28</Num>
+                <span style={{ fontSize: 13, color: B.dimmer }}>/ 35 题</span>
+              </div>
+            </div>
+            <Ring pct={80} size={64} stroke={7}><Num size={15}>80%</Num></Ring>
+          </div>
+          <div style={{ marginTop: 16, display: 'flex', gap: 8 }}>
+            {[['简单', 42, B.lime], ['中等', 26, B.violet], ['困难', 8, '#FF7A6B']].map(([l, n, c]) => (
+              <div key={l} style={{ flex: 1, padding: '11px 12px', borderRadius: 16, background: 'rgba(255,255,255,.04)', border: '1px solid ' + B.hair }}>
+                <div style={{ fontSize: 10, color: B.dimmer, fontWeight: 650 }}>{l}</div>
+                <div style={{ fontSize: 19, fontWeight: 800, color: c, letterSpacing: '-0.04em', marginTop: 3 }}>{n}</div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+
+      <div style={{ padding: '24px 22px 12px' }}><span style={{ fontSize: 16, fontWeight: 750, color: B.white, letterSpacing: '-0.02em' }}>继续练</span></div>
+
+      <div style={{ display: 'flex', gap: 12, overflowX: 'auto', padding: '0 18px 4px' }} className="sc">
+        {[
+          { k: '数组 · 哈希表', n: '两数之和', p: 70, c: B.limeGrad },
+          { k: '二分查找', n: '寻找峰值', p: 35, c: 'linear-gradient(120deg,#9D7CFF,#C9B6FF)' },
+          { k: '动态规划', n: '爬楼梯', p: 0, c: 'linear-gradient(120deg,#FF7A6B,#FFB09E)' },
+        ].map((it, i) => (
+          <div key={i} onClick={() => go('problem')} className="press" style={{
+            flex: '0 0 172px', height: 196, borderRadius: 26, padding: 18, cursor: 'pointer',
+            background: B.card, border: '1px solid ' + B.hair, display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+            boxShadow: '0 18px 40px rgba(0,0,0,.4)',
+          }}>
+            <div>
+              <div style={{ fontSize: 10, color: B.dimmer, fontWeight: 700, letterSpacing: '0.02em' }}>{it.k}</div>
+              <div style={{ fontSize: 17, fontWeight: 750, color: B.white, marginTop: 7, letterSpacing: '-0.025em', lineHeight: 1.3 }}>{it.n}</div>
+            </div>
+            <div>
+              <div style={{ height: 6, borderRadius: 999, background: 'rgba(255,255,255,.08)' }}>
+                <div style={{ width: Math.max(it.p, 3) + '%', height: '100%', borderRadius: 999, background: it.c, transition: 'width .6s' }} />
+              </div>
+              <div style={{ marginTop: 9, fontSize: 10.5, color: B.dim }}>{it.p > 0 ? '已答 ' + it.p + '%' : '未开始'}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ padding: '24px 22px 12px' }}><span style={{ fontSize: 16, fontWeight: 750, color: B.white, letterSpacing: '-0.02em' }}>待解决</span></div>
+      <div style={{ padding: '0 18px' }}>
+        {[
+          { q: 'KMP 的 next 数组为什么要右移', w: '李同学', n: 2 },
+          { q: 'DP 状态转移方程怎么推', w: '王同学', n: 5 },
+        ].map((q, i) => (
+          <Card key={i} pad={15} r={20} style={{ marginBottom: 9, display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 34, height: 34, borderRadius: 12, background: 'rgba(157,124,255,.14)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 750, color: B.violet }}>{q.w[0]}</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 13, fontWeight: 620, color: B.white, lineHeight: 1.45 }}>{q.q}</div>
+              <div style={{ fontSize: 10.5, color: B.dimmer, marginTop: 4 }}>{q.w} · {q.n} 条回答</div>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ===== 屏 3 · 赛事 ===== */
+function ScreenRace() {
+  return (
+    <div style={{ paddingBottom: 110 }}>
+      <Head kicker="28 项 · 按截止时间" title="赛事" />
+      <div style={{ display: 'flex', gap: 8, padding: '16px 18px 0', overflowX: 'auto' }} className="sc">
+        {['全部', 'A 类', 'B 类', '省级', '‹关注›'].map((c, i) => (
+          <div key={c} className="press" style={{
+            flexShrink: 0, padding: '8px 15px', borderRadius: 999, fontSize: 12, fontWeight: 650, cursor: 'pointer',
+            background: i === 0 ? B.limeGrad : 'transparent',
+            color: i === 0 ? '#0A0A0A' : B.dim,
+            border: '1px solid ' + (i === 0 ? 'transparent' : B.hair),
+          }}>{c}</div>
+        ))}
+      </div>
+
+      <div style={{ padding: '18px 18px 0' }}>
+        <div style={{ borderRadius: 32, padding: 22, background: 'linear-gradient(145deg,#C8FF3D 0%,#9BE86B 42%,#5BE79A 100%)', position: 'relative', overflow: 'hidden', boxShadow: '0 24px 60px rgba(200,255,61,.18)' }}>
+          <div style={{ position: 'absolute', right: -30, top: -30, width: 150, height: 150, borderRadius: '50%', background: 'rgba(255,255,255,.28)', filter: 'blur(2px)' }} />
+          <div style={{ position: 'relative' }}>
+            <div style={{ fontSize: 11, fontWeight: 800, color: 'rgba(0,0,0,.5)', letterSpacing: '0.02em' }}>最紧急 · 12 天后截止</div>
+            <div style={{ fontSize: 22, fontWeight: 820, color: '#0A0A0A', marginTop: 8, letterSpacing: '-0.035em', lineHeight: 1.25 }}>蓝桥杯<br />软件赛报名</div>
+            <div style={{ display: 'flex', gap: 16, marginTop: 16 }}>
+              {[['12', '天'], ['06', '时'], ['40', '分']].map(([n, l]) => (
+                <div key={l} style={{ display: 'flex', alignItems: 'baseline', gap: 2 }}>
+                  <span style={{ fontSize: 22, fontWeight: 820, color: '#0A0A0A', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{n}</span>
+                  <span style={{ fontSize: 10.5, color: 'rgba(0,0,0,.55)', fontWeight: 700 }}>{l}</span>
+                </div>
+              ))}
+            </div>
+            <div style={{ marginTop: 16, display: 'inline-flex', padding: '9px 20px', borderRadius: 999, background: '#0A0A0A' }}>
+              <span style={{ fontSize: 12.5, fontWeight: 700, color: B.lime }}>立即报名</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ padding: '20px 18px 0' }}>
+        {[
+          { n: '中国大学生计算机设计大赛', l: 'A', d: '3 月 15 日截止', k: 92 },
+          { n: '全国大学生数学建模竞赛', l: 'A', d: '9 月开赛', k: 24 },
+          { n: '蓝桥杯个人赛（省赛）', l: 'B', d: '12 月 20 日截止', k: 78 },
+        ].map((c, i) => (
+          <Card key={i} pad={16} r={22} style={{ marginBottom: 10 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 13.5, fontWeight: 650, color: B.white, letterSpacing: '-0.012em', lineHeight: 1.4 }}>{c.n}</div>
+                <div style={{ marginTop: 7, display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <span style={{ fontSize: 10, fontWeight: 800, color: c.l === 'A' ? '#FF8E7A' : B.violet }}>{c.l} 类</span>
+                  <span style={{ fontSize: 10.5, color: B.dimmer }}>{c.d}</span>
+                </div>
+              </div>
+              <Ring pct={c.k} size={44} stroke={5} grad={c.k > 70 ? ['#FF7A6B', '#FFB09E'] : ['#9D7CFF', '#C9B6FF']}>
+                <span style={{ fontSize: 9, fontWeight: 800, color: B.dim }}>{c.k}</span>
+              </Ring>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ===== 屏 4 · 题目 ===== */
+function ScreenProblem({ back }) {
+  return (
+    <div style={{ paddingBottom: 130, minHeight: '100%', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ padding: '6px 22px 0' }}>
+        <div onClick={back} className="press" style={{ display: 'inline-flex', alignItems: 'center', gap: 5, cursor: 'pointer', color: B.lime, fontSize: 13, fontWeight: 700 }}>
+          <svg width="8" height="13" viewBox="0 0 9 15" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><path d="M7.5 1.5L1.5 7.5l6 6" /></svg>
+          训练
+        </div>
+      </div>
+
+      <div style={{ padding: '14px 22px 0' }}>
+        <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
+          <span style={{ fontSize: 10, fontWeight: 800, color: '#0A0A0A', background: B.lime, padding: '4px 9px', borderRadius: 999 }}>CF 4A</span>
+          <span style={{ fontSize: 10, fontWeight: 700, color: B.dim, border: '1px solid ' + B.hair, padding: '4px 9px', borderRadius: 999 }}>800 分</span>
+        </div>
+        <div style={{ fontSize: 30, fontWeight: 820, letterSpacing: '-0.045em', color: B.white, lineHeight: 1.2 }}>西瓜</div>
+      </div>
+
+      <div style={{ padding: '18px 18px 0' }}>
+        <Card pad={20} r={26}>
+          <div style={{ fontSize: 14, color: '#D8D8DE', lineHeight: 1.8, letterSpacing: '-0.005em' }}>
+            一个炎热的夏天，皮特想吃西瓜。他买了一个重 <span style={{ color: B.lime, fontWeight: 700 }}>w</span> 公斤的西瓜，想分成两部分，两部分都必须是<b style={{ color: '#fff' }}>正偶数</b>。
+          </div>
+          <div style={{ marginTop: 16, display: 'flex', gap: 10 }}>
+            {[['8', 'YES'], ['2', 'NO'], ['3', 'NO']].map(([i, o]) => (
+              <div key={i} style={{ flex: 1, padding: '11px 12px', borderRadius: 16, background: 'rgba(255,255,255,.04)', border: '1px solid ' + B.hair, textAlign: 'center' }}>
+                <div style={{ fontSize: 10, color: B.dimmer, fontWeight: 650 }}>输入</div>
+                <div style={{ fontSize: 15, fontWeight: 800, color: B.white, fontVariantNumeric: 'tabular-nums', marginTop: 2 }}>{i}</div>
+                <div style={{ fontSize: 11, fontWeight: 800, color: o === 'YES' ? B.lime : '#FF8E7A', marginTop: 5 }}>{o}</div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+
+      <div style={{ padding: '16px 18px 0', display: 'flex', gap: 10 }}>
+        {['题面', '解题过程', '知识点'].map((t, i) => (
+          <div key={t} className="press" style={{ flex: 1, textAlign: 'center', padding: '11px 0', borderRadius: 16, fontSize: 12, fontWeight: 700, cursor: 'pointer',
+            background: i === 0 ? 'rgba(200,255,61,.12)' : B.card, color: i === 0 ? B.lime : B.dim,
+            border: '1px solid ' + (i === 0 ? 'rgba(200,255,61,.30)' : B.hair) }}>{t}</div>
+        ))}
+      </div>
+
+      <div style={{ padding: '16px 18px 0' }}>
+        <Card pad={20} r={26} variant="dark">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <div style={{ fontSize: 13.5, fontWeight: 700, color: B.white }}>背题模式</div>
+              <div style={{ fontSize: 11, color: B.dimmer, marginTop: 3 }}>解析已隐藏，自己先想 90 秒</div>
+            </div>
+            <div style={{ width: 48, height: 28, borderRadius: 999, background: B.limeGrad, padding: 3, display: 'flex', justifyContent: 'flex-end' }}>
+              <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#0A0A0A' }} />
+            </div>
+          </div>
+          <div style={{ marginTop: 16, padding: '14px 15px', borderRadius: 18, background: 'rgba(200,255,61,.06)', border: '1px dashed rgba(200,255,61,.25)', textAlign: 'center' }}>
+            <div style={{ fontSize: 12, color: B.lime, fontWeight: 700 }}>展开解析</div>
+            <div style={{ fontSize: 10.5, color: B.dimmer, marginTop: 4 }}>思路 · 代码 · 复杂度 · 易错点</div>
+          </div>
+        </Card>
+      </div>
+      <div style={{ padding: '24px 18px 0', marginTop: 'auto' }}>
+        <div style={{ height: 50, borderRadius: 20, background: B.limeGrad, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 14px 32px rgba(200,255,61,.22)' }} className="press">
+          <span style={{ fontSize: 14.5, fontWeight: 820, color: '#0A0A0A', letterSpacing: '-0.015em' }}>标记为已掌握</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ===== 屏 4.5 · 项目 ===== */
+function ScreenProject() {
+  return (
+    <div style={{ paddingBottom: 110 }}>
+      <Head kicker="3 个进行中" title="项目" />
+      <div style={{ padding: '20px 18px 0' }}>
+        {[
+          { n: '校园二手书交易小程序', s: '进行中', p: 68, m: '4 人 · 昨天有更新', c: B.limeGrad },
+          { n: '基于 YOLO 的实验室安全检测', s: '待验收', p: 100, m: '3 人 · 3 天前', c: 'linear-gradient(120deg,#9D7CFF,#C9B6FF)' },
+          { n: '校园活动报名与签到系统', s: '进行中', p: 34, m: '5 人 · 今天有更新', c: 'linear-gradient(120deg,#7F8CFF,#A9B4FF)' },
+        ].map((p, i) => (
+          <Card key={i} pad={18} r={24} style={{ marginBottom: 11 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+              <div style={{ fontSize: 14, fontWeight: 680, color: B.white, letterSpacing: '-0.015em', lineHeight: 1.4 }}>{p.n}</div>
+              <span style={{ flexShrink: 0, fontSize: 10, fontWeight: 800, color: p.s === '待验收' ? B.violet : B.lime, background: p.s === '待验收' ? 'rgba(157,124,255,.14)' : 'rgba(200,255,61,.10)', padding: '4px 9px', borderRadius: 999 }}>{p.s}</span>
+            </div>
+            <div style={{ marginTop: 14, height: 6, borderRadius: 999, background: 'rgba(255,255,255,.07)' }}>
+              <div style={{ width: p.p + '%', height: '100%', borderRadius: 999, background: p.c }} />
+            </div>
+            <div style={{ marginTop: 9, fontSize: 10.5, color: B.dimmer }}>{p.m}</div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ===== 屏 5 · 我 ===== */
+function ScreenMine() {
+  return (
+    <div style={{ paddingBottom: 110 }}>
+      <Head kicker="2023 级 · 计科 2 班" title="我" />
+      <div style={{ padding: '20px 18px 0' }}>
+        <Card pad={22} r={30}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            <div style={{ width: 56, height: 56, borderRadius: 20, background: B.limeGrad, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 21, fontWeight: 820, color: '#0A0A0A', boxShadow: '0 12px 28px rgba(200,255,61,.25)' }}>冉</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 18, fontWeight: 800, color: B.white, letterSpacing: '-0.03em' }}>冉同霄</div>
+              <div style={{ fontSize: 11.5, color: B.dimmer, marginTop: 4 }}>学号 2023010142</div>
+            </div>
+            <div style={{ padding: '5px 10px', borderRadius: 999, border: '1px solid rgba(200,255,61,.3)', background: 'rgba(200,255,61,.08)' }}>
+              <span style={{ fontSize: 10, fontWeight: 800, color: B.lime }}>已认证</span>
+            </div>
+          </div>
+          <div style={{ marginTop: 20, display: 'flex', gap: 8 }}>
+            {[['820', '总题量'], ['7', '连续'], ['12', '关注'], ['3', '提问']].map(([n, l]) => (
+              <div key={l} style={{ flex: 1, textAlign: 'center' }}>
+                <Num size={20}>{n}</Num>
+                <div style={{ fontSize: 10, color: B.dimmer, marginTop: 4 }}>{l}</div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+
+      <div style={{ padding: '24px 22px 12px' }}><span style={{ fontSize: 16, fontWeight: 750, color: B.white, letterSpacing: '-0.02em' }}>拿到的徽章</span></div>
+      <div style={{ padding: '0 18px', display: 'flex', gap: 10 }}>
+        {[['连续 7 天', '连'], ['首杀 20', '杀'], ['深夜刷题', '夜']].map(([n, g], i) => (
+          <Card key={n} pad={14} r={22} style={{ flex: 1, textAlign: 'center' }}>
+            <div style={{ width: 42, height: 42, borderRadius: '50%', margin: '0 auto 10px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              background: i === 2 ? 'rgba(255,255,255,.04)' : 'rgba(200,255,61,.10)',
+              border: '1.5px solid ' + (i === 2 ? 'rgba(255,255,255,.10)' : 'rgba(200,255,61,.4)'),
+              fontSize: 15, fontWeight: 800, color: i === 2 ? B.dimmer : B.lime }}>{g}</div>
+            <div style={{ fontSize: 10.5, color: i === 2 ? B.dimmer : B.dim, fontWeight: 600 }}>{n}</div>
+          </Card>
+        ))}
+      </div>
+
+      <div style={{ padding: '20px 18px 0' }}>
+        {['我关注的赛事', '我的提问', '成就徽章', '设置'].map((t) => (
+          <Card key={t} pad={16} r={20} style={{ marginBottom: 9, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: 13.5, fontWeight: 620, color: B.white }}>{t}</span>
+            <svg width="7" height="12" viewBox="0 0 7 12" fill="none" stroke={B.dimmer} strokeWidth="2" strokeLinecap="round"><path d="M1 1l5 5-5 5" /></svg>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function AppPhone({ initial = 'home' }) {
+  const [screen, setScreen] = React.useState(initial);
+  const go = (s) => setScreen(s);
+  return (
+      <IosFrame>
+        <div style={{ position: 'relative', height: '100%' }}>
+          <div style={{ height: '100%', overflowY: 'auto' }} className="sc">
+            {screen === 'home' && <ScreenToday go={go} />}
+            {screen === 'learn' && <ScreenTrain go={go} />}
+            {screen === 'contest' && <ScreenRace />}
+            {screen === 'project' && <ScreenProject />}
+            {screen === 'problem' && <ScreenProblem back={() => go('learn')} />}
+            {screen === 'mine' && <ScreenMine />}
+          </div>
+          <TabBar active={screen === 'problem' ? 'learn' : screen} onChange={go} />
+        </div>
+      </IosFrame>
+  );
+}
+
+function ScaleBox({ s = 1, children }) {
+  return (
+    <div style={{ width: 417 * s, height: 876 * s, position: 'relative', flexShrink: 0 }}>
+      <div style={{ position: 'absolute', top: 0, left: 0, transform: `scale(${s})`, transformOrigin: 'top left' }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function Board() {
+  return (
+    <div style={{ minHeight: '100vh', background: '#050506', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', top: -180, left: '8%', width: 620, height: 620, borderRadius: '50%', background: 'radial-gradient(circle, rgba(200,255,61,.10), rgba(200,255,61,0) 66%)' }} />
+      <div style={{ position: 'absolute', bottom: -240, right: '4%', width: 700, height: 700, borderRadius: '50%', background: 'radial-gradient(circle, rgba(157,124,255,.12), rgba(157,124,255,0) 66%)' }} />
+
+      <div style={{ position: 'relative', maxWidth: 1500, margin: '0 auto', padding: '70px 56px 100px' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 40, flexWrap: 'wrap', marginBottom: 60 }}>
+          <div style={{ flex: '1 1 560px' }}>
+            <div style={{ display: 'inline-flex', padding: '5px 12px', borderRadius: 999, background: 'rgba(200,255,61,.10)', border: '1px solid rgba(200,255,61,.25)', color: B.lime, fontSize: 11.5, fontWeight: 700, letterSpacing: '0.03em', marginBottom: 22 }}>方向 B · 圆体数据流</div>
+            <div style={{ fontSize: 60, fontWeight: 800, color: '#fff', letterSpacing: '-0.05em', lineHeight: 1, fontFamily: '"SF Pro Rounded", ui-rounded, -apple-system, "PingFang SC", sans-serif' }}>
+              你的<span style={{ color: B.lime }}>今天</span>，<br />不是一个菜单
+            </div>
+            <div style={{ marginTop: 20, fontSize: 14.5, color: 'rgba(255,255,255,.5)', maxWidth: 540, lineHeight: 1.75 }}>
+              借鉴 Apple Fitness 的组织方式：首页不谈功能入口，只谈「今天该做什么」。信息按时间排成一条流程线，进度用环、条、数字说话，圆体字与高饱和荧光绿让学习有运动感。
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 30, paddingBottom: 8 }}>
+            {[['字体', 'Rounded · 数字 -0.055em'], ['动效', '环描线 1.5s · 弹性 1.4 回弹'], ['结构', '按时间线 · 不按模块']].map(([k, v]) => (
+              <div key={k}>
+                <div style={{ fontSize: 10, color: 'rgba(255,255,255,.25)', marginBottom: 6, fontWeight: 700 }}>{k}</div>
+                <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,.55)' }}>{v}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 24 }}>
+          <div>
+            <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,.32)', marginBottom: 12, paddingLeft: 4 }}>今天 · 主界面</div>
+            <ScaleBox s={1.0}><AppPhone initial="home" /></ScaleBox>
+          </div>
+          <div style={{ marginBottom: 76 }}>
+            <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,.32)', marginBottom: 12, paddingLeft: 4 }}>训练</div>
+            <ScaleBox s={0.86}><AppPhone initial="learn" /></ScaleBox>
+          </div>
+          <div style={{ marginBottom: 158 }}>
+            <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,.32)', marginBottom: 12, paddingLeft: 4 }}>赛事</div>
+            <ScaleBox s={0.86}><AppPhone initial="contest" /></ScaleBox>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 34, marginTop: 84 }}>
+          <div>
+            <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,.32)', marginBottom: 12, paddingLeft: 4 }}>题目 · 背题模式</div>
+            <ScaleBox s={0.88}><AppPhone initial="problem" /></ScaleBox>
+          </div>
+          <div style={{ marginTop: 56 }}>
+            <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,.32)', marginBottom: 12, paddingLeft: 4 }}>项目</div>
+            <ScaleBox s={0.88}><AppPhone initial="project" /></ScaleBox>
+          </div>
+          <div style={{ marginTop: 20 }}>
+            <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,.32)', marginBottom: 12, paddingLeft: 4 }}>我</div>
+            <ScaleBox s={0.88}><AppPhone initial="mine" /></ScaleBox>
+          </div>
+        </div>
+
+        <div style={{ marginTop: 70, paddingTop: 26, borderTop: '1px solid rgba(255,255,255,.06)', display: 'flex', justifyContent: 'space-between', color: 'rgba(255,255,255,.26)', fontSize: 11.5, flexWrap: 'wrap', gap: 16 }}>
+          <span>底部四项可切，题目从训练页进入</span>
+          <span>落进小程序时：荧光色在深色底上对比度 12:1，符合可读性底线</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Board />);
+</script>
+</body>
+</html>
