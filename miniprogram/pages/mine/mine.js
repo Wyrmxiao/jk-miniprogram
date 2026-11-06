@@ -163,6 +163,20 @@ Page({
     wx.navigateTo({ url: '/pkgWork/task/publish' });
   },
 
+  /** 学生：每周学习汇报 */
+  goWeeklyReport() {
+    wx.navigateTo({ url: '/pages/report/report' });
+  },
+
+  goClasses() {
+    wx.navigateTo({ url: '/pages/class/list' });
+  },
+
+  /** 教师：每周汇报收集 */
+  goReportCollect() {
+    wx.navigateTo({ url: '/pkgWork/report/list' });
+  },
+
   goManageContest() {
     wx.navigateTo({ url: '/pkgContest/manage/manage' });
   },

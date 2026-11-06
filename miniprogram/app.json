@@ -13,7 +13,11 @@
     "pages/algo/modules",
     "pages/algo/problems",
     "pages/algo/problem",
-    "pages/algo/detail"
+    "pages/algo/detail",
+    "pages/report/report",
+    "pages/class/list",
+    "pages/class/detail",
+    "pages/class/join"
   ],
   "subpackages": [
     {
@@ -43,6 +47,8 @@
         "task/publish",
         "log/edit",
         "project/edit",
+        "report/list",
+        "report/detail",
         "admin/users/users"
       ]
     }

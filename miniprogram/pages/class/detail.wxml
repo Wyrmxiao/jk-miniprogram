@@ -1,0 +1,98 @@
+<view class="page">
+  <view class="blobs">
+    <view class="blob blob--1"></view>
+    <view class="blob blob--2"></view>
+    <view class="blob blob--3"></view>
+  </view>
+
+  <view class="hero">
+    <view class="hero__title">{{cls ? cls.name : '班级'}}</view>
+    <view class="hero__sub">{{cls && cls.intro ? cls.intro : '班级成员可向本班提交每周学习汇报'}}</view>
+    <view wx:if="{{cls}}" class="hero__btns">
+      <text class="tag tag-primary">{{cls.isOwner ? '我创建的' : '我是成员'}}</text>
+      <text class="tag">{{members.length}} 人</text>
+    </view>
+  </view>
+
+  <!-- 邀请加入 -->
+  <view class="block">
+    <view class="block__title">邀请同学加入</view>
+    <view class="invite__code" bindtap="copyCode">{{cls ? cls.code : '------'}}</view>
+    <view class="invite__acts">
+      <view class="btn-ghost btn-sm pressable" hover-class="pressing" bindtap="copyCode">复制邀请码</view>
+      <button class="btn btn-sm share-btn" open-type="share">分享给同学</button>
+      <view class="btn-ghost btn-sm pressable" hover-class="pressing" bindtap="shareCard">
+        {{cardLoading ? '生成中…' : '邀请卡片'}}
+      </view>
+    </view>
+    <view class="invite__tip">
+      同学可在「我的 → 我的班级 → 加入班级」输入邀请码；也可扫二维码加入。
+      点「邀请卡片」会生成一张带小程序码的图片，可直接转发到班级群。
+    </view>
+
+    <view class="qr-wrap">
+      <image wx:if="{{qrUrl}}" class="qr-img" src="{{qrUrl}}" mode="aspectFit" bindtap="previewQr" />
+      <view wx:elif="{{qrLoading}}" class="qr-ph">二维码生成中…</view>
+      <view wx:else class="qr-ph" bindtap="makeQr">点击生成班级二维码</view>
+    </view>
+  </view>
+
+  <!-- 本周提交情况 -->
+  <view class="block">
+    <view class="block__title">本周提交情况</view>
+    <view class="week__row">
+      <view class="week__num">{{week ? week.submitted : 0}}<text class="week__total">/{{week ? week.total : 0}}</text></view>
+      <view class="week__meta">
+        <view class="week__label">{{week ? week.weekKey : ''}}（{{week ? week.weekStart : ''}} ~ {{week ? week.weekEnd : ''}}）</view>
+        <view class="week__mine {{mySubmitted ? 'week__mine--done' : ''}}">{{mySubmitted ? '我本周已提交' : '我本周还没提交'}}</view>
+      </view>
+    </view>
+    <view class="bar"><view class="bar__fill" style="width: {{week && week.total ? (week.submitted / week.total * 100) : 0}}%"></view></view>
+    <view class="btn-row">
+      <view wx:if="{{canViewReports}}" class="btn btn-sm pressable" hover-class="pressing" bindtap="goReports">查看本班汇报</view>
+      <view wx:else class="btn-ghost btn-sm pressable" hover-class="pressing" bindtap="goReport">去提交汇报</view>
+    </view>
+  </view>
+
+  <!-- 成员 -->
+  <view class="block">
+    <view class="block__title">班级成员</view>
+    <view wx:if="{{loading}}" class="empty empty--inline">正在加载…</view>
+    <view
+      wx:for="{{members}}"
+      wx:key="openid"
+      wx:if="{{showAllMembers || index < 8}}"
+      class="mrow"
+    >
+      <view class="mrow__avatar">{{item.name[0]}}</view>
+      <view class="mrow__body">
+        <view class="mrow__name">
+          {{item.name}}
+          <text wx:if="{{item.role === 'owner'}}" class="tag tag-primary">创建者</text>
+          <text wx:if="{{item.authStatus !== 'approved'}}" class="tag tag-warning">未实名</text>
+        </view>
+        <view wx:if="{{item.studentId}}" class="mrow__id">学号 {{item.studentId}}</view>
+      </view>
+      <view
+        wx:if="{{cls.isOwner && item.role !== 'owner'}}"
+        class="mrow__del pressable"
+        hover-class="pressing"
+        data-openid="{{item.openid}}"
+        data-name="{{item.name}}"
+        catchtap="removeMember"
+      >移除</view>
+    </view>
+    <view wx:if="{{members.length > 8}}" class="block__foot">
+      <text class="link" bindtap="toggleMembers">{{showAllMembers ? '收起' : '查看全部 ' + members.length + ' 人'}}</text>
+    </view>
+  </view>
+
+  <!-- 危险操作 -->
+  <view wx:if="{{cls}}" class="block block--danger">
+    <view wx:if="{{cls.isOwner}}" class="danger-link" bindtap="dissolve">解散班级</view>
+    <view wx:else class="danger-link" bindtap="quit">退出班级</view>
+  </view>
+
+  <!-- 邀请卡片绘制用（移出屏幕，不可见但不影响渲染） -->
+  <canvas type="2d" id="posterCanvas" class="poster-canvas"></canvas>
+</view>

@@ -1,0 +1,60 @@
+/* pages/class/list.wxss —— 我的班级 */
+.page { min-height: 100vh; background: var(--bg-page); padding: 0 var(--space-lg) 80rpx; }
+
+.block {
+  margin-top: var(--space-md);
+  padding: var(--space-lg);
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+.block__title { font-size: var(--font-body); font-weight: 560; color: var(--text-primary); margin-bottom: var(--space-md); }
+.block__foot { margin-top: var(--space-sm); text-align: right; }
+.hint { font-size: var(--font-micro); color: var(--text-tertiary); }
+
+/* 小号按钮 */
+.btn-sm {
+  min-height: 72rpx;
+  height: 72rpx;
+  padding: 0 var(--space-md);
+  font-size: var(--font-caption);
+  font-weight: 560;
+  width: auto;
+}
+
+.form-actions { display: flex; justify-content: flex-end; gap: var(--space-sm); margin-top: var(--space-md); }
+
+/* 班级卡片 */
+.ccard {
+  padding: var(--space-md);
+  margin-bottom: var(--space-sm);
+  border-radius: var(--radius-md);
+  background: var(--bg-block);
+}
+.ccard__head { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-xs); }
+.ccard__name { font-size: var(--font-body); font-weight: 560; color: var(--text-primary); margin-right: 6rpx; }
+/* 未提交提醒：一行红字，字号与正文一致 */
+.ccard__warn {
+  margin-top: 8rpx;
+  font-size: var(--font-caption);
+  line-height: var(--leading-normal);
+  color: var(--color-danger);
+}
+.ccard__intro {
+  margin-top: 10rpx;
+  font-size: var(--font-caption);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+.ccard__meta {
+  margin-top: 12rpx;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--font-micro);
+  color: var(--text-tertiary);
+}
+.ccard__code { font-family: ui-monospace, Menlo, monospace; letter-spacing: 2rpx; }
+.ccard__chevron { margin-left: auto; font-size: 32rpx; color: var(--text-tertiary); }
+
+.empty--inline { padding: 30rpx 0; text-align: left; }

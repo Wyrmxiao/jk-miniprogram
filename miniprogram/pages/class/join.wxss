@@ -1,0 +1,27 @@
+/* pages/class/join.wxss —— 加入班级 */
+.page { min-height: 100vh; background: var(--bg-page); padding: 0 var(--space-lg) 80rpx; }
+
+.block {
+  margin-top: var(--space-md);
+  padding: var(--space-lg);
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+.block__title { font-size: var(--font-body); font-weight: 560; color: var(--text-primary); margin-bottom: var(--space-md); }
+
+.code-input {
+  height: 120rpx;
+  line-height: 120rpx;
+  text-align: center;
+  border-radius: var(--radius-md);
+  background: var(--bg-block);
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 56rpx;
+  font-weight: 700;
+  letter-spacing: 12rpx;
+  color: var(--color-primary);
+}
+
+.btn-row { margin-top: var(--space-md); }
+.tip { margin-top: var(--space-md); font-size: var(--font-micro); color: var(--text-tertiary); line-height: 1.6; }
