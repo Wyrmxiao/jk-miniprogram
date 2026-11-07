@@ -1,0 +1,36 @@
+/* ===== 赛事统计总览 ===== */
+.stat-cards { padding: 0 var(--space-md); }
+
+.stat-card {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: var(--space-lg) var(--space-md);
+  margin-bottom: var(--space-md);
+  border-radius: var(--radius-lg);
+  background: var(--bg-block);
+}
+
+.stat-card__info { flex: 1; min-width: 0; }
+.stat-card__title { font-size: var(--font-title); font-weight: 600; color: var(--text-primary); }
+.stat-card__desc { margin-top: var(--space-xs); font-size: var(--font-caption); color: var(--text-tertiary); }
+.stat-card__count {
+  min-width: 72rpx;
+  text-align: center;
+  margin: 0 var(--space-sm);
+  padding: 6rpx 20rpx;
+  border-radius: 999rpx;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-size: var(--font-body);
+  font-weight: 600;
+}
+.stat-card__chevron { color: var(--text-tertiary); font-size: 40rpx; line-height: 1; }
+
+.page-foot {
+  margin-top: var(--space-lg);
+  padding: 0 var(--space-lg);
+  text-align: center;
+  font-size: var(--font-caption);
+  color: var(--text-tertiary);
+}

@@ -52,3 +52,30 @@
 .my-race__name { flex: 1; min-width: 0; font-size: var(--font-body); font-weight: 500; color: var(--text-primary); line-height: 1.5; margin-right: var(--space-sm); }
 .my-race__top .level { flex-shrink: 0; }
 .cell__desc .tag { margin-right: var(--space-sm); }
+
+/* ===== 赛事统计 ===== */
+.group__title-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-lg) var(--space-lg) var(--space-sm);
+}
+.group__title-row .group__title { padding: 0; }
+.group__action {
+  font-size: var(--font-caption);
+  color: var(--color-primary);
+  font-weight: 560;
+  padding: 8rpx 0 8rpx var(--space-md);
+}
+.cell--head { min-height: 72rpx; padding-top: var(--space-sm); padding-bottom: 0; }
+.cell--head + .cell::before { display: none; }
+.stat-sub { font-size: var(--font-caption); color: var(--text-tertiary); font-weight: 560; letter-spacing: var(--tracking-normal); }
+.stat-sub__count {
+  margin-left: 10rpx;
+  padding: 2rpx 14rpx;
+  border-radius: var(--radius-pill);
+  background: var(--bg-block);
+  color: var(--text-secondary);
+  font-size: var(--font-micro);
+}

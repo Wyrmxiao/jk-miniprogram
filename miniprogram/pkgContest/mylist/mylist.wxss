@@ -1,0 +1,12 @@
+/* ===== 板块列表页 ===== */
+.race__top { display: flex; flex-direction: row; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; }
+.race__name { flex: 1; min-width: 0; font-size: var(--font-body); font-weight: 500; color: var(--text-primary); line-height: 1.5; margin-right: var(--space-sm); }
+.race__top .level { flex-shrink: 0; }
+
+.page-foot {
+  margin-top: var(--space-lg);
+  padding: 0 var(--space-lg);
+  text-align: center;
+  font-size: var(--font-caption);
+  color: var(--text-tertiary);
+}

@@ -76,6 +76,12 @@ const contest = {
   // 我的竞赛
   myList: (params) => request(DOMAIN.CONTEST, 'myList', params, { silent: true }),
   follow: (data) => request(DOMAIN.CONTEST, 'follow', data, { loading: '处理中' }),
+  // 学生自主登记参赛 / 获奖等次
+  register: (data) => request(DOMAIN.CONTEST, 'register', data, { loading: '保存中' }),
+  // 比赛统计（概览 + 学生榜 + 热门赛事 + 我的战绩）
+  stats: () => request(DOMAIN.CONTEST, 'stats', {}, { silent: true }),
+  // 个人赛事档案（本人或他人，公开可查）
+  myProfile: (params) => request(DOMAIN.CONTEST, 'myProfile', params || {}, { silent: true }),
   updateProgress: (data) => request(DOMAIN.CONTEST, 'updateProgress', data, { loading: '保存中' }),
   // 教师/管理员维护（含赛事时间编辑）
   create: (data) => request(DOMAIN.CONTEST, 'create', data, { loading: '保存中' }),

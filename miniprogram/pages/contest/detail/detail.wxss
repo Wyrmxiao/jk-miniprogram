@@ -70,3 +70,36 @@
 
 .contest-detail-page { padding-bottom: calc(180rpx + env(safe-area-inset-bottom)); }
 .hero__btns { margin-top: var(--space-sm); }
+
+/* ===== 我的参赛登记 ===== */
+.cell--top { align-items: flex-start; padding-top: var(--space-md); }
+.reg__opts { margin-top: var(--space-sm); }
+.reg__hint {
+  font-size: var(--font-caption);
+  color: var(--color-success);
+  line-height: var(--leading-normal);
+}
+
+/* 自定义开关：完全受 data 控制，避免原生 switch 与云端状态不同步 */
+.sw {
+  position: relative;
+  flex-shrink: 0;
+  width: 96rpx;
+  height: 56rpx;
+  border-radius: var(--radius-pill);
+  background: rgba(154, 154, 166, 0.32);
+  transition: background var(--duration-normal) var(--ease-spring);
+}
+.sw--on { background: var(--color-primary); }
+.sw__dot {
+  position: absolute;
+  top: 6rpx;
+  left: 6rpx;
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2rpx 8rpx rgba(14, 14, 18, 0.18);
+  transition: transform var(--duration-normal) var(--ease-spring);
+}
+.sw--on .sw__dot { transform: translateX(40rpx); }

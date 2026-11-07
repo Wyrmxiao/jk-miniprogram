@@ -34,7 +34,12 @@
       "name": "pkgContest",
       "pages": [
         "manage/manage",
-        "edit/edit"
+        "edit/edit",
+        "stats/stats",
+        "profile/profile",
+        "pick/pick",
+        "mystats/mystats",
+        "mylist/mylist"
       ]
     },
     {

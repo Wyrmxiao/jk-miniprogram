@@ -11,6 +11,21 @@ const CATEGORY_TEXT = {
   humanity: '人文社科'
 };
 
+/** 获奖等次（与云端 AWARD_TEXT 保持一致） */
+const AWARD_OPTIONS = [
+  { key: '', text: '未获奖' },
+  { key: 'special', text: '特等奖' },
+  { key: 'first', text: '一等奖' },
+  { key: 'second', text: '二等奖' },
+  { key: 'third', text: '三等奖' },
+  { key: 'other', text: '其他获奖' }
+];
+
+function awardText(key) {
+  const hit = AWARD_OPTIONS.find((a) => a.key === key);
+  return hit ? hit.text : '';
+}
+
 const MONTH_TEXT = {
   1: '一月', 2: '二月', 3: '三月', 4: '四月', 5: '五月', 6: '六月',
   7: '七月', 8: '八月', 9: '九月', 10: '十月', 11: '十一月', 12: '十二月'
@@ -28,7 +43,14 @@ Page({
     announcements: [],
     isTeacher: false,
     isLogin: false,
-    following: false
+    following: false,
+    /** 我的参赛登记 */
+    joined: false,
+    award: '',
+    awardNote: '',
+    awardShow: '',
+    awardOptions: AWARD_OPTIONS,
+    regHint: ''
   },
 
   onLoad(options) {
@@ -49,7 +71,12 @@ Page({
     this.setData({ loading: true });
     try {
       const d = await contest.detail({ id: this.data.id });
-      const cloudFollowed = !!(d.mine && d.mine.status === 'following');
+      const mine = d.mine || null;
+      // 云端用 status='watch' 标记关注；旧数据里可能存在 'following'，两者都认
+      const cloudFollowed = !!(mine && (mine.status === 'watch' || mine.status === 'following'));
+      const joined = !!(mine && mine.joined);
+      const award = (mine && mine.award) || '';
+      const awardNote = (mine && mine.awardNote) || '';
       this.setData({
         detail: d,
         categoryText: CATEGORY_TEXT[d.category] || '',
@@ -58,6 +85,11 @@ Page({
         announcements: (d.announcements || []).map((a) => a),
         // 云端状态优先，本地缓存兜底（未认证用户/云端未同步时）
         following: cloudFollowed || favorite.has(this.data.id),
+        joined,
+        award,
+        awardNote,
+        awardShow: joined ? awardNote || awardText(award) || '暂无登记' : '',
+        regHint: '',
         loading: false
       });
     } catch (e) {
@@ -124,6 +156,90 @@ Page({
     } catch (e) {
       /* 错误已在 request 层提示，状态不切换 */
     }
+  },
+
+  /** 参赛登记：开关点击即保存 */
+  toggleJoin() {
+    const joined = !this.data.joined;
+    this.saveRegister(joined, joined ? this.data.award : '');
+  },
+
+  /** 选择获奖等次：仅已参赛时可改 */
+  onAwardPick(e) {
+    if (!this.data.joined) return;
+    const key = e.currentTarget.dataset.key || '';
+    if (key === this.data.award) return;
+    this.saveRegister(true, key);
+  },
+
+  /** 写云端；失败时回滚界面状态，避免显示与数据不一致 */
+  async saveRegister(joined, award) {
+    if (this.saving) return;
+    this.saving = true;
+    try {
+      await contest.register({ competitionId: this.data.id, joined, award });
+      this.setData({
+        joined,
+        award,
+        regHint: joined ? (award ? '已登记：' + awardText(award) : '已登记为参赛未获奖') : ''
+      });
+      this.refreshAwardShow();
+      wx.showToast({ title: joined ? '已登记参赛' : '已取消登记', icon: 'none' });
+    } catch (err) {
+      this.setData({ joined: !joined });
+      wx.showToast({ title: '保存失败，请重试', icon: 'none' });
+    } finally {
+      this.saving = false;
+    }
+  },
+
+  /** 我的获奖展示文案：自由说明优先，其次等次，否则「暂无登记」 */
+  refreshAwardShow() {
+    const { joined, award, awardNote } = this.data;
+    this.setData({
+      awardShow: joined ? awardNote || awardText(award) || '暂无登记' : ''
+    });
+  },
+
+  /** 编辑获奖情况：自由填写，可填「无」；未填写显示「暂无登记」 */
+  editAwardNote() {
+    if (!this.data.joined) {
+      wx.showToast({ title: '请先打开「我参加过这项赛事」', icon: 'none' });
+      return;
+    }
+    wx.showModal({
+      title: '获奖情况',
+      content: this.data.awardNote || '',
+      editable: true,
+      placeholderText: '填写获得了什么奖，没有可填"无"',
+      success: (r) => {
+        if (!r.confirm) return;
+        this.saveAwardNote(String(r.content || '').trim().slice(0, 100));
+      }
+    });
+  },
+
+  async saveAwardNote(note) {
+    try {
+      await contest.register({
+        competitionId: this.data.id,
+        joined: true,
+        award: this.data.award,
+        awardNote: note
+      });
+      this.setData({
+        awardNote: note,
+        regHint: note ? '已登记获奖情况' : '已清空获奖情况'
+      });
+      this.refreshAwardShow();
+      wx.showToast({ title: '已保存', icon: 'success' });
+    } catch (err) {
+      wx.showToast({ title: '保存失败，请重试', icon: 'none' });
+    }
+  },
+
+  goLogin() {
+    wx.navigateTo({ url: '/pkgAuth/login/login' });
   },
 
   goManage() {

@@ -76,6 +76,61 @@
       </view>
     </view>
 
+    <!-- 我的参赛登记：学生自主登记，供比赛统计汇总 -->
+    <view class="group">
+      <view class="group__title">我的参赛登记</view>
+
+      <view wx:if="{{!isLogin}}" class="cell pressable" hover-class="pressing" bindtap="goLogin">
+        <view class="cell__body">
+          <view class="cell__title">登录后可登记</view>
+          <view class="cell__desc">登记参赛经历与获奖等次，会同步到比赛统计</view>
+        </view>
+        <text class="cell__chevron">›</text>
+      </view>
+
+      <block wx:else>
+        <view class="cell">
+          <view class="cell__body">
+            <view class="cell__title">我参加过这项赛事</view>
+            <view class="cell__desc">可随时修改；未获奖也建议登记，用于比赛统计</view>
+          </view>
+          <view class="sw {{joined ? 'sw--on' : ''}} pressable" hover-class="pressing" bindtap="toggleJoin">
+            <view class="sw__dot"></view>
+          </view>
+        </view>
+
+        <view wx:if="{{joined}}" class="cell cell--top">
+          <view class="cell__body">
+            <view class="cell__title">获奖等次</view>
+            <view class="opts reg__opts">
+              <view
+                wx:for="{{awardOptions}}"
+                wx:key="key"
+                class="opt {{award === item.key ? 'opt--on' : ''}}"
+                data-key="{{item.key}}"
+                bindtap="onAwardPick"
+              >{{item.text}}</view>
+            </view>
+            <view class="detail__tip">以获奖证书为准；不确定时先选「未获奖」</view>
+          </view>
+        </view>
+
+        <view wx:if="{{joined}}" class="cell pressable" hover-class="pressing" bindtap="editAwardNote">
+          <view class="cell__body">
+            <view class="cell__title">获奖情况</view>
+            <view class="cell__desc">{{awardShow}}</view>
+          </view>
+          <text class="cell__chevron">✎</text>
+        </view>
+
+        <view wx:if="{{regHint}}" class="cell">
+          <view class="cell__body">
+            <view class="reg__hint">{{regHint}}</view>
+          </view>
+        </view>
+      </block>
+    </view>
+
     <!-- 赛事简介 -->
     <view class="group">
       <view class="group__title">赛事简介</view>

@@ -1,0 +1,290 @@
+/* pkgContest/stats/stats.wxss —— 比赛统计 */
+@import '../../styles/variables.wxss';
+@import '../../styles/mixins.wxss';
+
+.state {
+  padding: 120rpx 0;
+  text-align: center;
+  font-size: var(--font-caption);
+  color: var(--text-secondary);
+}
+.state--empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.state__emoji {
+  display: block;
+  font-size: 64rpx;
+  margin-bottom: var(--space-sm);
+}
+
+/* ===== 概览 ===== */
+.ov { padding: var(--space-lg); }
+.ov__grid {
+  display: flex;
+  flex-wrap: wrap;
+}
+.ov__item {
+  width: 50%;
+  padding: 14rpx 0;
+}
+.ov__num {
+  font-size: var(--font-large);
+  font-weight: 760;
+  color: var(--text-primary);
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+.ov__label {
+  margin-top: 4rpx;
+  font-size: var(--font-caption);
+  color: var(--text-secondary);
+  letter-spacing: var(--tracking-normal);
+}
+.ov__levels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 1rpx solid var(--border-light);
+}
+.ov__level {
+  padding: 6rpx 22rpx;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-size: var(--font-micro);
+  font-weight: 560;
+}
+
+/* ===== 我的战绩 ===== */
+.mine__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.mine__title {
+  font-size: var(--font-headline);
+  font-weight: 620;
+  color: var(--text-primary);
+  letter-spacing: var(--tracking-title);
+}
+.mine__rank {
+  font-size: var(--font-caption);
+  font-weight: 600;
+  color: var(--color-primary);
+}
+.mine__grid {
+  display: flex;
+  margin-top: var(--space-md);
+}
+.mine__cell {
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-sm) 0;
+  margin-right: 12rpx;
+  text-align: center;
+  border-radius: var(--radius-md);
+  background: var(--bg-block);
+}
+.mine__cell:last-child { margin-right: 0; }
+.mine__num {
+  font-size: var(--font-headline);
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+.mine__label {
+  margin-top: 4rpx;
+  font-size: var(--font-micro);
+  color: var(--text-secondary);
+}
+.mine__list { margin-top: var(--space-md); }
+.mine__list-title {
+  margin-bottom: 8rpx;
+  font-size: var(--font-caption);
+  color: var(--text-tertiary);
+}
+.mine__award {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 0;
+  border-top: 1rpx solid var(--border-light);
+}
+.mine__award-name {
+  flex: 1;
+  min-width: 0;
+  margin-right: var(--space-sm);
+  font-size: var(--font-body);
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mine__tip {
+  margin-top: var(--space-md);
+  font-size: var(--font-caption);
+  color: var(--text-tertiary);
+  line-height: var(--leading-normal);
+}
+.mine__login {
+  margin-top: var(--space-md);
+  padding: 32rpx;
+  text-align: center;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-size: var(--font-body);
+  font-weight: 560;
+}
+
+/* ===== 分组标题补充 ===== */
+.group__note {
+  margin-left: var(--space-sm);
+  font-size: var(--font-caption);
+  font-weight: 400;
+  color: var(--text-tertiary);
+}
+
+/* ===== 学生榜 ===== */
+.rank {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: var(--space-md) var(--space-lg);
+}
+.rank + .rank::before {
+  content: '';
+  position: absolute;
+  left: var(--space-lg);
+  right: 0;
+  top: 0;
+  height: 1rpx;
+  background: var(--border-light);
+}
+.rank__no {
+  flex-shrink: 0;
+  width: 56rpx;
+  height: 56rpx;
+  line-height: 56rpx;
+  text-align: center;
+  border-radius: 50%;
+  font-size: var(--font-caption);
+  font-weight: 700;
+  color: var(--text-tertiary);
+  background: var(--bg-block);
+}
+.rank__no--1 { background: linear-gradient(135deg, #FFD666, #F0A32E); color: #7A4A00; }
+.rank__no--2 { background: linear-gradient(135deg, #E6EAF2, #BFC7D8); color: #46536B; }
+.rank__no--3 { background: linear-gradient(135deg, #F5CBA7, #D69A69); color: #6B3D12; }
+.rank__body {
+  flex: 1;
+  min-width: 0;
+  margin-left: var(--space-md);
+}
+.rank__name {
+  font-size: var(--font-body);
+  font-weight: 560;
+  color: var(--text-primary);
+}
+.rank__me {
+  margin-left: 12rpx;
+  padding: 2rpx 14rpx;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+  color: #fff;
+  font-size: var(--font-micro);
+  font-weight: 600;
+}
+.rank__meta {
+  margin-top: 4rpx;
+  font-size: var(--font-micro);
+  color: var(--text-tertiary);
+}
+.rank__right { text-align: right; }
+.rank__score {
+  font-size: var(--font-headline);
+  font-weight: 700;
+  color: var(--color-primary);
+  font-variant-numeric: tabular-nums;
+}
+.rank__unit {
+  margin-left: 4rpx;
+  font-size: var(--font-micro);
+  font-weight: 400;
+  color: var(--text-tertiary);
+}
+.rank__sub {
+  margin-top: 2rpx;
+  font-size: var(--font-micro);
+  color: var(--text-tertiary);
+}
+.rank-mine {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-lg);
+  background: var(--color-primary-light);
+}
+.rank-mine__text {
+  font-size: var(--font-caption);
+  color: var(--text-secondary);
+}
+.rank-mine__val {
+  font-size: var(--font-body);
+  font-weight: 620;
+  color: var(--color-primary);
+}
+
+/* ===== 热门赛事 ===== */
+.hot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: var(--space-md) var(--space-lg);
+}
+.hot + .hot::before {
+  content: '';
+  position: absolute;
+  left: var(--space-lg);
+  right: 0;
+  top: 0;
+  height: 1rpx;
+  background: var(--border-light);
+}
+.hot__idx {
+  flex-shrink: 0;
+  width: 52rpx;
+  font-size: var(--font-caption);
+  font-weight: 700;
+  color: var(--text-tertiary);
+}
+.hot__body {
+  flex: 1;
+  min-width: 0;
+}
+.hot__name {
+  font-size: var(--font-body);
+  font-weight: 540;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.hot__meta {
+  margin-top: 4rpx;
+  font-size: var(--font-micro);
+  color: var(--text-tertiary);
+}
+
+/* ===== 脚注 ===== */
+.stats-foot {
+  padding: var(--space-md) var(--space-lg) var(--space-xl);
+  text-align: center;
+  font-size: var(--font-micro);
+  color: var(--text-tertiary);
+  line-height: 1.7;
+}
