@@ -13,7 +13,11 @@
     "pages/algo/modules",
     "pages/algo/problems",
     "pages/algo/problem",
-    "pages/algo/detail"
+    "pages/algo/detail",
+    "pages/report/report",
+    "pages/class/list",
+    "pages/class/detail",
+    "pages/class/join"
   ],
   "subpackages": [
     {
@@ -30,7 +34,12 @@
       "name": "pkgContest",
       "pages": [
         "manage/manage",
-        "edit/edit"
+        "edit/edit",
+        "stats/stats",
+        "profile/profile",
+        "pick/pick",
+        "mystats/mystats",
+        "mylist/mylist"
       ]
     },
     {
@@ -43,6 +52,8 @@
         "task/publish",
         "log/edit",
         "project/edit",
+        "report/list",
+        "report/detail",
         "admin/users/users"
       ]
     }

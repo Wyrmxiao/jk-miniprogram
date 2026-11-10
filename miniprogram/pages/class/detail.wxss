@@ -1,0 +1,113 @@
+/* pages/class/detail.wxss —— 班级详情 */
+.page { min-height: 100vh; background: var(--bg-page); padding: 0 var(--space-lg) 80rpx; }
+
+.block {
+  margin-top: var(--space-md);
+  padding: var(--space-lg);
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+.block__title { font-size: var(--font-body); font-weight: 560; color: var(--text-primary); margin-bottom: var(--space-md); }
+.block__foot { margin-top: var(--space-sm); text-align: right; }
+.link { font-size: var(--font-caption); color: var(--color-primary); }
+
+/* 小号按钮 */
+.btn-sm {
+  min-height: 72rpx;
+  height: 72rpx;
+  padding: 0 var(--space-md);
+  font-size: var(--font-caption);
+  font-weight: 560;
+  width: auto;
+  box-shadow: none;
+}
+.share-btn {
+  margin: 0;
+  line-height: 72rpx;
+  border: none;
+}
+.share-btn::after { border: none; }
+.btn-row { display: flex; gap: var(--space-sm); margin-top: var(--space-md); }
+
+/* 邀请码 */
+.invite__code {
+  padding: 18rpx 0;
+  text-align: center;
+  border-radius: var(--radius-md);
+  background: var(--bg-block);
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 52rpx;
+  font-weight: 700;
+  letter-spacing: 10rpx;
+  color: var(--color-primary);
+}
+.invite__acts { margin-top: var(--space-sm); display: flex; gap: var(--space-xs); }
+.invite__acts .btn-sm { flex: 1; padding: 0; }
+.invite__tip { margin-top: var(--space-sm); font-size: var(--font-micro); color: var(--text-tertiary); line-height: 1.6; }
+
+/* 邀请卡片画布：移出可视区，保证能正常绘制又不挡住页面 */
+.poster-canvas {
+  position: fixed;
+  left: -2000rpx;
+  top: 0;
+  width: 375px;
+  height: 520px;
+  pointer-events: none;
+}
+
+/* 二维码 */
+.qr-wrap { margin-top: var(--space-md); display: flex; justify-content: center; }
+.qr-img { width: 320rpx; height: 320rpx; border-radius: var(--radius-md); background: #fff; }
+.qr-ph {
+  width: 320rpx;
+  height: 320rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  border: 1rpx dashed var(--border-color);
+  font-size: var(--font-micro);
+  color: var(--text-tertiary);
+  text-align: center;
+  padding: 0 var(--space-md);
+  box-sizing: border-box;
+}
+
+/* 本周提交 */
+.week__row { display: flex; align-items: center; gap: var(--space-md); }
+.week__num { font-size: 64rpx; font-weight: 760; color: var(--color-primary); line-height: 1; }
+.week__total { font-size: var(--font-body); color: var(--text-tertiary); font-weight: 500; }
+.week__meta { flex: 1; min-width: 0; }
+.week__label { font-size: var(--font-micro); color: var(--text-tertiary); }
+.week__mine { margin-top: 6rpx; font-size: var(--font-caption); color: var(--color-warning); }
+.week__mine--done { color: var(--color-success); }
+.bar { margin-top: var(--space-md); height: 12rpx; border-radius: 999rpx; background: var(--bg-block); overflow: hidden; }
+.bar__fill { height: 100%; border-radius: 999rpx; background: var(--color-accent-grad); transition: width 0.3s ease; }
+
+/* 成员 */
+.mrow { display: flex; align-items: center; padding: 18rpx 0; border-bottom: 1rpx solid var(--border-color); }
+.mrow:last-child { border-bottom: none; }
+.mrow__avatar {
+  width: 68rpx;
+  height: 68rpx;
+  border-radius: 50%;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-size: var(--font-caption);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: var(--space-sm);
+  flex-shrink: 0;
+}
+.mrow__body { flex: 1; min-width: 0; }
+.mrow__name { font-size: var(--font-body); color: var(--text-primary); display: flex; align-items: center; gap: 10rpx; }
+.mrow__id { margin-top: 4rpx; font-size: var(--font-micro); color: var(--text-tertiary); }
+.mrow__del { padding: 8rpx 16rpx; font-size: var(--font-micro); color: var(--color-danger); }
+
+/* 危险操作 */
+.block--danger { background: var(--bg-card); text-align: center; }
+.danger-link { color: var(--color-danger); font-size: var(--font-caption); }
+.empty--inline { padding: 30rpx 0; text-align: left; }

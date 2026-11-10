@@ -2,6 +2,7 @@
 const { announce, contest, auth } = require('../../services/index');
 const { getProfile, isTeacher, isVerified, isLogin } = require('../../utils/auth');
 const favorite = require('../../utils/favorite');
+const { raceTimeText } = require('../../utils/contest');
 const { ROLE_TEXT, AUTH_STATUS_TEXT, MY_CONTEST_STATUS_TEXT } = require('../../constants/index');
 
 /** 关注状态 → 标签配色 */
@@ -26,7 +27,7 @@ Page({
     // 教师：我发布的公告
     myAnnouncements: [],
     showMyAnnounce: false,
-    // 学生/教师：我关注的赛事
+    // 我关注的赛事（赛事库星标同步）
     myContests: []
   },
 
@@ -52,8 +53,8 @@ Page({
       authStatusText: AUTH_STATUS_TEXT[authStatus] || '未认证'
     });
     if (admin) this.loadSystemStatus();
-    // 只要登录就可读「我关注的赛事」（云端 myList 仅要求登录）
-    if (this.data.isLogin) this.loadMyContests();
+    // 登录即可读「我关注的赛事」（赛事统计内容在个人主页页内加载）
+    if (isLogin()) this.loadMyContests();
   },
 
   /** 我关注的赛事（报名时间/开赛时间/往期惯例） */
@@ -69,7 +70,7 @@ Page({
           level: c.level || '',
           statusText: MY_CONTEST_STATUS_TEXT[m.status] || '关注',
           statusClass: STATUS_CLASS[m.status] || 'tag-primary',
-          timeText: this.buildRaceTime(c)
+          timeText: raceTimeText(c)
         };
       });
       // 云端是真相：把云端关注合并进本地缓存，保证赛事库星标一致
@@ -78,15 +79,6 @@ Page({
     } catch (e) {
       this.setData({ myContests: [] });
     }
-  },
-
-  /** 赛事时间文案：优先官方精确日期，否则往期惯例月份 */
-  buildRaceTime(c) {
-    if (c.regEnd) return '报名截止 ' + String(c.regEnd).slice(0, 10);
-    if (c.contestDate) return '开赛 ' + String(c.contestDate).slice(0, 10);
-    const ms = c.typicalMonths;
-    if (ms && ms.length) return '往届惯例 ' + ms.join('/') + ' 月报名';
-    return '时间待定';
   },
 
   // ===== 管理员：系统状态 =====
@@ -143,6 +135,24 @@ Page({
     wx.navigateTo({ url: '/pkgAuth/login/login' });
   },
 
+  /** 头像卡片 → 个人主页（未登录先去登录） */
+  goProfile() {
+    if (!this.data.isLogin) {
+      this.goLogin();
+      return;
+    }
+    wx.navigateTo({ url: '/pkgContest/profile/profile' });
+  },
+
+  /** 赛事统计 → 总览页（两个板块入口） */
+  goMyStats() {
+    if (!this.data.isLogin) {
+      this.goLogin();
+      return;
+    }
+    wx.navigateTo({ url: '/pkgContest/mystats/mystats' });
+  },
+
   /** 弹层占位：catchtap 阻止事件冒泡到遮罩 */
   noop() {},
 
@@ -163,6 +173,20 @@ Page({
     wx.navigateTo({ url: '/pkgWork/task/publish' });
   },
 
+  /** 学生：每周学习汇报 */
+  goWeeklyReport() {
+    wx.navigateTo({ url: '/pages/report/report' });
+  },
+
+  goClasses() {
+    wx.navigateTo({ url: '/pages/class/list' });
+  },
+
+  /** 教师：每周汇报收集 */
+  goReportCollect() {
+    wx.navigateTo({ url: '/pkgWork/report/list' });
+  },
+
   goManageContest() {
     wx.navigateTo({ url: '/pkgContest/manage/manage' });
   },
@@ -172,7 +196,7 @@ Page({
     wx.switchTab({ url: '/pages/contest/contest' });
   },
 
-  /** 关注的赛事 → 赛事详情 */
+  /** 赛事统计条目 → 赛事详情（可登记参赛/获奖） */
   goContestDetail(e) {
     const id = e.currentTarget.dataset.id;
     if (id) wx.navigateTo({ url: '/pages/contest/detail/detail?id=' + id });

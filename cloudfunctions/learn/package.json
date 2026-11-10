@@ -4,6 +4,7 @@
   "description": "计科创新中心 · learn 域",
   "main": "index.js",
   "dependencies": {
-    "wx-server-sdk": "~2.6.3"
+    "wx-server-sdk": "~2.6.3",
+    "node-xlsx": "^0.24.0"
   }
 }

@@ -1,0 +1,112 @@
+/* pages/report/report.wxss —— 学生端：每周学习汇报 */
+.page { min-height: 100vh; background: var(--bg-page); padding: 0 var(--space-lg) 180rpx; }
+
+.block {
+  margin-top: var(--space-md);
+  padding: var(--space-lg);
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+.block__title { font-size: var(--font-body); font-weight: 560; color: var(--text-primary); margin-bottom: var(--space-md); }
+.block__hint { margin-left: 12rpx; font-size: var(--font-micro); color: var(--text-tertiary); font-weight: 400; }
+.block__foot { margin-top: var(--space-sm); display: flex; justify-content: flex-end; }
+.counter { margin-top: var(--space-xs); text-align: right; font-size: var(--font-micro); color: var(--text-tertiary); }
+.link { font-size: var(--font-caption); color: var(--color-primary); }
+
+/* 本周状态卡 */
+.block--status { margin-top: var(--space-sm); }
+.status { display: flex; align-items: center; justify-content: space-between; }
+.status__left { flex: 1; min-width: 0; }
+.status__title { font-size: var(--font-body); font-weight: 560; color: var(--text-primary); }
+.status__desc { margin-top: 8rpx; font-size: var(--font-caption); color: var(--text-secondary); line-height: 1.5; }
+.status__badge {
+  margin-left: var(--space-sm);
+  padding: 10rpx 24rpx;
+  border-radius: var(--radius-pill);
+  font-size: var(--font-caption);
+  font-weight: 500;
+}
+.status__badge--todo { background: var(--color-warning-light); color: var(--color-warning); }
+.status__badge--done { background: var(--color-success-light); color: var(--color-success); }
+.status__tip {
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1rpx solid var(--border-color);
+  font-size: var(--font-micro);
+  color: var(--text-tertiary);
+  line-height: 1.6;
+}
+
+/* 投递班级 */
+.chips { display: flex; flex-wrap: wrap; gap: var(--space-xs); }
+.chip {
+  display: flex;
+  align-items: center;
+  padding: 14rpx 26rpx;
+  border-radius: var(--radius-pill);
+  background: var(--bg-block);
+  border: 1rpx solid var(--border-color);
+  font-size: var(--font-caption);
+  color: var(--text-secondary);
+}
+.chip--on {
+  background: var(--color-primary-light);
+  border-color: rgba(59, 91, 255, 0.4);
+  color: var(--color-primary);
+  font-weight: 560;
+}
+.chip__tick { margin-right: 6rpx; }
+.noclass {
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  background: var(--color-warning-light);
+}
+.noclass__title { font-size: var(--font-caption); font-weight: 560; color: var(--color-warning); }
+.noclass__desc { margin-top: 6rpx; font-size: var(--font-micro); color: var(--text-secondary); line-height: 1.5; }
+
+/* 历史记录 */
+.empty--inline { padding: 30rpx 0; text-align: left; }
+.hitem {
+  padding: var(--space-md);
+  margin-bottom: var(--space-sm);
+  border-radius: var(--radius-md);
+  background: var(--bg-block);
+}
+.hitem__head { display: flex; align-items: center; }
+.hitem__week { font-size: var(--font-caption); font-weight: 560; color: var(--text-primary); }
+.hitem__time { margin-left: auto; font-size: var(--font-micro); color: var(--text-tertiary); }
+.hitem__range { margin-top: 6rpx; font-size: var(--font-micro); color: var(--text-tertiary); }
+.hitem__summary {
+  margin-top: 12rpx;
+  font-size: var(--font-caption);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* 底部操作条：毛玻璃 */
+.footer {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  padding: var(--space-md) var(--space-lg) calc(var(--space-md) + env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(24rpx) saturate(180%);
+  -webkit-backdrop-filter: blur(24rpx) saturate(180%);
+  box-shadow: 0 -4rpx 20rpx rgba(90, 82, 70, 0.06);
+}
+.submit {
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: #fff;
+  font-size: var(--font-body);
+  font-weight: 560;
+}
+.submit--disabled { opacity: 0.5; }

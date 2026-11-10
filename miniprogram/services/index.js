@@ -76,6 +76,12 @@ const contest = {
   // 我的竞赛
   myList: (params) => request(DOMAIN.CONTEST, 'myList', params, { silent: true }),
   follow: (data) => request(DOMAIN.CONTEST, 'follow', data, { loading: '处理中' }),
+  // 学生自主登记参赛 / 获奖等次
+  register: (data) => request(DOMAIN.CONTEST, 'register', data, { loading: '保存中' }),
+  // 比赛统计（概览 + 学生榜 + 热门赛事 + 我的战绩）
+  stats: () => request(DOMAIN.CONTEST, 'stats', {}, { silent: true }),
+  // 个人赛事档案（本人或他人，公开可查）
+  myProfile: (params) => request(DOMAIN.CONTEST, 'myProfile', params || {}, { silent: true }),
   updateProgress: (data) => request(DOMAIN.CONTEST, 'updateProgress', data, { loading: '保存中' }),
   // 教师/管理员维护（含赛事时间编辑）
   create: (data) => request(DOMAIN.CONTEST, 'create', data, { loading: '保存中' }),
@@ -131,6 +137,46 @@ const qa = {
   removeAnswer: (data) => request(DOMAIN.LEARN, 'qaRemoveAnswer', data, { loading: '删除中' })
 };
 
+// ============ 每周学习汇报（学生提交 → 教师按周查看 / 导出 Excel） ============
+const report = {
+  /** 学生：读取某周（默认本周）自己的汇报 */
+  mine: (params) => request(DOMAIN.LEARN, 'reportMine', params || {}, { silent: true }),
+  /** 学生：保存/修改本周汇报 */
+  save: (data) => request(DOMAIN.LEARN, 'reportSave', data, { loading: '保存中' }),
+  /** 学生：我的历史汇报 */
+  myWeeks: (params) => request(DOMAIN.LEARN, 'reportMyWeeks', params || {}, { silent: true }),
+  /** 教师：周次汇总 */
+  weeks: (params) => request(DOMAIN.LEARN, 'reportWeeks', params || {}, { silent: true }),
+  /** 教师：某周明细 + 未提交名单 */
+  list: (params) => request(DOMAIN.LEARN, 'reportList', params, { silent: true }),
+  /** 教师：导出 Excel，返回云文件 ID */
+  exportExcel: (data) => request(DOMAIN.LEARN, 'reportExport', data, { loading: '生成表格中' })
+};
+
+// ============ 班级（师生归属） ============
+const classroom = {
+  /** 创建班级 */
+  create: (data) => request(DOMAIN.LEARN, 'classCreate', data, { loading: '创建中' }),
+  /** 我加入的班级（含本周是否已提交） */
+  list: (params) => request(DOMAIN.LEARN, 'classList', params || {}, { silent: true }),
+  /** 班级详情：成员 + 本周提交情况 */
+  detail: (params) => request(DOMAIN.LEARN, 'classDetail', params, { silent: true }),
+  /** 用邀请码加入 */
+  join: (data) => request(DOMAIN.LEARN, 'classJoin', data, { loading: '加入中' }),
+  /** 退出班级 */
+  quit: (data) => request(DOMAIN.LEARN, 'classQuit', data, { loading: '退出中' }),
+  /** 解散班级（创建者） */
+  dissolve: (data) => request(DOMAIN.LEARN, 'classDissolve', data, { loading: '解散中' }),
+  /** 移除成员（创建者） */
+  removeMember: (data) => request(DOMAIN.LEARN, 'classRemoveMember', data),
+  /** 修改班级信息（创建者） */
+  update: (data) => request(DOMAIN.LEARN, 'classUpdate', data, { loading: '保存中' }),
+  /** 邀请小程序码 */
+  qr: (params) => request(DOMAIN.LEARN, 'classQr', params, { silent: true }),
+  /** 精简列表（供汇报页选择投递对象） */
+  mine: (params) => request(DOMAIN.LEARN, 'classMine', params || {}, { silent: true })
+};
+
 // ============ 智能体（预留） ============
 /**
  * 后续接入大模型 API 时，只需后端 agent 云函数对接，
@@ -157,5 +203,7 @@ module.exports = {
   announce,
   project,
   qa,
+  report,
+  classroom,
   agent
 };

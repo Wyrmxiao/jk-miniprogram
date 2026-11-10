@@ -1,0 +1,116 @@
+/* pkgContest/profile/profile.wxss —— 个人主页 */
+@import '../../styles/variables.wxss';
+@import '../../styles/mixins.wxss';
+
+.state {
+  padding: 120rpx 0;
+  text-align: center;
+  font-size: var(--font-caption);
+  color: var(--text-secondary);
+}
+
+/* ===== 主页头部 ===== */
+.profile {
+  display: flex;
+  align-items: center;
+  margin: var(--space-md) var(--space-lg) 0;
+  padding: var(--space-lg);
+  background: var(--bg-card);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  backdrop-filter: blur(28px) saturate(180%);
+  border-radius: var(--radius-lg);
+  border: 1rpx solid var(--glass-border);
+  box-shadow: var(--shadow-card);
+  animation: riseIn var(--duration-spring) var(--ease-spring) both;
+}
+.profile__avatar {
+  width: 112rpx;
+  height: 112rpx;
+  margin-right: var(--space-lg);
+  border-radius: 50%;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-size: var(--font-title);
+  font-weight: 560;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.profile__info { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; }
+.profile__name { font-size: var(--font-headline); font-weight: 560; color: var(--text-primary); }
+.profile__tags {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: var(--space-sm);
+}
+.profile__tags .tag { margin-right: var(--space-sm); }
+.share-btn {
+  flex-shrink: 0;
+  margin: var(--space-md) 0 0;
+  padding: 0 26rpx;
+  min-height: 56rpx;
+  line-height: 56rpx;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-size: var(--font-caption);
+  font-weight: 560;
+}
+.share-btn::after { border: none; }
+
+/* ===== 赛事统计 ===== */
+.group__title-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-lg) var(--space-lg) var(--space-sm);
+}
+.group__title-row .group__title { padding: 0; }
+.group__action {
+  font-size: var(--font-caption);
+  color: var(--color-primary);
+  font-weight: 560;
+  padding: 8rpx 0 8rpx var(--space-md);
+}
+.cell--head { min-height: 72rpx; padding-top: var(--space-sm); padding-bottom: 0; }
+.stat-sub {
+  font-size: var(--font-caption);
+  color: var(--text-tertiary);
+  font-weight: 560;
+  letter-spacing: var(--tracking-normal);
+}
+.stat-sub__count {
+  margin-left: 10rpx;
+  padding: 2rpx 14rpx;
+  border-radius: var(--radius-pill);
+  background: var(--bg-block);
+  color: var(--text-secondary);
+  font-size: var(--font-micro);
+}
+.my-race__top {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.my-race__name {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--font-body);
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.5;
+  margin-right: var(--space-sm);
+}
+.my-race__top .level { flex-shrink: 0; }
+
+.profile-foot {
+  padding: var(--space-md) var(--space-lg) var(--space-xl);
+  text-align: center;
+  font-size: var(--font-micro);
+  color: var(--text-tertiary);
+}

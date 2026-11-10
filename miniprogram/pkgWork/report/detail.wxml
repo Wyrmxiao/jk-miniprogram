@@ -1,0 +1,84 @@
+<view class="page">
+  <view class="blobs">
+    <view class="blob blob--1"></view>
+    <view class="blob blob--2"></view>
+    <view class="blob blob--3"></view>
+  </view>
+
+  <view class="hero">
+    <view class="hero__title">{{weekKey}} 汇报明细</view>
+    <view class="hero__sub">{{className ? className + ' · ' : ''}}{{rangeText}}{{isCurrent ? ' · 本周（可继续收）' : ''}}</view>
+  </view>
+
+  <!-- 汇总 -->
+  <view class="summary">
+    <view class="summary__cell">
+      <view class="summary__num">{{submitted}}</view>
+      <view class="summary__label">已提交</view>
+    </view>
+    <view class="summary__divider"></view>
+    <view class="summary__cell">
+      <view class="summary__num summary__num--warn">{{missing.length}}</view>
+      <view class="summary__label">未提交</view>
+    </view>
+    <view class="summary__divider"></view>
+    <view class="summary__cell">
+      <view class="summary__num">{{total}}</view>
+      <view class="summary__label">学生总数</view>
+    </view>
+  </view>
+
+  <!-- 搜索 -->
+  <view class="search">
+    <input class="search__input" placeholder="搜索姓名 / 学号" value="{{keyword}}" bindinput="onSearch" />
+  </view>
+
+  <view wx:if="{{loading && displayList.length === 0}}" class="state">正在加载…</view>
+  <view wx:elif="{{displayList.length === 0}}" class="empty">
+    <text class="empty__emoji">🗂</text>这一周还没有人提交
+  </view>
+
+  <!-- 提交明细 -->
+  <view wx:else class="list">
+    <view wx:for="{{displayList}}" wx:key="_id" class="card">
+      <view class="card__head">
+        <view class="card__who">
+          <text class="card__name">{{item.name}}</text>
+          <text wx:if="{{item.studentId}}" class="card__sid">{{item.studentId}}</text>
+        </view>
+        <text class="card__time">{{item.updatedText}}</text>
+      </view>
+
+      <view wx:if="{{item.knowledge}}" class="sec">
+        <view class="sec__label">知识点</view>
+        <view class="sec__text">{{item.knowledge}}</view>
+      </view>
+      <view wx:if="{{item.difficulty}}" class="sec">
+        <view class="sec__label">重难点</view>
+        <view class="sec__text">{{item.difficulty}}</view>
+      </view>
+      <view wx:if="{{item.questions}}" class="sec">
+        <view class="sec__label sec__label--warn">不理解的地方</view>
+        <view class="sec__text">{{item.questions}}</view>
+      </view>
+      <view wx:if="{{item.blogUrl}}" class="sec">
+        <view class="sec__label">博客链接</view>
+        <view class="sec__text sec__text--link" data-url="{{item.blogUrl}}" bindtap="copyBlog">{{item.blogUrl}}（点击复制）</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 未提交名单 -->
+  <view wx:if="{{missing.length > 0}}" class="block">
+    <view class="block__title">未提交（{{missing.length}} 人）</view>
+    <view class="chips">
+      <text wx:for="{{missing}}" wx:key="openid" class="chip">{{item.name}}{{item.studentId ? ' · ' + item.studentId : ''}}</text>
+    </view>
+  </view>
+
+  <view class="footer">
+    <view class="submit pressable {{exporting ? 'submit--disabled' : ''}}" hover-class="pressing" bindtap="exportExcel">
+      {{exporting ? '生成中…' : '导出 Excel（含未提交名单）'}}
+    </view>
+  </view>
+</view>

@@ -1,0 +1,161 @@
+<view class="page">
+  <view class="blobs">
+    <view class="blob blob--1"></view>
+    <view class="blob blob--2"></view>
+    <view class="blob blob--3"></view>
+  </view>
+
+  <view class="hero">
+    <view class="hero__row">
+      <view class="hero__title">比赛统计</view>
+      <view class="hero__btns">
+        <view class="hero__manage pressable" hover-class="pressing" bindtap="goContest">赛事库</view>
+      </view>
+    </view>
+    <view class="hero__sub">全院参赛与获奖汇总 · 成绩由同学在赛事页自主登记</view>
+  </view>
+
+  <view wx:if="{{loading}}" class="state">正在统计…</view>
+
+  <view wx:elif="{{error}}" class="state state--empty">
+    <view class="state__emoji">📊</view>
+    <view>{{error}}</view>
+  </view>
+
+  <block wx:else>
+    <!-- 概览 -->
+    <view class="card ov">
+      <view class="ov__grid">
+        <view class="ov__item">
+          <view class="ov__num">{{overview.people}}</view>
+          <view class="ov__label">参与人数</view>
+        </view>
+        <view class="ov__item">
+          <view class="ov__num">{{overview.entries}}</view>
+          <view class="ov__label">参赛人次</view>
+        </view>
+        <view class="ov__item">
+          <view class="ov__num">{{overview.awards}}</view>
+          <view class="ov__label">获奖人次</view>
+        </view>
+        <view class="ov__item">
+          <view class="ov__num">{{overview.contests}}</view>
+          <view class="ov__label">覆盖赛事</view>
+        </view>
+      </view>
+      <view wx:if="{{levelRows.length}}" class="ov__levels">
+        <text wx:for="{{levelRows}}" wx:key="level" class="ov__level">{{item.text}}获奖 {{item.count}}</text>
+      </view>
+    </view>
+
+    <!-- 我的战绩 -->
+    <view class="card mine">
+      <view class="mine__head">
+        <view class="mine__title">我的战绩</view>
+        <view wx:if="{{isLogin && myRank}}" class="mine__rank">第 {{myRank}} 名 · {{myScore}} 分</view>
+      </view>
+
+      <block wx:if="{{isLogin}}">
+        <view class="mine__grid">
+          <view class="mine__cell">
+            <view class="mine__num">{{my.followed || 0}}</view>
+            <view class="mine__label">关注</view>
+          </view>
+          <view class="mine__cell">
+            <view class="mine__num">{{my.joined || 0}}</view>
+            <view class="mine__label">参赛</view>
+          </view>
+          <view class="mine__cell">
+            <view class="mine__num">{{my.awards || 0}}</view>
+            <view class="mine__label">获奖</view>
+          </view>
+        </view>
+
+        <view wx:if="{{my.awardsList.length}}" class="mine__list">
+          <view class="mine__list-title">获奖记录</view>
+          <view
+            wx:for="{{my.awardsList}}"
+            wx:key="competitionId"
+            class="mine__award pressable"
+            hover-class="pressing"
+            data-id="{{item.competitionId}}"
+            bindtap="goDetail"
+          >
+            <view class="mine__award-name">{{item.name}}</view>
+            <view class="tag tag-primary">{{item.awardText}}</view>
+          </view>
+        </view>
+        <view wx:else class="mine__tip">还没有获奖记录 · 参加过比赛后，去赛事详情页登记</view>
+      </block>
+
+      <view wx:else class="mine__login pressable" hover-class="pressing" bindtap="goLogin">登录后登记我的比赛成绩 ›</view>
+    </view>
+
+    <!-- 切换 -->
+    <view class="seg">
+      <view
+        class="seg__item {{tab === 'ranking' ? 'seg__item--on' : ''}}"
+        data-tab="ranking"
+        bindtap="switchTab"
+      >学生榜</view>
+      <view
+        class="seg__item {{tab === 'hot' ? 'seg__item--on' : ''}}"
+        data-tab="hot"
+        bindtap="switchTab"
+      >热门赛事</view>
+    </view>
+
+    <!-- 学生榜 -->
+    <view wx:if="{{tab === 'ranking'}}" class="group">
+      <view class="group__title">学生榜<text class="group__note">共 {{rankingTotal}} 人</text></view>
+      <view wx:if="{{!ranking.length}}" class="empty">
+        <view class="empty__emoji">🏅</view>
+        还没有同学登记参赛成绩
+      </view>
+      <view wx:for="{{ranking}}" wx:key="rank" class="rank">
+        <view class="rank__no rank__no--{{item.rank <= 3 ? item.rank : 'n'}}">{{item.rank}}</view>
+        <view class="rank__body">
+          <view class="rank__name">
+            {{item.name}}<text wx:if="{{item.isMe}}" class="rank__me">我</text>
+          </view>
+          <view class="rank__meta">{{item.metaText}}</view>
+        </view>
+        <view class="rank__right">
+          <view class="rank__score">{{item.score}}<text class="rank__unit">分</text></view>
+          <view class="rank__sub">参赛{{item.joinCount}} · 获奖{{item.awardCount}}</view>
+        </view>
+      </view>
+
+      <view wx:if="{{isLogin && myRank && !myInTop}}" class="rank-mine">
+        <view class="rank-mine__text">我的排名</view>
+        <view class="rank-mine__val">第 {{myRank}} 名 · {{myScore}} 分</view>
+      </view>
+    </view>
+
+    <!-- 热门赛事 -->
+    <view wx:else class="group">
+      <view class="group__title">热门赛事<text class="group__note">按参赛人数</text></view>
+      <view wx:if="{{!hot.length}}" class="empty">
+        <view class="empty__emoji">🏆</view>
+        暂无赛事数据
+      </view>
+      <view
+        wx:for="{{hot}}"
+        wx:key="id"
+        class="hot pressable"
+        hover-class="pressing"
+        data-id="{{item.id}}"
+        bindtap="goDetail"
+      >
+        <view class="hot__idx">{{index + 1}}</view>
+        <view class="hot__body">
+          <view class="hot__name">{{item.name}}</view>
+          <view class="hot__meta">{{item.subText}}</view>
+        </view>
+        <text class="cell__chevron">›</text>
+      </view>
+    </view>
+
+    <view class="stats-foot">积分规则：参赛 +2 分；获奖按等次计分并乘赛事级别系数，仅作展示激励</view>
+  </block>
+</view>

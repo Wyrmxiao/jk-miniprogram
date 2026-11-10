@@ -1,0 +1,37 @@
+<view class="page">
+  <view class="blobs">
+    <view class="blob blob--1"></view>
+    <view class="blob blob--2"></view>
+    <view class="blob blob--3"></view>
+  </view>
+
+  <view wx:if="{{loading}}" class="state">正在加载…</view>
+
+  <block wx:else>
+    <!-- 主页头部 -->
+    <view class="profile">
+      <view class="profile__avatar">{{user && user.name ? user.name[0] : '同'}}</view>
+      <view class="profile__info">
+        <view class="profile__name">{{user ? (user.name || '同学') : '微信用户'}}</view>
+        <view wx:if="{{user}}" class="profile__tags">
+          <text class="tag tag-primary">{{user.major || '专业未填写'}}</text>
+          <text class="tag">{{user.grade || '年级未填写'}}</text>
+        </view>
+        <button wx:if="{{isSelf}}" class="share-btn pressable" hover-class="pressing" open-type="share">分享主页</button>
+      </view>
+    </view>
+
+    <!-- 赛事统计入口 -->
+    <view class="group">
+      <view class="cell pressable" hover-class="pressing" bindtap="goMyStats">
+        <view class="cell__body">
+          <view class="cell__title">赛事统计</view>
+          <view class="cell__desc">正在准备的比赛 · 参加过的比赛</view>
+        </view>
+        <text class="cell__chevron">›</text>
+      </view>
+    </view>
+
+    <view wx:if="{{isSelf}}" class="profile-foot">点右上角「···」可把主页转发给同学和老师</view>
+  </block>
+</view>

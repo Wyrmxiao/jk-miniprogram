@@ -1,0 +1,54 @@
+<view class="page">
+  <view class="blobs">
+    <view class="blob blob--1"></view>
+    <view class="blob blob--2"></view>
+    <view class="blob blob--3"></view>
+  </view>
+
+  <view wx:if="{{loading}}" class="state">正在加载…</view>
+
+  <block wx:else>
+    <!-- 本人：添加入口 -->
+    <view wx:if="{{isSelf}}" class="group">
+      <view class="cell pressable" hover-class="pressing" bindtap="goPick">
+        <view class="cell__body">
+          <view class="cell__title">＋ 添加赛事</view>
+          <view class="cell__desc">从赛事库挑选，加入{{type === 'preparing' ? '正在准备' : '参加过'}}的比赛</view>
+        </view>
+        <text class="cell__chevron">›</text>
+      </view>
+    </view>
+
+    <!-- 列表 -->
+    <view class="group">
+      <view wx:if="{{!list.length}}" class="cell pressable" hover-class="pressing" bindtap="{{isSelf ? 'goContest' : ''}}">
+        <view class="cell__body">
+          <view class="cell__title">{{isSelf ? '这里还是空的' : 'TA 还没有记录'}}</view>
+          <view wx:if="{{isSelf}}" class="cell__desc">{{type === 'preparing' ? '点上方「添加赛事」或前往"竞赛"看看' : '参加过比赛后，可在赛事详情页登记'}}</view>
+        </view>
+        <text wx:if="{{isSelf}}" class="cell__chevron">›</text>
+      </view>
+
+      <view
+        wx:for="{{list}}"
+        wx:key="recordId"
+        class="cell pressable"
+        hover-class="pressing"
+        data-id="{{item.competitionId}}"
+        bindtap="goDetail"
+        bindlongpress="removeItem"
+      >
+        <view class="cell__body">
+          <view class="race__top">
+            <text class="race__name text-2lines">{{item.name}}</text>
+            <text class="level level--{{item.level}}">{{item.level}}类</text>
+          </view>
+          <view class="cell__desc">{{type === 'preparing' ? item.timeText : '获奖情况：' + item.awardShow}}</view>
+        </view>
+        <text class="cell__chevron">›</text>
+      </view>
+    </view>
+
+    <view wx:if="{{isSelf && list.length}}" class="page-foot">长按赛事可移除</view>
+  </block>
+</view>
