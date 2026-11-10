@@ -13,14 +13,12 @@
       <view class="profile__avatar">{{user && user.name ? user.name[0] : '同'}}</view>
       <view class="profile__info">
         <view class="profile__name">{{user ? (user.name || '同学') : '微信用户'}}</view>
-        <view class="profile__meta">
-          <text wx:if="{{user && (user.major || user.grade)}}" class="tag tag-primary">
-            {{user.major || '专业未填写'}}{{user.grade ? ' · ' + user.grade : ''}}
-          </text>
-          <text wx:else class="tag">专业未填写</text>
+        <view wx:if="{{user}}" class="profile__tags">
+          <text class="tag tag-primary">{{user.major || '专业未填写'}}</text>
+          <text class="tag">{{user.grade || '年级未填写'}}</text>
         </view>
+        <button wx:if="{{isSelf}}" class="share-btn pressable" hover-class="pressing" open-type="share">分享主页</button>
       </view>
-      <button wx:if="{{isSelf}}" class="share-btn pressable" hover-class="pressing" open-type="share">分享主页</button>
     </view>
 
     <!-- 赛事统计入口 -->

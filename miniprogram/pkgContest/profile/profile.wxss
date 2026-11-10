@@ -37,21 +37,21 @@
   justify-content: center;
   flex-shrink: 0;
 }
-.profile__info { flex: 1; min-width: 0; }
+.profile__info { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; }
 .profile__name { font-size: var(--font-headline); font-weight: 560; color: var(--text-primary); }
-.profile__meta {
+.profile__tags {
   display: flex;
   flex-direction: row;
   align-items: center;
   margin-top: var(--space-sm);
-  flex-wrap: wrap;
 }
+.profile__tags .tag { margin-right: var(--space-sm); }
 .share-btn {
   flex-shrink: 0;
-  margin: 0;
+  margin: var(--space-md) 0 0;
   padding: 0 26rpx;
-  min-height: 64rpx;
-  line-height: 64rpx;
+  min-height: 56rpx;
+  line-height: 56rpx;
   border-radius: var(--radius-pill);
   background: var(--color-primary-light);
   color: var(--color-primary);
