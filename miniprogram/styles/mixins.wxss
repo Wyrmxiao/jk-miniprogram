@@ -370,6 +370,23 @@ input.field { height: 96rpx; line-height: 96rpx; padding: 0 var(--space-md); }
   border: 1rpx solid var(--glass-border);
   font-size: var(--font-caption);
 }
+/* picker / input 嵌套在 .field 容器内时（如算法页弹层）：
+   去掉自身框线与高度，撑满外层 field，避免双重描边和溢出压行 */
+.field .picker {
+  min-height: 0;
+  height: 100%;
+  padding: 0;
+  background: transparent;
+  border: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  font-size: var(--font-body);
+  color: var(--text-primary);
+}
+.field input {
+  height: 100%;
+  line-height: 88rpx;
+}
 .switch-row {
   display: flex;
   align-items: center;

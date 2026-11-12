@@ -160,3 +160,8 @@
 .sheet .opts {
   padding: var(--space-sm) var(--space-md) 0;
 }
+
+/* 弹层内按钮与上一个输入框的间距，与输入框之间的间距保持一致（28rpx） */
+.sheet .btn {
+  margin-top: var(--space-md);
+}
