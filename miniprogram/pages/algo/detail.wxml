@@ -1,0 +1,76 @@
+<view class="page">
+  <view class="blobs">
+    <view class="blob blob--1"></view>
+    <view class="blob blob--2"></view>
+    <view class="blob blob--3"></view>
+  </view>
+  <view wx:if="{{loading}}" class="state-empty">加载中…</view>
+
+  <block wx:elif="{{rec}}">
+    <view class="hero">
+      <view class="hero__title">{{rec.title}}</view>
+      <view class="hero__btns">
+        <view class="level">{{rec.diffText}}</view>
+        <text class="hero__meta">{{rec.dateText}}</text>
+        <text class="tag {{rec.passed ? 'tag-success' : 'tag-warning'}}">{{rec.passedText}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{rec.tagNames.length}}" class="group">
+      <view class="group__title">知识点</view>
+      <view class="opts pd">
+        <view wx:for="{{rec.tagNames}}" wx:key="*this" class="opt opt--on">{{item}}</view>
+      </view>
+    </view>
+
+    <view class="group">
+      <view class="group__title">题目信息</view>
+      <view class="cell">
+        <view class="cell__body">
+          <view class="cell__title">平台</view>
+          <view class="cell__desc">{{rec.platform || '手动补记'}}</view>
+        </view>
+      </view>
+      <view wx:if="{{rec.problemInfo || rec.url}}" class="cell pressable" hover-class="pressing" bindtap="copyLink">
+        <view class="cell__body">
+          <view class="cell__title">题目链接</view>
+          <view class="cell__desc text-ellipsis">{{rec.url}}</view>
+        </view>
+        <view class="cell__value">复制</view>
+      </view>
+      <view wx:if="{{rec.note}}" class="cell">
+        <view class="cell__body">
+          <view class="cell__title">我的备注</view>
+          <view class="cell__desc">{{rec.note}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 教师评语 -->
+    <view class="group">
+      <view class="group__title">老师评语</view>
+      <view wx:if="{{rec.teacherComment && !isTeacher}}" class="comment-box">
+        <view class="comment-box__by">{{rec.commentBy || '老师'}}：</view>
+        <view>{{rec.teacherComment}}</view>
+      </view>
+      <block wx:if="{{isTeacher}}">
+        <view class="field field--area">
+          <textarea value="{{comment}}" bindinput="onComment" placeholder="给学生写点鼓励或建议…" maxlength="500" cursor-spacing="240" auto-height />
+        </view>
+        <view class="btn btn-primary btn-block pressable {{submitting || !comment ? 'btn-disabled' : ''}}" hover-class="pressing" bindtap="submitComment">保存评语</view>
+      </block>
+      <view wx:if="{{!rec.teacherComment && !isTeacher}}" class="pb__tip">老师还没有评语，继续加油</view>
+    </view>
+
+    <!-- 删除 -->
+    <view wx:if="{{isOwner || isAdmin}}" class="group">
+      <view class="btn btn-danger btn-block pressable" hover-class="pressing" bindtap="removeRecord">删除此记录</view>
+    </view>
+  </block>
+
+  <view wx:else class="empty">
+    <view class="empty__emoji">🤔</view>
+    <view>记录不存在或无权查看</view>
+  </view>
+  <view class="safe-bottom"></view>
+</view>

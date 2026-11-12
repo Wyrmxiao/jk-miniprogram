@@ -1,7 +1,7 @@
 /* pkgWork/admin/users/users.wxss —— 用户与权限（Apple 风格） */
 .page {
   min-height: 100vh;
-  padding-bottom: var(--space-xl);
+  padding-bottom: calc(var(--space-xl) + env(safe-area-inset-bottom));
   background: var(--bg-page);
 }
 
@@ -25,17 +25,17 @@
   background: var(--color-primary-light);
   color: var(--color-primary);
   font-size: var(--font-headline);
-  font-weight: 600;
+  font-weight: 560;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .ucard__body { flex: 1; min-width: 0; }
-.ucard__row { flex-direction: row; align-items: center; flex-wrap: wrap; }
+.ucard__row { display: flex; flex-direction: row; align-items: center; flex-wrap: wrap; }
 .ucard__name {
   margin-right: var(--space-sm);
   font-size: var(--font-body);
-  font-weight: 600;
+  font-weight: 560;
   color: var(--text-primary);
 }
 .ucard__row .tag { margin-right: var(--space-xs); }
@@ -46,7 +46,7 @@
   line-height: 1.5;
 }
 
-.ucard__ops {
+.ucard__ops { display: flex;
   flex-shrink: 0;
   margin-left: var(--space-sm);
   flex-direction: row;

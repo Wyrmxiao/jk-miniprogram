@@ -1,5 +1,5 @@
 /* pkgWork/announce/list.wxss */
-.page { min-height: 100vh; background: var(--bg-page); padding-bottom: 60rpx; }
+.page { min-height: 100vh; background: var(--bg-page); padding-bottom: calc(60rpx + env(safe-area-inset-bottom)); }
 
 .state { text-align: center; color: var(--text-secondary); font-size: var(--font-caption); padding: 40rpx 0; }
 .state--end { color: var(--text-tertiary); }
@@ -16,7 +16,7 @@
   margin-bottom: var(--space-md);
 }
 .item__main { flex: 1; min-width: 0; }
-.item__badges { flex-direction: row; align-items: center; margin-bottom: 12rpx; }
+.item__badges { display: flex; flex-direction: row; align-items: center; margin-bottom: 12rpx; }
 .item__dot {
   width: 12rpx;
   height: 12rpx;
@@ -26,7 +26,7 @@
 }
 .item__title {
   font-size: var(--font-body);
-  font-weight: 600;
+  font-weight: 560;
   color: var(--text-primary);
   line-height: 1.5;
 }

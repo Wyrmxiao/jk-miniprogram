@@ -1,0 +1,183 @@
+<view class="page">
+  <view class="blobs">
+    <view class="blob blob--1"></view>
+    <view class="blob blob--2"></view>
+    <view class="blob blob--3"></view>
+  </view>
+  <view wx:if="{{loading}}" class="state-empty">加载中…</view>
+
+  <block wx:elif="{{problem}}">
+    <view class="hero">
+      <view class="hero__title">{{problem.titleCn || problem.title}}</view>
+      <view wx:if="{{problem.titleCn}}" class="hero__sub">{{problem.title}}</view>
+      <view class="hero__btns">
+        <view class="level">{{problem.rating || '—'}}</view>
+        <text class="hero__meta">{{problem.pid}} · {{problem.source === 'codeforces' ? 'Codeforces' : '力扣'}}</text>
+        <text wx:if="{{done}}" class="tag tag-success">已通过</text>
+        <text wx:if="{{hasContent}}" class="tag tag-primary">{{solutionTypeText}}</text>
+      </view>
+    </view>
+
+    <!-- ===== 完整题面 / 解题过程 / 知识点 ===== -->
+    <block wx:if="{{hasContent}}">
+      <view wx:if="{{contentLoading}}" class="state-empty">题面加载中…</view>
+      <view wx:elif="{{contentErr}}" class="group">
+        <view class="empty">{{contentErr}}</view>
+      </view>
+
+      <block wx:elif="{{content}}">
+        <view class="seg content-seg">
+          <view class="seg__item {{tab === 'statement' ? 'seg__item--on' : ''}} pressable" data-tab="statement" bindtap="onTab" hover-class="pressing">完整题面</view>
+          <view class="seg__item {{tab === 'solution' ? 'seg__item--on' : ''}} pressable" data-tab="solution" bindtap="onTab" hover-class="pressing">解题过程</view>
+          <view class="seg__item {{tab === 'knowledge' ? 'seg__item--on' : ''}} pressable" data-tab="knowledge" bindtap="onTab" hover-class="pressing">知识点</view>
+        </view>
+
+        <!-- 背题模式：解析默认收起 -->
+        <view wx:if="{{tab !== 'statement' && !revealed}}" class="recite-bar pressable" hover-class="pressing" bindtap="toggleReveal">
+          <view class="recite-bar__icon">◌</view>
+          <view class="recite-bar__body">
+            <view class="recite-bar__title">背题模式：解析已收起</view>
+          </view>
+          <view class="recite-bar__go">点开 ›</view>
+        </view>
+
+        <block wx:if="{{tab === 'statement'}}">
+          <!-- ===== 题面 ===== -->
+          <view class="group">
+            <view class="group__title">题目</view>
+            <view wx:if="{{metaText}}" class="stmt-meta">{{metaText}}</view>
+            <view class="stmt">
+              <rich-text nodes="{{content.statementHtml}}"></rich-text>
+            </view>
+          </view>
+          <view class="group">
+            <view class="btn btn-plain btn-block pressable" hover-class="pressing" bindtap="copyLink">去官方做题（复制链接）</view>
+            <view class="pb__tip">复制链接到浏览器做题，完成后返回标记「通过」。</view>
+          </view>
+        </block>
+
+        <block wx:elif="{{tab === 'solution' && revealed}}">
+          <!-- ===== 解题过程 ===== -->
+          <block wx:if="{{content.solution.type === 'editorial'}}">
+            <view class="group">
+              <view class="group__title">这题在考什么</view>
+              <view class="insight">{{content.solution.insight}}</view>
+            </view>
+            <view class="group">
+              <view class="group__title">解题过程</view>
+              <view wx:for="{{solutionSteps}}" wx:key="n" class="step">
+                <view class="step__n">{{item.n}}</view>
+                <view class="step__text">{{item.text}}</view>
+              </view>
+            </view>
+            <view class="group">
+              <view class="group__title">参考代码（C++17）</view>
+              <view class="codebox"><text class="codebox__text" decode="true" user-select="true">{{content.solution.code}}</text></view>
+              <view class="btn btn-plain btn-block pressable" hover-class="pressing" bindtap="copyCode">复制代码</view>
+            </view>
+            <view class="group">
+              <view class="group__title">代码解析</view>
+              <view wx:for="{{codeNotes}}" wx:key="n" class="step">
+                <view class="step__n">{{item.n}}</view>
+                <view class="step__text">{{item.text}}</view>
+              </view>
+            </view>
+            <view class="group">
+              <view class="group__title">复杂度与易错点</view>
+              <view class="kv"><text class="kv__k">复杂度</text><text class="kv__v">{{content.solution.complexity}}</text></view>
+              <view class="kv"><text class="kv__k">最容易 WA</text><text class="kv__v">{{content.solution.trap}}</text></view>
+            </view>
+          </block>
+
+          <!-- 通用框架：明确标注不是逐题题解 -->
+          <block wx:else>
+            <view class="group">
+              <view class="group__title">{{content.solution.mainName}} · 通用解题步骤</view>
+              <view class="notice">{{content.solution.note}}</view>
+              <view wx:for="{{solutionSteps}}" wx:key="n" class="step">
+                <view class="step__n">{{item.n}}</view>
+                <view class="step__text">{{item.text}}</view>
+              </view>
+            </view>
+            <view class="group">
+              <view class="group__title">涉及的知识点</view>
+              <view class="pb__tip">点击知识点查看讲解和代码。</view>
+            </view>
+          </block>
+        </block>
+
+        <block wx:elif="{{tab === 'knowledge' && revealed}}">
+          <!-- ===== 知识点 ===== -->
+          <view class="group">
+            <view class="group__title">涉及的知识点（{{knowledgeItems.length}}）</view>
+            <view wx:for="{{knowledgeItems}}" wx:key="key" class="kcard">
+              <view class="kcard__head pressable" hover-class="pressing" data-idx="{{item.idx}}" bindtap="toggleKnowledge">
+                <view class="kcard__name">{{item.name}}</view>
+                <view class="kcard__chevron">{{item.open ? '−' : '+'}}</view>
+              </view>
+              <view wx:if="{{item.why}}" class="kcard__why">{{item.why}}</view>
+              <block wx:if="{{item.open}}">
+                <view class="kcard__intro">{{item.intro}}</view>
+                <view class="kcard__label">什么时候用</view>
+                <view class="kcard__text">{{item.signalsText}}</view>
+                <view class="kcard__label">解题步骤</view>
+                <view class="kcard__text kcard__text--pre">{{item.stepsText}}</view>
+                <view class="kcard__label">参考代码</view>
+                <view class="codebox"><text class="codebox__text" decode="true" user-select="true">{{item.code}}</text></view>
+                <view class="kcard__label">易错点</view>
+                <view class="kcard__text kcard__text--warn">{{item.pitfallsText}}</view>
+                <view class="kcard__label">复杂度</view>
+                <view class="kcard__text">{{item.complexity}}</view>
+              </block>
+            </view>
+          </view>
+        </block>
+      </block>
+    </block>
+
+    <!-- 无内容包时的降级 -->
+    <view wx:else class="group">
+      <view class="group__title">知识点</view>
+      <view class="opts pd">
+        <view
+          wx:for="{{problem.tagNames}}"
+          wx:key="*this"
+          class="opt opt--on pressable"
+          data-tag="{{problem.tags[index]}}"
+          bindtap="goTagProblems"
+         hover-class="pressing">{{item}}</view>
+      </view>
+      <view class="pb__tip">题面待补充，可前往官网做题。</view>
+      <view class="btn btn-primary btn-block pressable" hover-class="pressing" bindtap="copyLink">复制题目链接，去官方做题</view>
+    </view>
+
+    <!-- ===== 做题记录与备注 ===== -->
+    <view wx:if="{{myRecords.length}}" class="group">
+      <view class="group__title">我的做题备注</view>
+      <view class="field field--area">
+        <textarea value="{{note}}" bindinput="onNote" placeholder="写点思路 / 踩过的坑…" maxlength="500" cursor-spacing="240" auto-height />
+      </view>
+      <view class="btn btn-plain btn-block pressable {{noteSaving ? 'btn-disabled' : ''}}" hover-class="pressing" bindtap="saveNote">保存备注</view>
+      <view
+        wx:for="{{myRecords}}"
+        wx:key="_id"
+        class="cell pressable"
+        hover-class="pressing"
+        data-id="{{item._id}}"
+        bindtap="goRecord"
+      >
+        <view class="cell__body">
+          <view class="cell__title">{{item.date}}</view>
+          <view class="cell__desc">{{item.teacherComment ? '老师已评语' : '查看记录详情'}}</view>
+        </view>
+        <view class="cell__chevron">›</view>
+      </view>
+    </view>
+  </block>
+
+  <view wx:else class="empty">
+    <view class="empty__emoji">🤔</view>
+    <view>题目不存在</view>
+  </view>
+  <view class="safe-bottom"></view>
+</view>

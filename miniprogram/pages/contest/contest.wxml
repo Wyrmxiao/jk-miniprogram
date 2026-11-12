@@ -1,4 +1,10 @@
 <view class="page">
+  <!-- 方向 A 光斑背景 -->
+  <view class="blobs">
+    <view class="blob blob--1"></view>
+    <view class="blob blob--2"></view>
+    <view class="blob blob--3"></view>
+  </view>
   <!-- 顶部：大标题 + 搜索 -->
   <view class="hero">
     <view class="hero__row">
@@ -7,7 +13,7 @@
         <view wx:if="{{isTeacher}}" class="hero__manage pressable" hover-class="pressing" bindtap="goManage">赛事维护</view>
       </view>
     </view>
-    <view class="hero__sub">共 {{total}} 项赛事 · 按最近可参与时间排序 · 默认展示理工其他类</view>
+    <view class="hero__sub">{{total}} 项赛事 · 最近可参与优先</view>
     <input
       class="hero__search"
       placeholder="搜索竞赛名称"
@@ -15,7 +21,7 @@
       value="{{keyword}}"
       confirm-type="search"
       bindconfirm="onSearch"
-      cursor-spacing="80"
+      cursor-spacing="120"
     />
   </view>
 
@@ -63,7 +69,6 @@
         <text wx:if="{{item.categoryText}}" class="tag">{{item.categoryText}}</text>
         <text wx:if="{{item.host}}" class="tag">{{item.host}}</text>
         <text wx:if="{{item.isFocus}}" class="tag tag-success">★ 院内重点</text>
-        <text wx:if="{{item.hasUrl}}" class="tag tag-primary">🔗 官网</text>
       </view>
       <view class="card__time time--{{item.timeState}}">
         <view class="card__time-dot"></view>
@@ -73,7 +78,7 @@
       </view>
     </view>
     <view wx:if="{{loadingMore}}" class="state">加载中…</view>
-    <view wx:if="{{noMore && list.length > 0}}" class="state state--end">— 已加载全部 {{total}} 项 —</view>
+    <view wx:if="{{noMore && list.length > 0}}" class="state state--end">共 {{total}} 项赛事</view>
   </view>
 
 </view>

@@ -1,4 +1,9 @@
 <view class="page doc">
+  <view class="blobs">
+    <view class="blob blob--1"></view>
+    <view class="blob blob--2"></view>
+    <view class="blob blob--3"></view>
+  </view>
   <view class="doc__title">用户隐私保护指引</view>
   <view class="doc__meta">更新日期 {{updatedAt}}</view>
 
@@ -41,10 +46,5 @@
     </view>
   </view>
 
-  <view class="doc__tip">
-    本指引为小程序内说明文本，正式上线前需在
-    微信公众平台「设置 - 服务内容声明 - 用户隐私保护指引」中同步配置。
-  </view>
-
-  <view class="doc__btn" bindtap="openPrivacyContract">查看平台隐私保护指引</view>
+  <view class="doc__btn pressable" bindtap="openPrivacyContract" hover-class="pressing">查看平台隐私保护指引</view>
 </view>

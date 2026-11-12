@@ -1,0 +1,174 @@
+<view class="page">
+  <view class="blobs">
+    <view class="blob blob--1"></view>
+    <view class="blob blob--2"></view>
+    <view class="blob blob--3"></view>
+  </view>
+  <view class="hero">
+    <view class="hero__title">学习问答</view>
+  </view>
+
+  <view wx:if="{{!isVerified}}" class="unverified">
+    <view class="unverified__title">完成实名认证后使用问答功能</view>
+    <view class="btn btn-block pressable" hover-class="pressing" bindtap="goRealname">去认证</view>
+  </view>
+
+  <block wx:else>
+    <view class="stats">
+      <view class="stats__item">
+        <view class="stats__n stats__n--open">{{stats.open}}</view>
+        <view class="stats__label">待解决</view>
+      </view>
+      <view class="stats__sep"></view>
+      <view class="stats__item">
+        <view class="stats__n stats__n--done">{{stats.solved}}</view>
+        <view class="stats__label">已解决</view>
+      </view>
+      <view class="stats__sep"></view>
+      <view class="stats__item">
+        <view class="stats__n">{{stats.mine}}</view>
+        <view class="stats__label">我的提问</view>
+      </view>
+    </view>
+
+    <view class="search">
+      <input
+        class="search__input"
+        value="{{searchWord}}"
+        placeholder="搜索问题或提问人"
+        confirm-type="search"
+        bindinput="onSearchInput"
+        bindconfirm="doSearch"
+        cursor-spacing="120"
+      />
+      <view wx:if="{{searchWord}}" class="search__clear pressable" bindtap="clearSearch" hover-class="pressing">×</view>
+      <view class="search__go pressable" hover-class="pressing" bindtap="doSearch">搜索</view>
+    </view>
+
+    <scroll-view class="seg seg--scroll" scroll-x>
+      <view class="seg__inner">
+        <view
+          wx:for="{{scopes}}"
+          wx:key="key"
+          class="seg__item {{scope === item.key ? 'seg__item--on' : ''}} pressable"
+          data-key="{{item.key}}"
+          bindtap="onScope"
+         hover-class="pressing">{{item.name}}</view>
+      </view>
+    </scroll-view>
+
+    <scroll-view class="cats" scroll-x>
+      <view class="cats__inner">
+        <view
+          wx:for="{{categories}}"
+          wx:key="key"
+          class="cat {{category === item.key ? 'cat--on' : ''}} pressable"
+          data-key="{{item.key}}"
+          bindtap="onCategory"
+         hover-class="pressing">{{item.name}}</view>
+      </view>
+    </scroll-view>
+
+    <view wx:if="{{loading}}" class="state">加载中…</view>
+    <view wx:elif="{{list.length === 0}}" class="state state--empty">
+      <view class="state__emoji">💬</view>
+      <view>这里还没有问题</view>
+    </view>
+    <block wx:else>
+      <view class="list">
+        <view
+          wx:for="{{list}}"
+          wx:key="_id"
+          class="qcard pressable"
+          hover-class="pressing"
+          data-id="{{item._id}}"
+          bindtap="goDetail"
+        >
+          <view class="qcard__top">
+            <text class="qcard__cat">{{item.categoryText}}</text>
+            <text class="badge badge--{{item.status === 'solved' ? 'reviewed' : 'todo'}}">{{item.statusText}}</text>
+          </view>
+          <view class="qcard__title">{{item.title}}</view>
+          <view class="qcard__summary">{{item.summary}}</view>
+          <view wx:if="{{item.problemTitle}}" class="qcard__problem">相关题目 · {{item.problemTitle}}</view>
+          <view class="qcard__foot">
+            <text class="qcard__author">{{item.authorName}}<text wx:if="{{item.isTeacherAuthor}}" class="qcard__role">教师</text></text>
+            <text class="qcard__answer {{item.status === 'solved' ? 'qcard__answer--done' : ''}}">{{item.answerText}}</text>
+            <text class="qcard__time">{{item.timeText}}</text>
+          </view>
+        </view>
+      </view>
+      <view wx:if="{{hasMore}}" class="more pressable" bindtap="loadMore" hover-class="pressing">{{loadingMore ? '加载中…' : '加载更多'}}</view>
+      <view wx:else class="more more--end">共 {{total}} 个问题</view>
+    </block>
+  </block>
+
+  <view wx:if="{{isVerified && !showAsk && !keyboardUp}}" class="fab pressable" hover-class="pressing" bindtap="openAsk">
+    <text class="fab__plus">+</text>
+    <text class="fab__text">提问</text>
+  </view>
+
+  <!-- ===== 弹层：提出新问题（表单滚动，发布条固定可见） ===== -->
+  <view wx:if="{{showAsk}}" class="mask mask--ask" bindtap="closeAsk">
+    <view class="sheet sheet--ask" style="{{sheetPad}}" catchtap="noop">
+      <view class="sheet__grip"></view>
+      <scroll-view class="sheet__body" scroll-y>
+        <view class="sheet__title">提出一个问题</view>
+
+        <view class="form-label">问题分类</view>
+        <view class="opts">
+          <text
+            wx:for="{{askCats}}"
+            wx:key="key"
+            class="opt {{item.on ? 'opt--on' : ''}}"
+            data-key="{{item.key}}"
+            bindtap="onAskCategory"
+          >{{item.name}}</text>
+        </view>
+
+        <view class="form-label">标题</view>
+        <input
+          class="field"
+          value="{{askForm.title}}"
+          placeholder="用一句话描述问题"
+          maxlength="80"
+          bindinput="onAskTitle"
+          bindkeyboardheightchange="onKeyboardHeightChange"
+          cursor-spacing="120"
+        />
+
+        <view class="form-label">详细描述</view>
+        <textarea
+          class="field field--area"
+          value="{{askForm.content}}"
+          placeholder="描述问题、已尝试的思路和卡住的位置"
+          maxlength="3000"
+          bindinput="onAskContent"
+          bindkeyboardheightchange="onKeyboardHeightChange"
+          auto-height
+          cursor-spacing="240"
+        />
+        <view class="counter">{{askForm.content.length}}/3000</view>
+
+        <view class="form-label">相关题目（选填）</view>
+        <input
+          class="field"
+          value="{{askForm.problemTitle}}"
+          placeholder="如：两数之和 / cf:4:A"
+          maxlength="80"
+          bindinput="onAskProblem"
+          bindkeyboardheightchange="onKeyboardHeightChange"
+          cursor-spacing="120"
+        />
+        <view class="form-tail"></view>
+      </scroll-view>
+
+      <view class="sheet__actions">
+        <view wx:if="{{askHint}}" class="ask-hint">{{askHint}}</view>
+        <view class="btn btn-block btn-primary pressable {{canAsk ? '' : 'btn-disabled'}}" hover-class="pressing" bindtap="submitAsk">
+          {{asking ? '发布中…' : '发布问题'}}
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

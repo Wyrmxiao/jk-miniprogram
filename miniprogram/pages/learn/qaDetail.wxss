@@ -1,0 +1,201 @@
+/* pages/learn/qaDetail.wxss —— 问题详情与回答 */
+.page {
+  min-height: 100vh;
+  padding-bottom: calc(160rpx + env(safe-area-inset-bottom));
+  background: var(--bg-page);
+}
+
+.state { padding: var(--space-xl) 0; text-align: center; font-size: var(--font-caption); color: var(--text-secondary); }
+.state--empty { display: flex; flex-direction: column; align-items: center; }
+
+/* ===== 问题主体 ===== */
+.qhead {
+  margin: var(--space-md) var(--space-lg) 0;
+  padding: var(--space-lg);
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+.qhead__top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.qhead__cat {
+  padding: 4rpx 18rpx;
+  border-radius: var(--radius-pill);
+  background: var(--bg-block);
+  color: var(--text-secondary);
+  font-size: var(--font-micro);
+}
+.qhead__title {
+  margin-top: var(--space-md);
+  font-size: var(--font-headline);
+  font-weight: 560;
+  color: var(--text-primary);
+  line-height: 1.45;
+}
+.qhead__meta {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 8rpx;
+  margin-top: var(--space-sm);
+  font-size: var(--font-micro);
+  color: var(--text-tertiary);
+}
+.qhead__role {
+  padding: 2rpx 10rpx; border-radius: var(--radius-pill);
+  background: var(--color-primary-light); color: var(--color-primary-dark);
+}
+.qhead__dot { margin: 0 4rpx; }
+.qhead__content {
+  margin-top: var(--space-lg);
+  padding-top: var(--space-md);
+  border-top: 2rpx solid var(--border-light);
+  font-size: var(--font-body);
+  color: var(--text-primary);
+  line-height: 1.75;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.qhead__problem {
+  margin-top: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  font-size: var(--font-caption);
+}
+.qhead__tags { display: flex; flex-wrap: wrap; gap: var(--space-sm); margin-top: var(--space-md); }
+
+/* ===== 提问者 / 教师操作 ===== */
+.acts { display: flex; gap: var(--space-sm); padding: var(--space-md) var(--space-lg) 0; }
+.acts__btn { display: inline-flex; align-items: center; justify-content: center;
+  flex: 1;
+  padding: 18rpx 0;
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  border: 2rpx solid var(--border-color);
+  text-align: center;
+  font-size: var(--font-caption);
+  color: var(--text-secondary);
+  min-height: 80rpx;
+}
+.acts__btn--danger { color: var(--color-danger); border-color: var(--color-danger-light); }
+
+/* ===== 回答区 ===== */
+.ans-title {
+  display: flex; align-items: baseline; gap: 8rpx;
+  padding: var(--space-xl) var(--space-lg) var(--space-sm);
+  font-size: var(--font-caption);
+  color: var(--text-secondary);
+}
+.ans-title__n { font-size: var(--font-headline); font-weight: 560; color: var(--text-primary); }
+.ans-title__done {
+  margin-left: auto;
+  padding: 4rpx 18rpx;
+  border-radius: var(--radius-pill);
+  background: var(--color-success-light);
+  color: var(--color-success);
+  font-size: var(--font-micro);
+}
+.state__emoji { font-size: 72rpx; margin-bottom: var(--space-sm); }
+
+.ans-list { padding: 0 var(--space-lg); }
+.ans {
+  position: relative;
+  margin-bottom: var(--space-md);
+  padding: var(--space-lg);
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+.ans--accepted {
+  border-left: 6rpx solid var(--color-success);
+  background: var(--bg-card);
+}
+.ans__accepted {
+  position: absolute; top: 0; right: 0;
+  padding: 6rpx 20rpx;
+  border-radius: 0 var(--radius-lg) 0 var(--radius-md);
+  background: var(--color-success);
+  color: #fff;
+  font-size: var(--font-micro);
+}
+.ans__head { display: flex; align-items: center; flex-wrap: wrap; }
+.ans__avatar {
+  width: 64rpx; height: 64rpx; border-radius: 50%;
+  background: var(--color-primary-light); color: var(--color-primary-dark);
+  display: flex; align-items: center; justify-content: center;
+  font-size: var(--font-body); font-weight: 500;
+  flex-shrink: 0;
+}
+.ans__who { margin-left: var(--space-sm); }
+.ans__name { font-size: var(--font-body); font-weight: 500; color: var(--text-primary); }
+.ans__time { margin-top: 4rpx; font-size: var(--font-micro); color: var(--text-tertiary); }
+.ans__role, .ans__self {
+  margin-left: 8rpx; padding: 2rpx 12rpx;
+  border-radius: var(--radius-pill);
+  font-size: var(--font-micro); font-weight: 400;
+}
+.ans__role { background: var(--color-primary-light); color: var(--color-primary-dark); }
+.ans__self { background: var(--bg-block); color: var(--text-tertiary); }
+.ans__content {
+  margin-top: var(--space-md);
+  font-size: var(--font-body);
+  color: var(--text-primary);
+  line-height: 1.75;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.ans__foot { display: flex; justify-content: flex-end; gap: var(--space-lg); margin-top: var(--space-md); flex-wrap: wrap; }
+.ans__act { font-size: var(--font-caption); color: var(--text-tertiary); }
+.ans__act--primary { color: var(--color-success); font-weight: 500; }
+
+.bottom-gap { height: var(--space-md); }
+
+/* ===== 底部回答栏 ===== */
+.footer {
+  position: fixed; left: 0; right: 0; bottom: 0;
+  display: flex; align-items: center; gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-lg) calc(var(--space-sm) + env(safe-area-inset-bottom));
+  background: var(--bg-elevated);
+  border-top: 2rpx solid var(--border-light);
+  box-shadow: 0 -8rpx 24rpx rgba(90, 82, 70, 0.05);
+}
+.footer__ph {
+  flex: 1; height: 88rpx;
+  display: flex; align-items: center;
+  padding: 0 var(--space-md);
+  border-radius: var(--radius-pill);
+  background: var(--bg-page);
+  font-size: var(--font-body);
+  color: var(--text-tertiary);
+}
+.footer__send {
+  padding: 0 32rpx; height: 88rpx; border-radius: var(--radius-pill);
+  background: var(--color-primary); color: #fff;
+  display: flex; align-items: center;
+  font-size: var(--font-caption); font-weight: 500;
+  flex-shrink: 0;
+}
+
+.counter { margin-top: 8rpx; text-align: right; font-size: var(--font-micro); color: var(--text-tertiary); }
+.form-tail { height: 16rpx; }
+
+/* 回答弹层：输入区可滚，发布条固定在底部 */
+.sheet--ask {
+  display: flex;
+  flex-direction: column;
+  max-height: 88vh;
+  overflow: hidden;
+  padding-bottom: 0;
+}
+.sheet__body { flex: 1; min-height: 0; overflow-y: auto; }
+.sheet__actions {
+  flex-shrink: 0;
+  padding: var(--space-md) 0 calc(var(--space-md) + env(safe-area-inset-bottom));
+  background: var(--bg-elevated);
+  border-top: 2rpx solid var(--border-light);
+}
+.sheet__actions .btn { margin-top: 0; }
+.ask-hint {
+  margin-bottom: 12rpx;
+  text-align: center;
+  font-size: var(--font-micro);
+  color: var(--color-warning);
+}

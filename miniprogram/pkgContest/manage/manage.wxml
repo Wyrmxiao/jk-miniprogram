@@ -1,7 +1,11 @@
 <view class="page">
+  <view class="blobs">
+    <view class="blob blob--1"></view>
+    <view class="blob blob--2"></view>
+    <view class="blob blob--3"></view>
+  </view>
   <view class="hero">
     <view class="hero__title">赛事维护</view>
-    <view class="hero__sub">编辑报名时间、开赛时间与赛事信息</view>
     <input
       class="hero__search"
       placeholder="搜索竞赛名称"
@@ -9,7 +13,7 @@
       value="{{keyword}}"
       confirm-type="search"
       bindconfirm="onSearch"
-      cursor-spacing="80"
+      cursor-spacing="120"
     />
   </view>
 
@@ -17,10 +21,10 @@
     <view
       wx:for="{{filters}}"
       wx:key="key"
-      class="chip {{filter === item.key ? 'chip--on' : ''}}"
+      class="chip {{filter === item.key ? 'chip--on' : ''}} pressable"
       data-key="{{item.key}}"
       bindtap="onFilter"
-    >{{item.text}}</view>
+     hover-class="pressing">{{item.text}}</view>
   </scroll-view>
 
   <view class="count">共 {{list.length}} 项</view>
@@ -30,7 +34,7 @@
     <text class="empty__emoji">🔍</text>没有符合条件的赛事
   </view>
   <view wx:else class="list">
-    <view wx:for="{{list}}" wx:key="_id" class="card" data-id="{{item._id}}" bindtap="goEdit">
+    <view wx:for="{{list}}" wx:key="_id" class="card pressable" data-id="{{item._id}}" bindtap="goEdit" hover-class="pressing">
       <view class="card__head">
         <view class="card__title">{{item.name}}</view>
         <view class="level level--{{item.level}}">{{item.level}}类</view>
@@ -50,5 +54,5 @@
     </view>
   </view>
 
-  <view class="fab" bindtap="goCreate">＋</view>
+  <view class="fab pressable" hover-class="pressing" bindtap="goCreate">＋ 新建</view>
 </view>

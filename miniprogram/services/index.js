@@ -49,7 +49,23 @@ const learn = {
   taskDetail: (params) => request(DOMAIN.LEARN, 'taskDetail', params, { silent: true }),
   submitTask: (data) => request(DOMAIN.LEARN, 'submitTask', data, { loading: '提交中' }),
   reviewSubmission: (data) => request(DOMAIN.LEARN, 'reviewSubmission', data, { loading: '提交中' }),
-  closeTask: (data) => request(DOMAIN.LEARN, 'closeTask', data, { loading: '处理中' })
+  closeTask: (data) => request(DOMAIN.LEARN, 'closeTask', data, { loading: '处理中' }),
+  // 算法训练：题库刷题 + 打卡统计
+  algoProblemModules: (params) => request(DOMAIN.LEARN, 'algoProblemModules', params, { silent: true }),
+  algoProblemList: (params) => request(DOMAIN.LEARN, 'algoProblemList', params, { silent: true }),
+  algoProblemDetail: (params) => request(DOMAIN.LEARN, 'algoProblemDetail', params, { silent: true }),
+  // 完整题面 + 解题过程 + 涉及知识点（按需取单题，背题模式可只取 statement）
+  algoProblemContent: (params) => request(DOMAIN.LEARN, 'algoProblemContent', params, { silent: true }),
+  algoMarkProblem: (data) => request(DOMAIN.LEARN, 'algoMarkProblem', data, { loading: '记录中' }),
+  algoCheckIn: (data) => request(DOMAIN.LEARN, 'algoCheckIn', data, { loading: '保存中' }),
+  algoRecords: (params) => request(DOMAIN.LEARN, 'algoRecords', params, { silent: true }),
+  algoRecordDetail: (params) => request(DOMAIN.LEARN, 'algoRecordDetail', params, { silent: true }),
+  algoRemove: (data) => request(DOMAIN.LEARN, 'algoRemove', data, { loading: '删除中' }),
+  algoUpdateNote: (data) => request(DOMAIN.LEARN, 'algoUpdateNote', data, { loading: '保存中' }),
+  algoComment: (data) => request(DOMAIN.LEARN, 'algoComment', data, { loading: '提交中' }),
+  algoStats: (params) => request(DOMAIN.LEARN, 'algoStats', params, { silent: true }),
+  algoSetGoal: (data) => request(DOMAIN.LEARN, 'algoSetGoal', data, { loading: '保存中' }),
+  algoTeacherOverview: (params) => request(DOMAIN.LEARN, 'algoTeacherOverview', params, { silent: true })
 };
 
 // ============ 竞赛 ============
@@ -102,6 +118,19 @@ const project = {
   feature: (data) => request(DOMAIN.PROJECT, 'feature', data, { loading: '处理中' })
 };
 
+// ============ 学习问答（学生提问 → 教师同学解答） ============
+const qa = {
+  list: (params) => request(DOMAIN.LEARN, 'qaList', params, { silent: true }),
+  stats: (params) => request(DOMAIN.LEARN, 'qaStats', params || {}, { silent: true }),
+  detail: (params) => request(DOMAIN.LEARN, 'qaDetail', params, { silent: true }),
+  ask: (data) => request(DOMAIN.LEARN, 'qaAsk', data, { loading: '发布中' }),
+  answer: (data) => request(DOMAIN.LEARN, 'qaAnswer', data, { loading: '发送中' }),
+  accept: (data) => request(DOMAIN.LEARN, 'qaAccept', data, { loading: '处理中' }),
+  setStatus: (data) => request(DOMAIN.LEARN, 'qaSetStatus', data, { loading: '处理中' }),
+  removeQuestion: (data) => request(DOMAIN.LEARN, 'qaRemoveQuestion', data, { loading: '删除中' }),
+  removeAnswer: (data) => request(DOMAIN.LEARN, 'qaRemoveAnswer', data, { loading: '删除中' })
+};
+
 // ============ 智能体（预留） ============
 /**
  * 后续接入大模型 API 时，只需后端 agent 云函数对接，
@@ -127,5 +156,6 @@ module.exports = {
   contest,
   announce,
   project,
+  qa,
   agent
 };

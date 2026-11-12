@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>方向 C · 编辑排版 — 计科创新中心</title>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: #EFEDE8; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Helvetica Neue", sans-serif; -webkit-font-smoothing: antialiased; }
+  @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+  @keyframes growX { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  @keyframes markIn { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  .stagger > * { animation: rise .6s cubic-bezier(.22,1,.36,1) both; }
+  .stagger > *:nth-child(1) { animation-delay: .02s; }
+  .stagger > *:nth-child(2) { animation-delay: .07s; }
+  .stagger > *:nth-child(3) { animation-delay: .12s; }
+  .stagger > *:nth-child(4) { animation-delay: .17s; }
+  .stagger > *:nth-child(5) { animation-delay: .22s; }
+  .stagger > *:nth-child(6) { animation-delay: .27s; }
+  .press { transition: transform .28s cubic-bezier(.22,1,.36,1), opacity .2s; }
+  .press:active { transform: scale(.978); opacity: .82; }
+  .sc::-webkit-scrollbar { width: 0; height: 0; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="react">
+const iosFrameStyles = {
+  wrapper: { display: 'inline-block', padding: 12, background: '#111', borderRadius: 60, boxShadow: '0 0 0 1px rgba(0,0,0,.4), 0 34px 70px rgba(0,0,0,.28), 0 4px 10px rgba(0,0,0,.16)', position: 'relative' },
+  screen: { position: 'relative', borderRadius: 48, overflow: 'hidden' },
+  statusBar: { position: 'absolute', top: 0, left: 0, right: 0, height: 54, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 32px', fontSize: 16, fontWeight: 600, zIndex: 20, pointerEvents: 'none' },
+  dynamicIsland: { position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)', width: 124, height: 36, background: '#000', borderRadius: 999, zIndex: 30 },
+  statusIcons: { display: 'flex', alignItems: 'center', gap: 6 },
+  signalIcon: { display: 'flex', alignItems: 'flex-end', gap: 2, height: 12 },
+  signalBar: { width: 3, background: 'currentColor', borderRadius: 1 },
+  batteryIcon: { width: 26, height: 12, border: '1.5px solid currentColor', borderRadius: 3, padding: 1, position: 'relative', opacity: .8 },
+  batteryCap: { position: 'absolute', top: 3, right: -3, width: 2, height: 6, background: 'currentColor', borderRadius: '0 1px 1px 0' },
+  content: { position: 'absolute', top: 54, left: 0, right: 0, bottom: 34, overflow: 'auto' },
+  homeIndicator: { position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)', width: 140, height: 5, background: 'rgba(0,0,0,.32)', borderRadius: 999, zIndex: 10 },
+};
+function IosFrame({ children, width = 393, height = 852, time = '9:41', battery = 82 }) {
+  return (
+    <div style={iosFrameStyles.wrapper}>
+      <div style={{ ...iosFrameStyles.screen, width, height, background: '#FCFBF9' }}>
+        <div style={{ ...iosFrameStyles.statusBar, color: '#000' }}>
+          <span>{time}</span>
+          <div style={iosFrameStyles.statusIcons}>
+            <div style={iosFrameStyles.signalIcon}>{[4, 6, 9, 11].map((h, i) => <div key={i} style={{ ...iosFrameStyles.signalBar, height: h }} />)}</div>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none" style={{ color: '#000' }}>
+              <path d="M8 11.5a1 1 0 100-2 1 1 0 000 2z" fill="currentColor" />
+              <path d="M3 7.5a7 7 0 0110 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+              <path d="M1 4.5a11 11 0 0114 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity=".7" />
+            </svg>
+            <div style={iosFrameStyles.batteryIcon}><div style={{ width: battery + '%', height: '100%', background: 'currentColor', borderRadius: 1 }} /><div style={iosFrameStyles.batteryCap} /></div>
+          </div>
+        </div>
+        <div style={iosFrameStyles.dynamicIsland} />
+        <div style={iosFrameStyles.content} className="sc">{children}</div>
+        <div style={iosFrameStyles.homeIndicator} />
+      </div>
+    </div>
+  );
+}
+
+const C = {
+  paper: '#FCFBF9',
+  ink: '#101014',
+  ink2: '#5E5E66',
+  ink3: '#A0A0A8',
+  rule: 'rgba(16,16,20,.14)',
+  ruleLight: 'rgba(16,16,20,.08)',
+  accent: '#FF3B2F',
+  marker: '#F2FF49',
+};
+
+const Rule = ({ style }) => <div style={{ height: 1, background: C.rule, transformOrigin: 'left', animation: 'growX .7s cubic-bezier(.22,1,.36,1) both', ...style }} />;
+
+const Kicker = ({ children, tone }) => (
+  <div style={{ fontSize: 12, fontWeight: 750, letterSpacing: '0.10em', color: tone || C.accent }}>{children}</div>
+);
+
+/* ===== 屏 1 · 首页（编辑头版） ===== */
+function ScreenHome({ go }) {
+  return (
+    <div style={{ paddingBottom: 100 }}>
+      <div style={{ padding: '10px 24px 0' }} className="stagger">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Kicker>11 月 5 日 · 周三</Kicker>
+          <div style={{ display: 'flex', gap: 10 }}>
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke={C.ink} strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="7" /><path d="M16.5 16.5L21 21" /></svg>
+          </div>
+        </div>
+
+        <div style={{ marginTop: 16, fontSize: 46, fontWeight: 820, letterSpacing: '-0.055em', lineHeight: 1.0, color: C.ink }}>
+          计科<br />创新中心
+        </div>
+        <div style={{ marginTop: 14, fontSize: 14, color: C.ink2, lineHeight: 1.65, letterSpacing: '-0.005em', maxWidth: 300 }}>
+          今天有 2 项任务待提交，蓝桥杯还剩 12 天截止。
+        </div>
+      </div>
+
+      <div style={{ marginTop: 26 }}>
+        <Rule />
+      </div>
+
+      <div style={{ padding: '22px 24px 0' }} className="stagger">
+        <Kicker>接着做</Kicker>
+        <div onClick={() => go('problem')} className="press" style={{ marginTop: 12, cursor: 'pointer' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+            <div style={{ fontSize: 25, fontWeight: 800, letterSpacing: '-0.04em', color: C.ink, lineHeight: 1.15 }}>
+              两数<span style={{ position: 'relative', display: 'inline-block' }}>
+                <span style={{ position: 'absolute', left: -3, right: -3, bottom: 2, height: 12, background: C.marker, transformOrigin: 'left', animation: 'markIn .7s .28s cubic-bezier(.22,1,.36,1) both' }} />
+                <span style={{ position: 'relative' }}>之和</span>
+              </span>
+            </div>
+            <div style={{ fontSize: 13, color: C.ink2, fontWeight: 600, paddingBottom: 4 }}>继续 ›</div>
+          </div>
+          <div style={{ marginTop: 8, fontSize: 12.5, color: C.ink3, letterSpacing: '-0.005em' }}>哈希表 · 简单 · 上次停在 70%</div>
+          <div style={{ marginTop: 14, height: 2, background: C.ruleLight }}>
+            <div style={{ width: '70%', height: '100%', background: C.ink }} />
+          </div>
+        </div>
+      </div>
+
+      <div style={{ marginTop: 26, padding: '0 24px' }}><Rule /></div>
+
+      <div style={{ padding: '20px 24px 0' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+          <div style={{ fontSize: 19, fontWeight: 800, letterSpacing: '-0.03em', color: C.ink }}>今日要闻</div>
+          <span style={{ fontSize: 12, color: C.ink3 }}>3 条</span>
+        </div>
+
+        <div style={{ marginTop: 4 }}>
+          {[
+            { t: '2026 年蓝桥杯省赛报名启动', s: '教务处 · 2 小时前', tag: '赛事' },
+            { t: '算法训练营第 4 期开营，本周主题：二分', s: '张老师 · 昨天', tag: '学习' },
+            { t: '计算机设计大赛院内选拔开始报名', s: '创新中心 · 2 天前', tag: '赛事' },
+          ].map((n, i) => (
+            <div key={i} className="press" style={{ cursor: 'pointer', padding: '15px 0', borderBottom: '1px solid ' + C.ruleLight }}>
+              <div style={{ display: 'flex', gap: 12 }}>
+                <span style={{ fontSize: 11, fontWeight: 800, color: C.accent, flexShrink: 0, paddingTop: 3, width: 26 }}>{n.tag}</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 15, fontWeight: 640, color: C.ink, lineHeight: 1.45, letterSpacing: '-0.015em' }}>{n.t}</div>
+                  <div style={{ marginTop: 5, fontSize: 11.5, color: C.ink3 }}>{n.s}</div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ padding: '24px 24px 0' }}>
+        <div style={{ display: 'flex', gap: 10 }}>
+          {[['算法训练', '820 题'], ['学习问答', '5 待解'], ['赛事库', '28 项']].map(([t, s]) => (
+            <div key={t} className="press" style={{ flex: 1, cursor: 'pointer', borderTop: '2px solid ' + C.ink, paddingTop: 9 }}>
+              <div style={{ fontSize: 13.5, fontWeight: 750, color: C.ink, letterSpacing: '-0.02em' }}>{t}</div>
+              <div style={{ fontSize: 11, color: C.ink3, marginTop: 3 }}>{s}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ===== 屏 2 · 学习（目录式） ===== */
+function ScreenLearn({ go }) {
+  return (
+    <div style={{ paddingBottom: 100 }}>
+      <div style={{ padding: '10px 24px 0' }} className="stagger">
+        <Kicker>学习</Kicker>
+        <div style={{ marginTop: 12, fontSize: 44, fontWeight: 820, letterSpacing: '-0.055em', lineHeight: 1.02, color: C.ink }}>第 7 天，<br />别断。</div>
+        <div style={{ marginTop: 14, display: 'flex', gap: 0 }}>
+          {[['820', '累计题'], ['28', '本周'], ['7', '连续天']].map(([n, l], i) => (
+            <div key={l} style={{ flex: 1, paddingLeft: i ? 14 : 0, borderLeft: i ? '1px solid ' + C.ruleLight : 'none' }}>
+              <div style={{ fontSize: 24, fontWeight: 820, letterSpacing: '-0.045em', color: C.ink, fontVariantNumeric: 'tabular-nums' }}>{n}</div>
+              <div style={{ fontSize: 10.5, color: C.ink3, marginTop: 2, letterSpacing: '0.02em' }}>{l}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ marginTop: 24 }}><Rule /></div>
+
+      <div style={{ padding: '0 24px' }}>
+        {[
+          { t: '算法训练', s: '按知识点刷题 · 14 个专题', bg: C.ink, fg: '#fff', go: 'problem' },
+          { t: '学习问答', s: '5 个问题等待解答', bg: C.paper, fg: C.ink, border: true },
+          { t: '学习任务', s: '2 项待提交，最近 11 月 8 日截止', bg: C.paper, fg: C.ink, border: true },
+          { t: '学习记录', s: '写今天的记录，老师会批注', bg: C.paper, fg: C.ink, border: true },
+        ].map((row, i) => (
+          <div key={row.t} onClick={() => row.go && go(row.go)} className="press"
+            style={{
+              cursor: 'pointer', padding: '22px 0',
+              borderBottom: '1px solid ' + C.ruleLight,
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
+            }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <div style={{ width: 4, height: 40, background: row.bg === C.ink ? C.accent : C.rule }} />
+              <div>
+                <div style={{ fontSize: 21, fontWeight: 780, letterSpacing: '-0.035em', color: C.ink, lineHeight: 1.2 }}>{row.t}</div>
+                <div style={{ marginTop: 4, fontSize: 12, color: C.ink2, letterSpacing: '-0.005em' }}>{row.s}</div>
+              </div>
+            </div>
+            <svg width="8" height="14" viewBox="0 0 7 12" fill="none" stroke={C.ink3} strokeWidth="1.8" strokeLinecap="round"><path d="M1 1l5 5-5 5" /></svg>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ padding: '26px 24px 0' }}>
+        <div style={{ fontSize: 13, fontWeight: 800, letterSpacing: '-0.01em', color: C.ink, marginBottom: 12 }}>待办</div>
+        {[
+          { t: '完成「二分查找」专题 5 题', d: '11 月 8 日', done: false },
+          { t: '整理本周学习笔记', d: '已批阅', done: true },
+        ].map((it, i) => (
+          <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', padding: '10px 0', borderBottom: i === 0 ? '1px solid ' + C.ruleLight : 'none' }}>
+            <div style={{ width: 15, height: 15, borderRadius: 999, border: '1.5px solid ' + (it.done ? C.ink : C.ink3), background: it.done ? C.ink : 'transparent', marginTop: 2, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {it.done && <svg width="8" height="6" viewBox="0 0 8 6" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"><path d="M1 3l2 2 4-4" /></svg>}
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 14, color: it.done ? C.ink3 : C.ink, textDecoration: it.done ? 'line-through' : 'none', letterSpacing: '-0.01em', lineHeight: 1.45 }}>{it.t}</div>
+              <div style={{ fontSize: 11, color: C.ink3, marginTop: 3 }}>{it.d}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ===== 屏 3 · 赛事（榜单） ===== */
+function ScreenRace() {
+  return (
+    <div style={{ paddingBottom: 132 }}>
+      <div style={{ padding: '10px 24px 0' }} className="stagger">
+        <Kicker>赛事库</Kicker>
+        <div style={{ marginTop: 12, fontSize: 40, fontWeight: 820, letterSpacing: '-0.055em', color: C.ink, lineHeight: 1.05 }}>28 项<br />值得打的比赛</div>
+      </div>
+
+      <div style={{ padding: '18px 24px 0' }}>
+        <div style={{ display: 'flex', borderBottom: '1.5px solid ' + C.ink, paddingBottom: 8, gap: 20 }}>
+          {['全部', 'A 类', 'B 类', '关注'].map((t, i) => (
+            <div key={t} className="press" style={{ cursor: 'pointer', position: 'relative' }}>
+              <span style={{ fontSize: 13, fontWeight: i === 0 ? 800 : 550, color: i === 0 ? C.ink : C.ink3, letterSpacing: '-0.01em' }}>{t}</span>
+              {i === 0 && <div style={{ position: 'absolute', left: 0, right: 0, bottom: -10, height: 2, background: C.accent }} />}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ padding: '0 24px' }}>
+        {[
+          { n: '蓝桥杯全国软件和信息技术专业人才大赛', l: 'B', d: '12 月 20 日截止', hot: true },
+          { n: '中国大学生计算机设计大赛', l: 'A', d: '3 月 15 日截止' },
+          { n: '全国大学生数学建模竞赛', l: 'A', d: '9 月开赛' },
+          { n: '中国高校计算机大赛 · 团体程序设计天梯赛', l: 'A', d: '3 月开赛' },
+        ].map((c, i) => (
+          <div key={i} className="press" style={{ cursor: 'pointer', padding: '18px 0', borderBottom: '1px solid ' + C.ruleLight, display: 'flex', gap: 14 }}>
+            <div style={{ width: 34, flexShrink: 0 }}>
+              <div style={{ fontSize: 26, fontWeight: 820, color: c.hot ? C.accent : C.ink3, letterSpacing: '-0.05em', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>{String(i + 1).padStart(2, '0')}</div>
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 15.5, fontWeight: 700, color: C.ink, lineHeight: 1.4, letterSpacing: '-0.02em' }}>{c.n}</div>
+              <div style={{ marginTop: 6, display: 'flex', gap: 10, alignItems: 'center' }}>
+                <span style={{ fontSize: 11, fontWeight: 800, color: c.l === 'A' ? C.accent : C.ink2 }}>{c.l} 类</span>
+                <span style={{ fontSize: 11.5, color: C.ink3 }}>{c.d}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ padding: '26px 24px 0' }}>
+        <div style={{ padding: 20, background: C.ink, borderRadius: 4 }}>
+          <Kicker tone={C.marker}>最紧急</Kicker>
+          <div style={{ marginTop: 10, fontSize: 20, fontWeight: 800, color: '#fff', letterSpacing: '-0.03em', lineHeight: 1.3 }}>蓝桥杯报名<br />还剩 12 天</div>
+          <div style={{ marginTop: 14, display: 'inline-flex', padding: '8px 16px', background: C.marker, borderRadius: 999 }}>
+            <span style={{ fontSize: 12, fontWeight: 800, color: C.ink }}>去报名</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ===== 屏 4 · 题目（阅读式） ===== */
+function ScreenProblem({ back }) {
+  return (
+    <div style={{ paddingBottom: 120, minHeight: '100%', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ padding: '8px 24px 0' }}>
+        <div onClick={back} className="press" style={{ display: 'inline-flex', alignItems: 'center', gap: 5, cursor: 'pointer', fontSize: 13, fontWeight: 700, color: C.ink }}>
+          <svg width="8" height="13" viewBox="0 0 9 15" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M7.5 1.5L1.5 7.5l6 6" /></svg>
+          题库
+        </div>
+      </div>
+
+      <div style={{ padding: '16px 24px 0' }} className="stagger">
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <span style={{ fontSize: 11, fontWeight: 800, color: C.accent }}>CF 4A</span>
+          <span style={{ fontSize: 11, color: C.ink3 }}>· 简单 · 数学</span>
+        </div>
+        <div style={{ marginTop: 10, fontSize: 38, fontWeight: 820, letterSpacing: '-0.055em', color: C.ink, lineHeight: 1.08 }}>西瓜</div>
+      </div>
+
+      <div style={{ padding: '18px 24px 0' }}>
+        <Rule />
+      </div>
+
+      <div style={{ padding: '18px 24px 0' }}>
+        <div style={{ fontSize: 15.5, color: C.ink, lineHeight: 1.78, letterSpacing: '-0.008em' }}>
+          一个炎热的夏天，皮特想吃西瓜。他买了一个重 <b>w</b> 公斤的西瓜，想把它分成两部分，要求两部分的重量都是<b>正偶数</b>。
+        </div>
+        <div style={{ marginTop: 16, padding: '14px 16px', background: '#F4F2ED', borderLeft: '2px solid ' + C.ink }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: C.ink2, letterSpacing: '0.06em', marginBottom: 8 }}>样例</div>
+          <div style={{ fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace', fontSize: 12.5, color: C.ink, lineHeight: 1.9 }}>
+            8 → YES<br />2 → NO<br />3 → NO
+          </div>
+        </div>
+      </div>
+
+      <div style={{ padding: '20px 24px 0' }}>
+        <div style={{ display: 'flex', borderBottom: '1px solid ' + C.ruleLight, gap: 22 }}>
+          {['题面', '解题过程', '知识点'].map((t, i) => (
+            <div key={t} className="press" style={{ cursor: 'pointer', paddingBottom: 9, position: 'relative' }}>
+              <span style={{ fontSize: 13.5, fontWeight: i === 0 ? 800 : 550, color: i === 0 ? C.ink : C.ink3, letterSpacing: '-0.015em' }}>{t}</span>
+              {i === 0 && <div style={{ position: 'absolute', left: 0, right: 0, bottom: -1, height: 2.5, background: C.ink }} />}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ padding: '20px 24px 0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 18px', border: '1px solid ' + C.rule, borderRadius: 4 }}>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 750, color: C.ink }}>背题模式</div>
+            <div style={{ fontSize: 11.5, color: C.ink3, marginTop: 3 }}>解析已遮住</div>
+          </div>
+          <div style={{ width: 46, height: 26, borderRadius: 999, background: C.ink, padding: 3, display: 'flex', justifyContent: 'flex-end' }}>
+            <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#fff' }} />
+          </div>
+        </div>
+      </div>
+
+      <div style={{ padding: '24px 24px 0', marginTop: 'auto' }}>
+        <div className="press" style={{ height: 52, background: C.accent, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+          <span style={{ fontSize: 15, fontWeight: 800, color: '#fff', letterSpacing: '-0.015em' }}>标记为已掌握</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ===== 屏 4.5 · 项目 ===== */
+function ScreenProject() {
+  return (
+    <div style={{ paddingBottom: 100 }}>
+      <div style={{ padding: '10px 24px 0' }}>
+        <Kicker>项目</Kicker>
+        <div style={{ marginTop: 12, fontSize: 40, fontWeight: 820, letterSpacing: '-0.055em', color: C.ink, lineHeight: 1.05 }}>3 个在做的<br />东西</div>
+      </div>
+      <div style={{ marginTop: 22 }}><Rule /></div>
+      <div style={{ padding: '0 24px' }}>
+        {[
+          { n: '校园二手书交易小程序', s: '进行中', p: 68, m: '4 人 · 昨天有更新' },
+          { n: '基于 YOLO 的实验室安全检测', s: '待验收', p: 100, m: '3 人 · 3 天前' },
+          { n: '校园活动报名与签到系统', s: '进行中', p: 34, m: '5 人 · 今天有更新' },
+        ].map((p, i) => (
+          <div key={i} className="press" style={{ cursor: 'pointer', padding: '20px 0', borderBottom: '1px solid ' + C.ruleLight }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12 }}>
+              <div style={{ fontSize: 17, fontWeight: 780, color: C.ink, letterSpacing: '-0.03em', lineHeight: 1.3 }}>{p.n}</div>
+              <span style={{ flexShrink: 0, fontSize: 10.5, fontWeight: 800, color: p.s === '待验收' ? C.ink2 : C.accent, letterSpacing: '0.02em' }}>{p.s}</span>
+            </div>
+            <div style={{ marginTop: 12, height: 2, background: C.ruleLight }}>
+              <div style={{ width: p.p + '%', height: '100%', background: C.ink }} />
+            </div>
+            <div style={{ marginTop: 8, fontSize: 11.5, color: C.ink3 }}>{p.m}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ===== 屏 5 · 我（档案页） ===== */
+function ScreenMine() {
+  return (
+    <div style={{ paddingBottom: 100 }}>
+      <div style={{ padding: '10px 24px 0' }}>
+        <Kicker>我的档案</Kicker>
+        <div style={{ marginTop: 14, fontSize: 40, fontWeight: 820, letterSpacing: '-0.055em', lineHeight: 1.02, color: C.ink }}>冉同霄</div>
+        <div style={{ marginTop: 8, fontSize: 13, color: C.ink2, letterSpacing: '-0.005em' }}>2023 级 · 计科 2 班 · 学号 2023010142</div>
+        <div style={{ marginTop: 12, display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 11px', background: C.ink, borderRadius: 999 }}>
+          <div style={{ width: 5, height: 5, borderRadius: 999, background: C.marker }} />
+          <span style={{ fontSize: 11, fontWeight: 750, color: '#fff' }}>已实名认证</span>
+        </div>
+      </div>
+
+      <div style={{ marginTop: 22 }}><Rule /></div>
+
+      <div style={{ padding: '20px 24px 0', display: 'flex' }}>
+        {[['820', '累计题量'], ['7', '连续天数'], ['12', '关注赛事'], ['3', '我的提问']].map(([n, l], i) => (
+          <div key={l} style={{ flex: 1, paddingLeft: i ? 12 : 0, borderLeft: i ? '1px solid ' + C.ruleLight : 'none' }}>
+            <div style={{ fontSize: 22, fontWeight: 820, color: C.ink, letterSpacing: '-0.05em', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>{n}</div>
+            <div style={{ fontSize: 10, color: C.ink3, marginTop: 5, lineHeight: 1.3 }}>{l}</div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ padding: '24px 24px 0' }}>
+        {['我关注的赛事', '我的提问', '学习记录', '设置'].map((t, i) => (
+          <div key={t} className="press" style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 0', borderTop: '1px solid ' + C.ruleLight }}>
+            <span style={{ fontSize: 15, fontWeight: 620, color: C.ink, letterSpacing: '-0.015em' }}>{t}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: 11.5, color: C.ink3 }}>{['12', '3', '18', ''][i]}</span>
+              <svg width="7" height="12" viewBox="0 0 7 12" fill="none" stroke={C.ink3} strokeWidth="1.8" strokeLinecap="round"><path d="M1 1l5 5-5 5" /></svg>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ padding: '24px 24px 0' }}>
+        <div style={{ padding: 18, border: '1px solid ' + C.rule, borderRadius: 4 }}>
+          <div style={{ fontSize: 11.5, fontWeight: 800, color: C.ink2, letterSpacing: '0.02em' }}>本周节奏</div>
+          <div style={{ marginTop: 12, display: 'flex', alignItems: 'flex-end', gap: 5, height: 54 }}>
+            {[40, 62, 30, 88, 55, 20, 8].map((h, i) => (
+              <div key={i} style={{ flex: 1, height: h + '%', background: i === 6 ? 'rgba(16,16,20,.12)' : C.ink, borderRadius: 1 }} />
+            ))}
+          </div>
+          <div style={{ marginTop: 8, display: 'flex', gap: 5 }}>
+            {['一', '二', '三', '四', '五', '六', '日'].map((d, i) => <span key={i} style={{ flex: 1, textAlign: 'center', fontSize: 9.5, color: C.ink3 }}>{d}</span>)}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AppPhone({ initial = 'home' }) {
+  const [screen, setScreen] = React.useState(initial);
+  const go = (s) => setScreen(s);
+  const nav = [['home', '首页'], ['learn', '学习'], ['contest', '赛事'], ['project', '项目'], ['mine', '我的']];
+  return (
+      <IosFrame>
+        <div style={{ position: 'relative', height: '100%' }}>
+          <div style={{ height: '100%', overflowY: 'auto' }} className="sc">
+            {screen === 'home' && <ScreenHome go={go} />}
+            {screen === 'learn' && <ScreenLearn go={go} />}
+            {screen === 'contest' && <ScreenRace />}
+            {screen === 'project' && <ScreenProject />}
+            {screen === 'problem' && <ScreenProblem back={() => go('learn')} />}
+            {screen === 'mine' && <ScreenMine />}
+            <div style={{ height: 24 }} />
+          </div>
+          <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: '30px 24px 22px', background: 'linear-gradient(180deg, rgba(252,251,249,0) 0%, rgba(252,251,249,.97) 28%, ' + C.paper + ' 48%)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid ' + C.rule, paddingTop: 13 }}>
+              {nav.map(([k, label]) => {
+                const on = (screen === 'problem' ? 'learn' : screen) === k;
+                return (
+                  <div key={k} onClick={() => go(k)} className="press" style={{ cursor: 'pointer', flex: 1, textAlign: 'center' }}>
+                    <span style={{ fontSize: 12, fontWeight: on ? 800 : 550, color: on ? C.ink : C.ink3, letterSpacing: '0.01em', position: 'relative' }}>
+                      {label}
+                      {on && <span style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', bottom: -7, width: 4, height: 4, borderRadius: 999, background: C.accent }} />}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </IosFrame>
+  );
+}
+
+function ScaleBox({ s = 1, children }) {
+  return (
+    <div style={{ width: 417 * s, height: 876 * s, position: 'relative', flexShrink: 0 }}>
+      <div style={{ position: 'absolute', top: 0, left: 0, transform: `scale(${s})`, transformOrigin: 'top left' }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function Board() {
+  return (
+    <div style={{ minHeight: '100vh', background: '#EFEDE8', padding: '72px 56px 100px' }}>
+      <div style={{ maxWidth: 1440, margin: '0 auto' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 60, alignItems: 'end', marginBottom: 64 }}>
+          <div>
+            <div style={{ fontSize: 11.5, fontWeight: 800, letterSpacing: '0.10em', color: C.accent, marginBottom: 20 }}>方向 C · 编辑排版</div>
+            <div style={{ fontSize: 66, fontWeight: 820, letterSpacing: '-0.06em', color: C.ink, lineHeight: .98 }}>
+              把校园<br />做成一本<br />杂志
+            </div>
+          </div>
+          <div style={{ paddingBottom: 10 }}>
+            <div style={{ height: 2, background: C.ink, marginBottom: 14 }} />
+            <div style={{ fontSize: 13.5, color: C.ink2, lineHeight: 1.75, letterSpacing: '-0.005em' }}>
+              不用卡片、不用阴影、不用玻璃。层级全靠字号跨度、留白和一根 1px 的线。标题 46px 紧排到 -0.055em，正文 15.5px 行高 1.78；全场只有一个强调色，用来标出「该看哪里」。
+            </div>
+            <div style={{ marginTop: 16, display: 'flex', gap: 22 }}>
+              {[['字体', '46 / 25 / 15.5 / 11'], ['动效', 'stagger 60ms · 细线生长'], ['结构', '线框列表 · 无卡片']].map(([k, v]) => (
+                <div key={k}>
+                  <div style={{ fontSize: 9.5, fontWeight: 800, color: C.ink3, letterSpacing: '0.08em', marginBottom: 4 }}>{k}</div>
+                  <div style={{ fontSize: 11, color: C.ink2 }}>{v}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 30 }}>
+          {[
+            { k: 'home', l: '头版 · 今天该做什么', s: 1.0, m: 0 },
+            { k: 'learn', l: '学习 · 目录式', s: 0.86, m: 74 },
+            { k: 'contest', l: '赛事 · 榜单式', s: 0.86, m: 30 },
+          ].map(it => (
+            <div key={it.k} style={{ marginBottom: it.m }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 12, paddingLeft: 2 }}>
+                <div style={{ width: 5, height: 5, border: '1px solid ' + C.ink, borderRadius: 999 }} />
+                <span style={{ fontSize: 11, color: C.ink2, letterSpacing: '-0.005em' }}>{it.l}</span>
+              </div>
+              <ScaleBox s={it.s}><AppPhone initial={it.k} /></ScaleBox>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 30, marginTop: 60 }}>
+          {[
+            { k: 'problem', l: '题目 · 阅读式' },
+            { k: 'project', l: '项目 · 清单式' },
+            { k: 'mine', l: '我的 · 档案页' },
+          ].map(it => (
+            <div key={it.k}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 12, paddingLeft: 2 }}>
+                <div style={{ width: 5, height: 5, border: '1px solid ' + C.ink, borderRadius: 999 }} />
+                <span style={{ fontSize: 11, color: C.ink2, letterSpacing: '-0.005em' }}>{it.l}</span>
+              </div>
+              <ScaleBox s={0.86}><AppPhone initial={it.k} /></ScaleBox>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ marginTop: 64, paddingTop: 20, borderTop: '2px solid ' + C.ink, display: 'flex', justifyContent: 'space-between', fontSize: 11.5, color: C.ink2, flexWrap: 'wrap', gap: 14 }}>
+          <span>底部四项可切，题目从学习页进入</span>
+          <span>落进小程序时：强调色 #FF3B2F 在纸白底上对比度 4.6:1，正文用墨黑</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Board />);
+</script>
+</body>
+</html>

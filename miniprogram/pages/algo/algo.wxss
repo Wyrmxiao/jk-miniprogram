@@ -1,0 +1,162 @@
+@import '../../styles/variables.wxss';
+@import '../../styles/mixins.wxss';
+
+/* ===== hero 附加 ===== */
+.hero__go {
+  background: var(--color-primary);
+  color: var(--text-inverse);
+}
+
+.algo__seg {
+  margin: var(--space-md) var(--space-lg) 0;
+}
+
+/* ===== 备赛目标卡 ===== */
+.goal {
+  margin: var(--space-md) var(--space-lg) 0;
+  padding: var(--space-md) var(--space-md);
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+.goal--empty {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.goal__title {
+  font-size: var(--font-body);
+  font-weight: 500;
+  color: var(--text-primary);
+}
+.goal__num {
+  font-size: var(--font-caption);
+  color: var(--text-secondary);
+}
+.goal__bar {
+  margin-top: var(--space-sm);
+  height: 14rpx;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary-light);
+  overflow: hidden;
+}
+.goal__bar-inner {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+  transition: width 0.4s var(--ease-press);
+}
+
+/* ===== 统计三卡 ===== */
+.algo__cards {
+  display: flex;
+  gap: var(--space-sm);
+  margin: var(--space-md) var(--space-lg) 0;
+}
+.algo__card {
+  flex: 1;
+  padding: var(--space-md) 0;
+  text-align: center;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+.algo__card-num {
+  font-size: var(--font-large);
+  font-weight: 500;
+  color: var(--text-primary);
+}
+.algo__card-label {
+  margin-top: 4rpx;
+  font-size: var(--font-micro);
+  color: var(--text-tertiary);
+}
+
+/* ===== 热力图 ===== */
+.heat {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+  padding: var(--space-sm) var(--space-md);
+}
+.heat__cell {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 8rpx;
+  background: var(--bg-block);
+}
+.heat--0 { background: var(--bg-block); }
+.heat--1 { background: var(--color-primary-light); }
+.heat--2 { background: #99c7ff; }
+.heat--3 { background: var(--color-primary); }
+.heat--4 { background: var(--color-primary-dark); }
+.heat__legend {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8rpx;
+  padding: 0 var(--space-md) var(--space-sm);
+  font-size: var(--font-micro);
+  color: var(--text-tertiary);
+}
+.heat__legend .heat__cell {
+  width: 22rpx;
+  height: 22rpx;
+}
+
+/* ===== 知识点分布 ===== */
+.tagrow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 10rpx var(--space-md);
+}
+.tagrow__name {
+  width: 150rpx;
+  font-size: var(--font-caption);
+  color: var(--text-secondary);
+}
+.tagrow__bar {
+  flex: 1;
+  height: 16rpx;
+  border-radius: var(--radius-pill);
+  background: var(--bg-block);
+  overflow: hidden;
+}
+.tagrow__inner {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: var(--color-student);
+  transition: width 0.4s var(--ease-press);
+}
+.tagrow__num {
+  width: 56rpx;
+  text-align: right;
+  font-size: var(--font-caption);
+  color: var(--text-tertiary);
+}
+
+/* ===== 打卡流水 ===== */
+.rec__dot {
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-caption);
+  flex-shrink: 0;
+}
+.rec__dot--pass {
+  color: #fff;
+  background: var(--color-student);
+}
+.rec__dot--fail {
+  color: var(--text-tertiary);
+  background: var(--bg-block);
+}
+
+/* ===== 弹层内 chips ===== */
+.sheet .opts {
+  padding: var(--space-sm) var(--space-md) 0;
+}

@@ -1,4 +1,9 @@
 <view class="page" wx:if="{{project}}">
+  <view class="blobs">
+    <view class="blob blob--1"></view>
+    <view class="blob blob--2"></view>
+    <view class="blob blob--3"></view>
+  </view>
   <!-- ===== 档案头 ===== -->
   <view class="head">
     <view class="head__badges">
@@ -18,12 +23,12 @@
 
     <!-- 操作行：教师推荐 / 作者编辑删除 -->
     <view class="head__ops">
-      <view wx:if="{{isTeacher}}" class="op {{project.featured ? 'op--star' : ''}}" bindtap="toggleFeature">
+      <view wx:if="{{isTeacher}}" class="op {{project.featured ? 'op--star' : ''}} pressable" bindtap="toggleFeature" hover-class="pressing">
         {{project.featured ? '取消推荐' : '⭐ 推荐项目'}}
       </view>
       <block wx:if="{{isOwner}}">
-        <view class="op" bindtap="editProject">编辑</view>
-        <view class="op op--danger" bindtap="removeProject">删除项目</view>
+        <view class="op pressable" bindtap="editProject" hover-class="pressing">编辑</view>
+        <view class="op op--danger pressable" bindtap="removeProject" hover-class="pressing">删除项目</view>
       </block>
     </view>
   </view>
@@ -45,7 +50,7 @@
       />
       <view class="upd-editor__foot">
         <text class="upd-editor__count">{{draft.length}}/2000</text>
-        <view class="upd-editor__send {{canSend ? '' : 'upd-editor__send--off'}}" bindtap="publishUpdate">
+        <view class="upd-editor__send {{canSend ? '' : 'upd-editor__send--off'}} pressable" bindtap="publishUpdate" hover-class="pressing">
           {{sending ? '发布中' : '发布进展'}}
         </view>
       </view>
@@ -107,7 +112,7 @@
       bindconfirm="sendComment"
       cursor-spacing="120"
     />
-    <view class="footer__send {{canSendComment ? '' : 'footer__send--off'}}" bindtap="sendComment">
+    <view class="footer__send {{canSendComment ? '' : 'footer__send--off'}} pressable" bindtap="sendComment" hover-class="pressing">
       {{commentSending ? '发送中' : '发送'}}
     </view>
   </view>

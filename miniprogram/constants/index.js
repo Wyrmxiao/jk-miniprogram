@@ -137,6 +137,74 @@ const MY_CONTEST_STATUS_TEXT = {
   finished: '已完赛'
 };
 
+/** 算法训练 · 学生端统一难度（牛客 / LeetCode 映射为三档） */
+const ALGO_BANDS = [
+  { key: 'entry', name: '简单', range: '基础语法与单一知识点' },
+  { key: 'basic', name: '中等', range: '组合知识点与常见模型' },
+  { key: 'improve', name: '困难', range: '综合设计与进阶模型' }
+];
+
+const ALGO_BAND_TEXT = {
+  entry: '简单',
+  basic: '中等',
+  improve: '困难',
+  // 兼容历史 Codeforces 记录
+  advanced: '进阶',
+  challenge: '挑战'
+};
+
+/** 算法训练 · 知识点（与题库一致，顺序即展示顺序） */
+const ALGO_TAGS = [
+  { key: 'simulation', name: '模拟枚举' },
+  { key: 'sort', name: '排序' },
+  { key: 'binary', name: '二分' },
+  { key: 'prefix', name: '前缀和差分' },
+  { key: 'twopointer', name: '双指针' },
+  { key: 'greedy', name: '贪心' },
+  { key: 'recursion', name: '递归分治' },
+  { key: 'dp', name: '动态规划' },
+  { key: 'graph', name: '图论' },
+  { key: 'tree', name: '树' },
+  { key: 'ds', name: '数据结构' },
+  { key: 'string', name: '字符串' },
+  { key: 'search', name: '搜索' },
+  { key: 'math', name: '数学' }
+];
+
+const ALGO_TAG_TEXT = ALGO_TAGS.reduce((m, t) => {
+  m[t.key] = t.name;
+  return m;
+}, {});
+
+/** 算法训练 · 内置题库平台 */
+const ALGO_SOURCES = [
+  { key: 'nowcoder', name: '牛客网', short: '牛客', color: 'green' },
+  { key: 'leetcode', name: 'LeetCode', short: '力扣', color: 'orange' }
+];
+
+/** 算法训练 · 手动补记平台建议 */
+const ALGO_PLATFORMS = ['牛客网', 'LeetCode', '洛谷', '其他'];
+
+/** 学习问答 · 分类（与后端 handlers/qa.js CATEGORIES 一致） */
+const QA_CATEGORIES = [
+  { key: 'algorithm', name: '算法题' },
+  { key: 'course', name: '课程学习' },
+  { key: 'project', name: '项目开发' },
+  { key: 'contest', name: '竞赛备赛' },
+  { key: 'other', name: '其他' }
+];
+
+const QA_CATEGORY_TEXT = QA_CATEGORIES.reduce((m, t) => {
+  m[t.key] = t.name;
+  return m;
+}, {});
+
+/** 学习问答 · 状态 */
+const QA_STATUS_TEXT = {
+  open: '待解决',
+  solved: '已解决'
+};
+
 /** 后端服务域：与云函数目录名一一对应，新增域需同步后端 */
 const DOMAIN = {
   AUTH: 'auth',
@@ -176,6 +244,15 @@ module.exports = {
   ANNOUNCE_TYPE_TEXT,
   MY_CONTEST_STATUS,
   MY_CONTEST_STATUS_TEXT,
+  ALGO_BANDS,
+  ALGO_BAND_TEXT,
+  ALGO_TAGS,
+  ALGO_TAG_TEXT,
+  ALGO_SOURCES,
+  ALGO_PLATFORMS,
+  QA_CATEGORIES,
+  QA_CATEGORY_TEXT,
+  QA_STATUS_TEXT,
   DOMAIN,
   STORAGE_KEY
 };

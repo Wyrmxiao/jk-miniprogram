@@ -8,7 +8,7 @@
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
 }
-.block__title { font-size: var(--font-body); font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-md); }
+.block__title { font-size: var(--font-body); font-weight: 560; color: var(--text-primary); margin-bottom: var(--space-md); }
 .block-label { display: block; margin-top: var(--space-lg); }
 .tip { font-size: var(--font-micro); color: var(--text-secondary); line-height: 1.6; margin-bottom: var(--space-sm); }
 
@@ -28,17 +28,17 @@
 }
 
 
-.row { flex-direction: row; align-items: center; margin-top: var(--space-lg); flex-wrap: wrap; }
+.row { display: flex; flex-direction: row; align-items: center; margin-top: var(--space-lg); flex-wrap: wrap; }
 .row__label { font-size: var(--font-caption); color: var(--text-secondary); margin-right: var(--space-md); font-weight: 500; }
-.opts { flex-direction: row; flex-wrap: wrap; }
-.opt {
+.opts { display: flex; flex-direction: row; flex-wrap: wrap; }
+.opt { display: inline-flex; align-items: center; justify-content: center;
   padding: 12rpx 28rpx;
   margin: 0 14rpx 14rpx 0;
   border-radius: var(--radius-pill);
   background: var(--bg-block);
   font-size: var(--font-caption);
   color: var(--text-secondary);
-}
+ min-height: 80rpx;}
 .opt--on { background: var(--color-primary-light); color: var(--color-primary); font-weight: 500; }
 .picker {
   padding: 12rpx var(--space-md);
@@ -47,7 +47,7 @@
   font-size: var(--font-caption);
 }
 
-.months { flex-direction: row; flex-wrap: wrap; margin-top: var(--space-sm); }
+.months { display: flex; flex-direction: row; flex-wrap: wrap; margin-top: var(--space-sm); }
 .month {
   width: 96rpx;
   margin: 0 12rpx 12rpx 0;
@@ -60,7 +60,7 @@
 }
 .month--on { background: var(--color-primary-light); color: var(--color-primary); font-weight: 500; }
 
-.switch-row {
+.switch-row { display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
@@ -70,6 +70,6 @@
 }
 
 .actions { margin-top: var(--space-lg); }
-.btn-block { display: block; width: 100%; text-align: center; height: 88rpx; line-height: 88rpx; border-radius: var(--radius-pill); font-size: var(--font-body); font-weight: 600; margin-bottom: var(--space-md); }
+.btn-block { display: block; width: 100%; text-align: center; height: 88rpx; line-height: 88rpx; border-radius: var(--radius-md); font-size: var(--font-body); font-weight: 560; margin-bottom: var(--space-md); }
 .btn-primary { background: var(--color-teacher); color: #fff; }
 .btn-danger { background: var(--color-danger-light); color: var(--color-danger); font-weight: 500; }

@@ -1,8 +1,10 @@
 <view class="page" wx:if="{{loaded}}">
-  <view class="rolebar rolebar--teacher">
-    <view class="rolebar__icon">师</view>
-    <view class="rolebar__text">教师端 · 维护赛事信息与时间，保存后学生端立即生效</view>
+  <view class="blobs">
+    <view class="blob blob--1"></view>
+    <view class="blob blob--2"></view>
+    <view class="blob blob--3"></view>
   </view>
+  <view class="hero"><view class="hero__title">编辑赛事</view></view>
 
   <view class="block">
     <view class="block__title">基础信息</view>
@@ -29,7 +31,7 @@
     <input class="field" placeholder="校内承办单位" value="{{form.host}}" data-field="host" bindinput="onField" cursor-spacing="120" />
     <view class="switch-row">
       <text>标记为院内重点赛事</text>
-      <switch checked="{{form.isFocus}}" bindchange="toggleFocus" color="#6b8ca3" />
+      <switch checked="{{form.isFocus}}" bindchange="toggleFocus" color="#007aff" />
     </view>
   </view>
 

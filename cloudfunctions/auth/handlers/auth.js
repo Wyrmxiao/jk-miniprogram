@@ -197,7 +197,9 @@ const COLLECTIONS = [
   'task_submissions',
   'projects',
   'project_updates',
-  'project_comments'
+  'project_comments',
+  'algo_records',
+  'algo_stats'
 ];
 
 /** 建集合（已存在时云开发会报错，忽略即可） */

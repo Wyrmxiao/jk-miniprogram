@@ -1,4 +1,9 @@
 <view class="page">
+  <view class="blobs">
+    <view class="blob blob--1"></view>
+    <view class="blob blob--2"></view>
+    <view class="blob blob--3"></view>
+  </view>
   <view wx:if="{{loading}}" class="state">正在加载…</view>
 
   <view wx:elif="{{detail}}" class="article">

@@ -1,0 +1,82 @@
+<view class="page">
+  <view class="blobs">
+    <view class="blob blob--1"></view>
+    <view class="blob blob--2"></view>
+    <view class="blob blob--3"></view>
+  </view>
+  <view class="hero library-hero">
+    <view class="hero__title">精选题库</view>
+    <view class="searchbar">
+      <text class="searchbar__icon">⌕</text>
+      <input class="searchbar__input" value="{{query}}" placeholder="搜索题号或中文题名" confirm-type="search" bindinput="onQuery" bindconfirm="submitSearch" />
+      <view class="searchbar__btn pressable" bindtap="submitSearch" hover-class="pressing">搜索</view>
+    </view>
+  </view>
+
+  <view wx:if="{{loading}}" class="state-empty">正在整理题库…</view>
+
+  <block wx:else>
+    <view class="progress-card">
+      <view>
+        <view class="progress-card__label">练习进度</view>
+        <view class="progress-card__value">{{done}} / {{total}} 题</view>
+      </view>
+      <view class="progress-ring">{{progress}}%</view>
+      <view class="progress-card__bar"><view class="progress-card__bar-in" style="width: {{progress}}%"></view></view>
+    </view>
+
+    <view class="section-head">
+      <view>
+        <view class="section-head__title">平台</view>
+      </view>
+    </view>
+    <scroll-view class="source-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="source-row">
+        <view class="source-card source-card--all pressable {{sourceKey === '' ? 'source-card--on' : ''}}" hover-class="pressing" data-key="" bindtap="selectSource">
+          <view class="source-card__logo">ALL</view>
+          <view class="source-card__name">全部平台</view>
+          <view class="source-card__meta">{{total}} 题可练</view>
+        </view>
+        <view wx:for="{{platforms}}" wx:key="key" class="source-card source-card--{{item.key}} pressable {{sourceKey === item.key ? 'source-card--on' : ''}}" hover-class="pressing" data-key="{{item.key}}" bindtap="selectSource">
+          <view class="source-card__logo">{{item.key === 'nowcoder' ? '牛' : 'LC'}}</view>
+          <view class="source-card__name">{{item.name}}</view>
+          <view class="source-card__meta">已完成 {{item.done}} / {{item.total}}</view>
+        </view>
+      </view>
+    </scroll-view>
+
+    <view class="section-head section-head--compact"><view class="section-head__title">按难度</view></view>
+    <view class="filter-row">
+      <view wx:for="{{difficulties}}" wx:key="key" class="filter-chip {{bandKey === item.key ? 'filter-chip--on' : ''}} pressable" data-key="{{item.key}}" bindtap="selectBand" hover-class="pressing">{{item.name}}</view>
+    </view>
+
+    <view wx:if="{{next}}" class="next-card pressable" hover-class="pressing" bindtap="goNext">
+      <view class="next-card__flag">继续练</view>
+      <view class="next-card__body">
+        <view class="next-card__title text-ellipsis">{{next.title}}</view>
+        <view class="next-card__meta">{{next.sourceName}} · {{next.pid}} · {{next.bandName}}</view>
+      </view>
+      <view class="next-card__arrow">›</view>
+    </view>
+
+    <view class="section-head">
+      <view>
+        <view class="section-head__title">按知识点</view>
+      </view>
+      <view class="section-head__action pressable" bindtap="goAll" hover-class="pressing">全部题目</view>
+    </view>
+
+    <view wx:if="{{view.length}}" class="knowledge-grid">
+      <view wx:for="{{view}}" wx:key="key" class="knowledge-card pressable" hover-class="pressing" data-key="{{item.key}}" bindtap="goProblems">
+        <view class="knowledge-card__top">
+          <view class="knowledge-card__name">{{item.name}}</view>
+          <view class="knowledge-card__count">{{item.total}} 题</view>
+        </view>
+        <view class="knowledge-card__bar"><view class="knowledge-card__bar-in" style="width: {{item.pct}}%"></view></view>
+        <view class="knowledge-card__foot">已完成 {{item.done}}</view>
+      </view>
+    </view>
+    <view wx:else class="empty">当前组合暂无题目，请切换难度或平台</view>
+  </block>
+  <view class="safe-bottom"></view>
+</view>

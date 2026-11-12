@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>字体改版对照 · 前 / 后</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: #0b0b10;
+    color: #fff;
+    font-family: "Nunito", -apple-system, "PingFang SC", sans-serif;
+    padding: 56px 48px 72px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .head { max-width: 980px; margin: 0 auto 40px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 5px 13px; border-radius: 999px;
+    background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12);
+    color: #9FB2FF; font-size: 11.5px; letter-spacing: .04em; margin-bottom: 18px;
+  }
+  h1 { font-size: 40px; line-height: 1.15; margin: 0 0 14px; letter-spacing: .01em; font-weight: 700; }
+  h1 em { font-style: normal; color: #8FA4FF; }
+  .lede { font-size: 14px; line-height: 1.75; color: rgba(255,255,255,.5); max-width: 640px; margin: 0; }
+
+  .stage { display: flex; gap: 44px; justify-content: center; align-items: flex-start; max-width: 980px; margin: 0 auto; }
+  .col { flex: 1; max-width: 400px; }
+  .tag { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .tag b { font-size: 13px; font-weight: 700; letter-spacing: .02em; }
+  .tag span { font-size: 11px; color: rgba(255,255,255,.35); letter-spacing: .02em; }
+  .before b { color: rgba(255,255,255,.5); }
+  .after b { color: #8FA4FF; }
+  img { width: 100%; display: block; border-radius: 34px; }
+
+  .notes { max-width: 980px; margin: 52px auto 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .note {
+    background: rgba(255,255,255,.035);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 18px; padding: 18px 18px 20px;
+  }
+  .note h3 { margin: 0 0 9px; font-size: 13.5px; font-weight: 700; letter-spacing: .01em; }
+  .note p { margin: 0; font-size: 12.5px; line-height: 1.72; color: rgba(255,255,255,.45); }
+  .note .k { color: #8FA4FF; }
+</style>
+</head>
+<body>
+  <div class="head">
+    <div class="eyebrow">方向 A · 字体改版</div>
+    <h1>从「系统感」换成<em>圆润的呼吸感</em></h1>
+    <p class="lede">同一屏内容，只改字体与字距。左边是原来的苹方重字紧排，右边是圆体 + Nunito 数字 + 全站字距放松。</p>
+  </div>
+
+  <div class="stage">
+    <div class="col before">
+      <div class="tag"><b>改前</b><span>苹方 800 · −0.035em</span></div>
+      <img src="shots/cmp-old.png" alt="改前" />
+    </div>
+    <div class="col after">
+      <div class="tag"><b>改后</b><span>圆体 400 · +0.008em · Nunito</span></div>
+      <img src="shots/cmp-new.png" alt="改后" />
+    </div>
+  </div>
+
+  <div class="notes">
+    <div class="note">
+      <h3>字形</h3>
+      <p>中文换成<span class="k">圆体</span>，笔末端不再平切，转角带弧度。数字与英文换成 <span class="k">Nunito</span>，820、70%、天数这些数字变成整块圆润的几何形。</p>
+    </div>
+    <div class="note">
+      <h3>字距</h3>
+      <p>原来全站 −0.035em 的紧排是"锐利"的来源。改成 <span class="k">+0.008em</span> 后，字与字之间有空气，读起来不顶眼。</p>
+    </div>
+    <div class="note">
+      <h3>层级</h3>
+      <p>圆体只有一个字重，所以靠<span class="k">字号差</span>和<span class="k">颜色</span>建立主次，不再靠粗体。强调词改用蓝色，比硬加粗更清楚。</p>
+    </div>
+  </div>
+</body>
+</html>

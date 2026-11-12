@@ -9,5 +9,6 @@ module.exports = {
   suggestRoadmap: agent.suggestRoadmap,
   contestAdvice: agent.contestAdvice,
   reviewLog: agent.reviewLog,
+  algoCoach: agent.algoCoach,
   history: agent.history
 };

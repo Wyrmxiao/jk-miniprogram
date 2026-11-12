@@ -1,15 +1,20 @@
 <view class="page">
+  <view class="blobs">
+    <view class="blob blob--1"></view>
+    <view class="blob blob--2"></view>
+    <view class="blob blob--3"></view>
+  </view>
   <!-- 大标题头部 -->
   <view class="hero">
     <view class="hero__title">通知与赛事公告</view>
-    <view class="hero__sub">共 {{total}} 条 · 教师发布的重要信息</view>
+    <view class="hero__sub">共 {{total}} 条公告</view>
   </view>
 
   <!-- 类型筛选 -->
   <view class="seg">
-    <view class="seg__item {{tab === '' ? 'seg__item--on' : ''}}" data-tab="" bindtap="switchTab">全部</view>
-    <view class="seg__item {{tab === 'notice' ? 'seg__item--on' : ''}}" data-tab="notice" bindtap="switchTab">通知</view>
-    <view class="seg__item {{tab === 'contest' ? 'seg__item--on' : ''}}" data-tab="contest" bindtap="switchTab">赛事</view>
+    <view class="seg__item {{tab === '' ? 'seg__item--on' : ''}} pressable" data-tab="" bindtap="switchTab" hover-class="pressing">全部</view>
+    <view class="seg__item {{tab === 'notice' ? 'seg__item--on' : ''}} pressable" data-tab="notice" bindtap="switchTab" hover-class="pressing">通知</view>
+    <view class="seg__item {{tab === 'contest' ? 'seg__item--on' : ''}} pressable" data-tab="contest" bindtap="switchTab" hover-class="pressing">赛事</view>
   </view>
 
   <!-- 列表 -->

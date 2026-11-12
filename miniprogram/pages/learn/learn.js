@@ -1,5 +1,5 @@
 // pages/learn/learn.js
-const { learn } = require('../../services/index');
+const { learn, qa } = require('../../services/index');
 const { isTeacher, isVerified } = require('../../utils/auth');
 
 const DIRECTIONS = [
@@ -42,12 +42,67 @@ Page({
 
     // 教师查看某任务的提交
     activeTask: null,
-    submissions: []
+    submissions: [],
+
+    // 算法训练入口
+    algoStat: null,
+    // 学习问答入口
+    qaStat: null
   },
 
   onShow() {
+    const tabBar = this.getTabBar && this.getTabBar();
+    if (tabBar) tabBar.setData({ active: 1 });
     this.setData({ isVerified: isVerified(), isTeacher: isTeacher() });
     this.loadData();
+    this.loadAlgoStat();
+    this.loadQaStat();
+  },
+
+  /** 问答入口状态（静默，失败不提示） */
+  async loadQaStat() {
+    if (!isVerified()) {
+      this.setData({ qaStat: null });
+      return;
+    }
+    try {
+      const s = await qa.stats();
+      this.setData({ qaStat: { open: s.open || 0, mine: s.mine || 0 } });
+    } catch (e) {
+      this.setData({ qaStat: null });
+    }
+  },
+
+  /** 算法训练入口状态（静默，失败不提示） */
+  async loadAlgoStat() {
+    if (!isVerified()) {
+      this.setData({ algoStat: null });
+      return;
+    }
+    try {
+      const s = await learn.algoStats({});
+      this.setData({
+        algoStat: {
+          streak: s.streak || 0,
+          total: s.total || 0,
+          todayDone: !!(s.byDate && s.byDate[this.bjToday()])
+        }
+      });
+    } catch (e) {
+      this.setData({ algoStat: null });
+    }
+  },
+
+  bjToday() {
+    return new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
+  },
+
+  goAlgo() {
+    wx.navigateTo({ url: '/pages/algo/algo' });
+  },
+
+  goQa() {
+    wx.navigateTo({ url: '/pages/learn/qa' });
   },
 
   onPullDownRefresh() {

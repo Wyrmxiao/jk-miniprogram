@@ -2,11 +2,18 @@
   "pages": [
     "pages/index/index",
     "pages/learn/learn",
+    "pages/learn/qa",
+    "pages/learn/qaDetail",
     "pages/contest/contest",
     "pages/contest/detail/detail",
     "pages/project/project",
     "pages/project/detail",
-    "pages/mine/mine"
+    "pages/mine/mine",
+    "pages/algo/algo",
+    "pages/algo/modules",
+    "pages/algo/problems",
+    "pages/algo/problem",
+    "pages/algo/detail"
   ],
   "subpackages": [
     {
@@ -68,18 +75,19 @@
     }
   },
   "window": {
-    "navigationBarBackgroundColor": "#f4f1ec",
+    "navigationBarBackgroundColor": "#F7F8FC",
     "navigationBarTitleText": "计科创新中心",
     "navigationBarTextStyle": "black",
-    "backgroundColor": "#f4f1ec",
+    "backgroundColor": "#F7F8FC",
     "backgroundTextStyle": "dark",
     "enablePullDownRefresh": false
   },
   "tabBar": {
-    "color": "#9d988e",
-    "selectedColor": "#6b8ca3",
-    "backgroundColor": "#fffdf9",
-    "borderStyle": "black",
+    "custom": true,
+    "color": "#9A9AA6",
+    "selectedColor": "#3B5BFF",
+    "backgroundColor": "#F7F8FC",
+    "borderStyle": "white",
     "list": [
       {
         "pagePath": "pages/index/index",

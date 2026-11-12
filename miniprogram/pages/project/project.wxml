@@ -1,8 +1,13 @@
 <view class="page">
+  <!-- 方向 A 光斑背景 -->
+  <view class="blobs">
+    <view class="blob blob--1"></view>
+    <view class="blob blob--2"></view>
+    <view class="blob blob--3"></view>
+  </view>
   <!-- 头部 -->
   <view class="hero">
     <view class="hero__title">项目</view>
-    <view class="hero__sub">记录你的创造，展示你的成果</view>
   </view>
 
   <!-- 阶段筛选 -->
@@ -10,11 +15,11 @@
     <view
       wx:for="{{stages}}"
       wx:key="key"
-      class="chip {{activeStage === item.key ? 'chip--on' : ''}}"
+      class="chip {{activeStage === item.key ? 'chip--on' : ''}} pressable"
       data-key="{{item.key}}"
       bindtap="switchStage"
-    >{{item.name}}</view>
-    <view class="chip {{onlyMine ? 'chip--mine' : ''}}" bindtap="toggleMine">我的项目</view>
+     hover-class="pressing">{{item.name}}</view>
+    <view class="chip {{onlyMine ? 'chip--mine' : ''}} pressable" bindtap="toggleMine" hover-class="pressing">我的项目</view>
   </scroll-view>
 
   <!-- 项目卡片流 -->
@@ -27,7 +32,7 @@
       data-id="{{item._id}}"
       bindtap="goDetail"
     >
-      <view wx:if="{{item.featured}}" class="card__star">⭐ 教师推荐</view>
+      <view wx:if="{{item.featured}}" class="card__star">教师推荐</view>
       <view class="card__head">
         <view class="card__avatar">{{item.ownerName[0] || '项'}}</view>
         <view class="card__who">
@@ -40,7 +45,7 @@
         <text class="tag tag--stage-{{item.stage}}">{{item.stageText}}</text>
         <text class="tag">{{item.directionText}}</text>
       </view>
-      <view class="card__meta">📝 {{item.updateCount || 0}} 进展 · 💬 {{item.commentCount || 0}} 留言 · 👀 {{item.viewCount || 0}}</view>
+      <view class="card__meta">{{item.updateCount || 0}} 条进展 · {{item.commentCount || 0}} 条留言</view>
     </view>
 
     <view wx:if="{{noMore && list.length}}" class="list__end">— 没有更多了 —</view>
@@ -51,5 +56,5 @@
   </view>
 
   <!-- 创建入口 -->
-  <view class="fab" bindtap="goCreate">＋</view>
+  <view class="fab pressable" hover-class="pressing" bindtap="goCreate">＋ 新建</view>
 </view>

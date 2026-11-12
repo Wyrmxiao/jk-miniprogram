@@ -27,6 +27,8 @@ Page({
   },
 
   onShow() {
+    const tabBar = this.getTabBar && this.getTabBar();
+    if (tabBar) tabBar.setData({ active: 3 });
     this.load(true);
   },
 
