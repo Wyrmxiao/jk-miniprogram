@@ -5,6 +5,13 @@
 const { badRequest } = require('../utils/response');
 const { callLLM, saveConversation } = require('../services/llm');
 const { COACH_PROMPT, buildProblemContext } = require('../prompts/errichto-coach');
+const {
+  ASSISTANT_PROMPT,
+  TAG_KEYS,
+  BAND_KEYS,
+  buildProblemContext: buildAssistantProblemContext
+} = require('../prompts/algo-assistant');
+const { QA_PROMPT } = require('../prompts/qa-assistant');
 
 /** 系统提示词：定义助手身份与边界 */
 const SYSTEM_PROMPT =
@@ -113,6 +120,102 @@ async function algoCoach(params, ctx) {
   return { reply: res.content };
 }
 
+/**
+ * 算法训练 · 悬浮球 AI 助手
+ *
+ * 两种意图，模型返回严格 JSON（见 prompts/algo-assistant.js 的输出契约）：
+ *   goto   → 学生想刷某类题，前端拿 tag/band 跳到对应题单页
+ *   answer → 讲解/答疑，直接展示文本
+ * 解析失败时兜底降级为 answer，保证对话永不白屏。
+ */
+async function algoAssistant(params, ctx) {
+  ctx.requireLogin();
+  const { message = '', history: hist = [], problem = null } = params || {};
+  if (!message) throw badRequest('请输入你的问题');
+
+  const problemCtx = buildAssistantProblemContext(problem);
+
+  const messages = [
+    { role: 'system', content: ASSISTANT_PROMPT },
+    ...(problemCtx ? [{ role: 'system', content: problemCtx }] : []),
+    ...hist.slice(-6).map((h) => ({ role: h.role, content: h.content })),
+    { role: 'user', content: message }
+  ];
+
+  const res = await callLLM(messages, { temperature: 0.5 });
+  const intent = parseIntent(res.content, message);
+  await saveConversation(ctx.openid, 'algoAssistant', messages, res.content);
+  return intent;
+}
+
+/** 解析模型 JSON 输出：剥代码块围栏 → 提取首个 {} → 校验合法 key，失败降级为 answer */
+function parseIntent(text, fallbackQuestion) {
+  const raw = String(text || '').trim();
+  let body = raw
+    .replace(/^```(?:json)?\s*/i, '')
+    .replace(/```\s*$/, '')
+    .trim();
+  const match = body.match(/\{[\s\S]*\}/);
+  let obj = null;
+  if (match) {
+    try {
+      obj = JSON.parse(match[0]);
+    } catch (e) {
+      obj = null;
+    }
+  }
+
+  if (obj && obj.action === 'goto') {
+    return normalizeGoto(obj);
+  }
+  if (obj && obj.action === 'answer' && typeof obj.text === 'string' && obj.text.trim()) {
+    return { action: 'answer', text: obj.text.trim() };
+  }
+
+  // 模型没按契约输出：若整段是纯文本就直接当回答，否则给兜底话术
+  const clean = body.replace(/```/g, '').trim();
+  return {
+    action: 'answer',
+    text: clean && clean.length <= 500 ? clean : `这个问题我先记下了（“${fallbackQuestion}”），你可以换个说法再问我，或直接去题单页筛选知识点。`
+  };
+}
+
+/** goto 意图归一化：key 必须在合法表内，非法回空串；补齐中文名给前端展示 */
+function normalizeGoto(obj) {
+  const tagKey = TAG_KEYS.some((t) => t.key === obj.tag) ? String(obj.tag) : '';
+  const bandKey = BAND_KEYS.some((b) => b.key === obj.band) ? String(obj.band) : '';
+  const tagName = tagKey ? (TAG_KEYS.find((t) => t.key === tagKey) || {}).name : '全部知识点';
+  const bandName = bandKey ? (BAND_KEYS.find((b) => b.key === bandKey) || {}).name : '';
+  const text =
+    typeof obj.text === 'string' && obj.text.trim()
+      ? obj.text.trim()
+      : `已为你选好${tagName}${bandName ? ' · ' + bandName : ''}的题目`;
+  return { action: 'goto', tag: tagKey, band: bandKey, tagName, bandName, text };
+}
+
+/**
+ * 学习问答 · 悬浮球 AI 答疑助手
+ *
+ * 与 algoAssistant 的区别：不做跳题单意图，永远返回纯文本回答
+ * （返回结构与 algoAssistant 的 answer 分支一致：{ action:'answer', text }，
+ *  前端组件按 scene 区分，qa 场景不渲染「去刷题」按钮）。
+ */
+async function qaAssistant(params, ctx) {
+  ctx.requireLogin();
+  const { message = '', history: hist = [] } = params || {};
+  if (!message) throw badRequest('请输入你的问题');
+
+  const messages = [
+    { role: 'system', content: QA_PROMPT },
+    ...hist.slice(-6).map((h) => ({ role: h.role, content: h.content })),
+    { role: 'user', content: message }
+  ];
+
+  const res = await callLLM(messages, { temperature: 0.6 });
+  await saveConversation(ctx.openid, 'qaAssistant', messages, res.content);
+  return { action: 'answer', text: res.content };
+}
+
 /** 会话历史 */
 async function history(params, ctx) {
   ctx.requireLogin();
@@ -140,5 +243,7 @@ module.exports = {
   contestAdvice,
   reviewLog,
   algoCoach,
+  algoAssistant,
+  qaAssistant,
   history
 };

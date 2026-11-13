@@ -19,7 +19,14 @@
   background: var(--bg-block);
   font-size: var(--font-body);
 }
-.field--area { min-height: 140rpx; width: auto; }
+.field--area {
+  height: auto;                  /* 多行输入要放回自动高度 */
+  min-height: 160rpx;
+  line-height: 1.6;              /* 行距恢复正常 */
+  padding: 20rpx var(--space-md);/* 多行的上下内边距要留 */
+  width: auto;
+}
+
 
 .row { display: flex; flex-direction: row; align-items: center; margin-top: var(--space-lg); flex-wrap: wrap; }
 .row__label { font-size: var(--font-caption); color: var(--text-secondary); margin-right: var(--space-md); font-weight: 500; }

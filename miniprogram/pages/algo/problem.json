@@ -1,5 +1,7 @@
 {
   "navigationBarTitleText": "题目详情",
   "enablePullDownRefresh": true,
-  "usingComponents": {}
+  "usingComponents": {
+    "ai-float": "/components/ai-float/ai-float"
+  }
 }

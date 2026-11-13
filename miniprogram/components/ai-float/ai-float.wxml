@@ -1,0 +1,82 @@
+<!-- 悬浮球（收起态） -->
+<view wx:if="{{!open}}" class="ai-ball pressable" hover-class="pressing" bindtap="toggle">
+  <view class="ai-ball__icon">AI</view>
+  <view class="ai-ball__pulse"></view>
+</view>
+
+<!-- 聊天面板（弹出态）：遮罩 + 底部玻璃面板，原页面布局不受影响 -->
+<view wx:if="{{open}}" class="ai-mask" bindtap="close">
+  <view class="ai-panel" catchtap="noop">
+    <view class="ai-panel__grip"></view>
+    <view class="ai-panel__head">
+      <view class="ai-panel__title">{{title}}</view>
+      <view class="ai-panel__close pressable" hover-class="pressing" bindtap="close">✕</view>
+    </view>
+
+    <scroll-view class="ai-panel__list" scroll-y scroll-into-view="{{scrollInto}}" scroll-with-animation>
+      <view wx:if="{{msgs.length === 0}}" class="ai-welcome">
+        <view class="ai-welcome__title">{{welcomeTitle}}</view>
+        <view class="ai-welcome__desc">{{welcomeDesc}}</view>
+      </view>
+
+      <view
+        wx:for="{{msgs}}"
+        wx:key="index"
+        id="msg-{{index}}"
+        class="ai-row ai-row--{{item.role}}"
+      >
+        <view class="ai-bubble ai-bubble--{{item.role}}">
+          <view wx:if="{{item.loading}}" class="ai-dots">
+            <view class="ai-dots__d"></view>
+            <view class="ai-dots__d ai-dots__d--2"></view>
+            <view class="ai-dots__d ai-dots__d--3"></view>
+          </view>
+          <block wx:else>
+            <text class="ai-bubble__text">{{item.text}}</text>
+            <view
+              wx:if="{{item.goto}}"
+              class="ai-goto pressable"
+              hover-class="pressing"
+              data-goto="{{item.goto}}"
+              bindtap="onGoto"
+            >
+              去刷题 · {{item.goto.tagName}}{{item.goto.bandName ? ' · ' + item.goto.bandName : ''}} ›
+            </view>
+          </block>
+        </view>
+      </view>
+      <view class="ai-list__tail"></view>
+    </scroll-view>
+
+    <view class="ai-chips">
+      <view
+        wx:for="{{chips}}"
+        wx:key="*this"
+        class="ai-chip pressable"
+        hover-class="pressing"
+        data-text="{{item}}"
+        bindtap="onChip"
+      >{{item}}</view>
+    </view>
+
+    <view class="ai-input-row">
+      <input
+        class="ai-input"
+        value="{{input}}"
+        placeholder="{{placeholder}}"
+        placeholder-class="ai-input__ph"
+        bindinput="onInput"
+        bindconfirm="onConfirm"
+        confirm-type="send"
+        cursor-spacing="120"
+        disabled="{{sending}}"
+      />
+      <view
+        class="ai-send pressable {{sending || !input ? 'ai-send--off' : ''}}"
+        hover-class="pressing"
+        bindtap="send"
+      >发送</view>
+    </view>
+    <view class="ai-safe"></view>
+  </view>
+</view>
