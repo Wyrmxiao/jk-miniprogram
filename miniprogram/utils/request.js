@@ -24,17 +24,18 @@ function toastError(msg) {
  * @param {string} domain  服务域（云函数名），见 constants.DOMAIN
  * @param {string} action  业务动作，后端 router 按此分发
  * @param {object} params  业务参数
- * @param {object} options { silent: 不提示错误, loading: 显示加载文案, retry: 401 时重试一次 }
+ * @param {object} options { silent: 不提示错误, loading: 显示加载文案, retry: 401 时重试一次, timeout: 备用等待毫秒数（云开发 callFunction 当前忽略此参数，前端等函数返回；传入无害，SDK 未来支持后自动生效） }
  */
 function request(domain, action, params = {}, options = {}) {
-  const { silent = false, loading = '', retry = true } = options;
+  const { silent = false, loading = '', retry = true, timeout = 15000 } = options;
 
   if (loading) wx.showLoading({ title: loading, mask: true });
 
   return wx.cloud
     .callFunction({
       name: domain,
-      data: { action, params }
+      data: { action, params },
+      timeout
     })
     .then((res) => {
       const body = (res && res.result) || {};

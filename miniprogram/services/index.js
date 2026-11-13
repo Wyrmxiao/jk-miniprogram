@@ -135,26 +135,33 @@ const qa = {
 /**
  * 后续接入大模型 API 时，只需后端 agent 云函数对接，
  * 前端这几个方法保持不变
+ *
+ * LLM 调用耗时较长（几秒到几十秒），真正的超时上限在云函数侧：
+ * agent 的 config.json 执行超时已放宽到 60 秒，前端会等到函数返回。
+ * 注：wx.cloud.callFunction 当前不支持 timeout 参数，这里传入是无害冗余，
+ * SDK 未来支持后可防止前端提前断开。
  */
+const AGENT_TIMEOUT = 60000;
+
 const agent = {
   /** 通用对话 */
-  chat: (data) => request(DOMAIN.AGENT, 'chat', data, { loading: '思考中' }),
+  chat: (data) => request(DOMAIN.AGENT, 'chat', data, { loading: '思考中', timeout: AGENT_TIMEOUT }),
   /** AI 生成学习路线建议 */
-  suggestRoadmap: (data) => request(DOMAIN.AGENT, 'suggestRoadmap', data, { loading: '生成中' }),
+  suggestRoadmap: (data) => request(DOMAIN.AGENT, 'suggestRoadmap', data, { loading: '生成中', timeout: AGENT_TIMEOUT }),
   /** AI 竞赛指导建议 */
-  contestAdvice: (data) => request(DOMAIN.AGENT, 'contestAdvice', data, { loading: '分析中' }),
+  contestAdvice: (data) => request(DOMAIN.AGENT, 'contestAdvice', data, { loading: '分析中', timeout: AGENT_TIMEOUT }),
   /** AI 点评学习记录 */
-  reviewLog: (data) => request(DOMAIN.AGENT, 'reviewLog', data, { loading: '点评中' }),
+  reviewLog: (data) => request(DOMAIN.AGENT, 'reviewLog', data, { loading: '点评中', timeout: AGENT_TIMEOUT }),
   /**
    * 算法训练悬浮球助手：找题意图返回 {action:'goto',tag,band,...}，
    * 答疑返回 {action:'answer',text}；错误由组件自己展示（silent）
    */
-  algoAssistant: (data) => request(DOMAIN.AGENT, 'algoAssistant', data, { silent: true }),
+  algoAssistant: (data) => request(DOMAIN.AGENT, 'algoAssistant', data, { silent: true, timeout: AGENT_TIMEOUT }),
   /**
    * 学习问答悬浮球答疑助手：恒返回 {action:'answer',text}，纯文本不跳转；
    * 错误由组件自己展示（silent）
    */
-  qaAssistant: (data) => request(DOMAIN.AGENT, 'qaAssistant', data, { silent: true }),
+  qaAssistant: (data) => request(DOMAIN.AGENT, 'qaAssistant', data, { silent: true, timeout: AGENT_TIMEOUT }),
   /** 会话历史 */
   history: (params) => request(DOMAIN.AGENT, 'history', params, { silent: true })
 };

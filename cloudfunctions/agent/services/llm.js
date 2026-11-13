@@ -74,7 +74,10 @@ function postChatCompletions(cfg, body) {
                 ? data.choices[0].message.content
                 : '';
             if (!content) return reject(new Error('模型返回为空'));
-            resolve({ content, usage: data.usage || null });
+            // 防御：个别网关会把思考过程以 <think>...</think> 混进正文，剥掉只留答案
+            const cleaned = content.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+            if (!cleaned) return reject(new Error('模型返回为空（仅含思考内容）'));
+            resolve({ content: cleaned, usage: data.usage || null });
           } catch (e) {
             reject(new Error('模型响应解析失败'));
           }
@@ -97,7 +100,9 @@ function postChatCompletions(cfg, body) {
 /**
  * 调用大模型
  * @param {Array<{role,content}>} messages OpenAI 消息数组
- * @param {object} options { provider, temperature, maxTokens }
+ * @param {object} options { provider, temperature, maxTokens, disableThinking }
+ *   - disableThinking: 关闭推理模型的思考模式（讯飞 Spark-X2.5 等，官方规范 reasoning.effort='none'），
+ *     可显著降低响应延迟；需要深度推理的场景不要传
  * @returns {Promise<{content: string, usage: object}>}
  */
 async function callLLM(messages, options = {}) {
@@ -114,6 +119,7 @@ async function callLLM(messages, options = {}) {
     temperature: typeof options.temperature === 'number' ? options.temperature : 0.7
   };
   if (options.maxTokens) body.max_tokens = options.maxTokens;
+  if (options.disableThinking) body.reasoning = { effort: 'none' };
 
   const res = await postChatCompletions(cfg, body);
   return res;

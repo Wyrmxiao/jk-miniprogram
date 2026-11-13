@@ -12,12 +12,36 @@ const {
   buildProblemContext: buildAssistantProblemContext
 } = require('../prompts/algo-assistant');
 const { QA_PROMPT } = require('../prompts/qa-assistant');
+// 题库紧凑索引（自动生成：node tools/build_algo_bank_index.js，题库更新后需重跑）
+const BANK_INDEX = require('../data/algo_bank_index');
 
 /** 系统提示词：定义助手身份与边界 */
 const SYSTEM_PROMPT =
   '你是重庆移通学院计算机学院「计科创新中心」的学习助手。' +
   '面向计算机专业学生，回答要具体、可执行，优先推荐院内有师资与承办单位的 A/B 类竞赛。' +
   '不确定的信息要说明，禁止编造政策、时间与金额。';
+
+/**
+ * 题库知识块：学生端真实题库注入 AI 助手（algoAssistant / qaAssistant 共用）。
+ * 26 题约 1.2K token，常驻 system prompt 开销可忽略；
+ * 题库更新后重跑 tools/build_algo_bank_index.js 并重新部署即可。
+ */
+const BANK_BAND_NAME = { entry: '简单', basic: '中等', improve: '困难', advanced: '进阶', challenge: '挑战' };
+const BANK_SOURCE_NAME = { leetcode: 'LeetCode', nowcoder: '牛客网' };
+const BANK_TAG_NAME = new Map(TAG_KEYS.map((t) => [t.key, t.name]));
+const BANK_PROMPT = [
+  `以下是小程序「算法训练」题库当前全部 ${BANK_INDEX.total} 道题（每行：题名 · 难度 · 平台 · 知识点）：`,
+  ...BANK_INDEX.problems.map((p) => {
+    const tags = (p.tags || []).map((t) => BANK_TAG_NAME.get(t) || t).join('、');
+    const parts = [p.title];
+    if (p.titleEn) parts.push(`英文题名 ${p.titleEn}`);
+    parts.push(BANK_BAND_NAME[p.band] || p.band);
+    parts.push(BANK_SOURCE_NAME[p.source] || p.source);
+    if (tags) parts.push(tags);
+    return `- ${parts.join(' · ')}`;
+  }),
+  '推荐题目时只能从上述清单中选择，用题目中文名；清单之外的题一律不要编造。'
+].join('\n');
 
 async function chat(params, ctx) {
   ctx.requireLogin();
@@ -137,12 +161,15 @@ async function algoAssistant(params, ctx) {
 
   const messages = [
     { role: 'system', content: ASSISTANT_PROMPT },
+    { role: 'system', content: BANK_PROMPT },
     ...(problemCtx ? [{ role: 'system', content: problemCtx }] : []),
     ...hist.slice(-6).map((h) => ({ role: h.role, content: h.content })),
     { role: 'user', content: message }
   ];
 
-  const res = await callLLM(messages, { temperature: 0.5 });
+  // Spark-X2.5 等推理模型官方推荐 temperature=1.0（偏离会降效果）；
+  // 找题/答疑是轻任务，关闭思考模式换取响应速度
+  const res = await callLLM(messages, { temperature: 1.0, disableThinking: true });
   const intent = parseIntent(res.content, message);
   await saveConversation(ctx.openid, 'algoAssistant', messages, res.content);
   return intent;
@@ -207,11 +234,17 @@ async function qaAssistant(params, ctx) {
 
   const messages = [
     { role: 'system', content: QA_PROMPT },
+    { role: 'system', content: BANK_PROMPT },
     ...hist.slice(-6).map((h) => ({ role: h.role, content: h.content })),
     { role: 'user', content: message }
   ];
 
-  const res = await callLLM(messages, { temperature: 0.6 });
+  // 悬浮球答疑：提示词已约束 200 字内，max_tokens 兜底防长输出拖慢响应
+  const res = await callLLM(messages, {
+    temperature: 1.0,
+    maxTokens: 500,
+    disableThinking: true
+  });
   await saveConversation(ctx.openid, 'qaAssistant', messages, res.content);
   return { action: 'answer', text: res.content };
 }
