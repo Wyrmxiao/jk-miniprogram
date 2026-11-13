@@ -69,6 +69,13 @@
       </view>
     </scroll-view>
 
+    <view
+      wx:if="{{!showAsk}}"
+      class="btn pressable ask-top"
+      hover-class="pressing"
+      bindtap="openAsk"
+    >＋ 提问</view>
+
     <view wx:if="{{loading}}" class="state">加载中…</view>
     <view wx:elif="{{list.length === 0}}" class="state state--empty">
       <view class="state__emoji">💬</view>
@@ -102,11 +109,6 @@
       <view wx:else class="more more--end">共 {{total}} 个问题</view>
     </block>
   </block>
-
-  <view wx:if="{{isVerified && !showAsk && !keyboardUp}}" class="fab pressable" hover-class="pressing" bindtap="openAsk">
-    <text class="fab__plus">+</text>
-    <text class="fab__text">提问</text>
-  </view>
 
   <!-- ===== 弹层：提出新问题（表单滚动，发布条固定可见） ===== -->
   <view wx:if="{{showAsk}}" class="mask mask--ask" bindtap="closeAsk">
@@ -171,4 +173,7 @@
       </view>
     </view>
   </view>
+
+  <!-- AI 答疑悬浮球（实名认证后可用；提问弹层打开时隐藏，避免层级冲突） -->
+  <ai-float wx:if="{{isVerified && !showAsk}}" scene="qa" />
 </view>

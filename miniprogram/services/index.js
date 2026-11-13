@@ -145,6 +145,16 @@ const agent = {
   contestAdvice: (data) => request(DOMAIN.AGENT, 'contestAdvice', data, { loading: '分析中' }),
   /** AI 点评学习记录 */
   reviewLog: (data) => request(DOMAIN.AGENT, 'reviewLog', data, { loading: '点评中' }),
+  /**
+   * 算法训练悬浮球助手：找题意图返回 {action:'goto',tag,band,...}，
+   * 答疑返回 {action:'answer',text}；错误由组件自己展示（silent）
+   */
+  algoAssistant: (data) => request(DOMAIN.AGENT, 'algoAssistant', data, { silent: true }),
+  /**
+   * 学习问答悬浮球答疑助手：恒返回 {action:'answer',text}，纯文本不跳转；
+   * 错误由组件自己展示（silent）
+   */
+  qaAssistant: (data) => request(DOMAIN.AGENT, 'qaAssistant', data, { silent: true }),
   /** 会话历史 */
   history: (params) => request(DOMAIN.AGENT, 'history', params, { silent: true })
 };

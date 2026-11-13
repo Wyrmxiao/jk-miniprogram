@@ -47,4 +47,7 @@
     <text class="prob__next-title text-ellipsis">{{nextItem.titleCn || nextItem.title}}</text>
     <text class="prob__next-arrow">›</text>
   </view>
+
+  <!-- AI 悬浮球助手 -->
+  <ai-float />
 </view>

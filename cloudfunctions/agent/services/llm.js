@@ -1,19 +1,18 @@
 /**
- * 智能体域 · 大模型接入预留
+ * 智能体域 · 大模型接入（OpenAI 兼容 /chat/completions）
  *
- * 现状：未配置任何模型服务，调用会返回「未启用」提示，不影响其他功能。
- * 接入步骤（后续要接智能体 API 时只改本目录）：
- *   1. 在下方 PROVIDERS 里加一个供应商配置，或在云函数环境变量里配置
- *      LLM_BASE_URL / LLM_API_KEY / LLM_MODEL
- *   2. 实现 callLLM()，用 axios 或 wx-server-sdk 自带的 http 请求访问模型接口
- *   3. handlers/agent.js 里的场景方法保持不变，前端无需改动
+ * 环境变量（云开发控制台 → 云函数 agent → 配置）：
+ *   LLM_BASE_URL  如 https://api.openai.com/v1（兼容 DeepSeek/通义/Kimi 等 OpenAI 协议网关）
+ *   LLM_API_KEY   对应网关的密钥
+ *   LLM_MODEL     模型名，如 deepseek-chat / qwen-plus
+ * 三个都配置后自动启用；未配置时调用返回 503「未启用」，不影响其他功能。
  *
- * 建议接入场景：
- *   suggestRoadmap 根据学生测评结果生成个性化学习路线
- *   contestAdvice  根据竞赛与学生方向给出备赛建议
- *   reviewLog      AI 先点评学习记录，再由老师复核
- *   chat           通用问答助手
+ * 实现：Node 原生 https，不引入 axios，部署零额外依赖。
  */
+const https = require('https');
+const http = require('http');
+const { URL } = require('url');
+
 const cloud = require('wx-server-sdk');
 
 const db = () => cloud.database();
@@ -25,31 +24,99 @@ const PROVIDERS = {
     baseUrl: process.env.LLM_BASE_URL || '',
     apiKey: process.env.LLM_API_KEY || '',
     model: process.env.LLM_MODEL || '',
-    enabled: false
+    timeoutMs: Number(process.env.LLM_TIMEOUT_MS || 60000),
+    get enabled() {
+      return !!(this.baseUrl && this.apiKey && this.model);
+    }
   }
 };
 
+/** OpenAI 兼容补全请求（原生 https，返回 { content, usage }） */
+function postChatCompletions(cfg, body) {
+  return new Promise((resolve, reject) => {
+    let url;
+    try {
+      const base = cfg.baseUrl.replace(/\/+$/, '');
+      url = new URL(base.endsWith('/chat/completions') ? base : base + '/chat/completions');
+    } catch (e) {
+      return reject(new Error('LLM_BASE_URL 配置不合法'));
+    }
+    const payload = JSON.stringify(body);
+    const isHttps = url.protocol === 'https:';
+    const lib = isHttps ? https : http;
+    const req = lib.request(
+      {
+        hostname: url.hostname,
+        port: url.port || (isHttps ? 443 : 80),
+        path: url.pathname + (url.search || ''),
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(payload),
+          Authorization: `Bearer ${cfg.apiKey}`
+        },
+        timeout: cfg.timeoutMs
+      },
+      (res) => {
+        const chunks = [];
+        res.on('data', (c) => chunks.push(c));
+        res.on('end', () => {
+          const raw = Buffer.concat(chunks).toString('utf8');
+          if (res.statusCode !== 200) {
+            const err = new Error(`模型服务返回 ${res.statusCode}：${raw.slice(0, 200)}`);
+            err.code = 502;
+            return reject(err);
+          }
+          try {
+            const data = JSON.parse(raw);
+            const content =
+              data && data.choices && data.choices[0] && data.choices[0].message
+                ? data.choices[0].message.content
+                : '';
+            if (!content) return reject(new Error('模型返回为空'));
+            resolve({ content, usage: data.usage || null });
+          } catch (e) {
+            reject(new Error('模型响应解析失败'));
+          }
+        });
+      }
+    );
+    req.on('timeout', () => {
+      req.destroy(new Error('模型服务响应超时'));
+    });
+    req.on('error', (e) => {
+      const err = new Error(`模型服务连接失败：${e.message}`);
+      err.code = 502;
+      reject(err);
+    });
+    req.write(payload);
+    req.end();
+  });
+}
+
 /**
  * 调用大模型
- * TODO: 接入时实现。参考返回结构 { content: string, usage: object }
+ * @param {Array<{role,content}>} messages OpenAI 消息数组
+ * @param {object} options { provider, temperature, maxTokens }
+ * @returns {Promise<{content: string, usage: object}>}
  */
 async function callLLM(messages, options = {}) {
   const cfg = PROVIDERS[options.provider || 'default'];
-  if (!cfg || !cfg.enabled || !cfg.baseUrl || !cfg.apiKey) {
-    const err = new Error('智能体服务未启用，请先配置模型服务');
+  if (!cfg || !cfg.enabled) {
+    const err = new Error('智能体服务未启用，请先在云函数环境变量中配置 LLM_BASE_URL / LLM_API_KEY / LLM_MODEL');
     err.code = 503;
     throw err;
   }
 
-  // 接入示例（需安装 axios 或使用 https 模块）：
-  // const axios = require('axios')
-  // const res = await axios.post(`${cfg.baseUrl}/chat/completions`, {
-  //   model: cfg.model,
-  //   messages
-  // }, { headers: { Authorization: `Bearer ${cfg.apiKey}` } })
-  // return { content: res.data.choices[0].message.content, usage: res.data.usage }
+  const body = {
+    model: cfg.model,
+    messages,
+    temperature: typeof options.temperature === 'number' ? options.temperature : 0.7
+  };
+  if (options.maxTokens) body.max_tokens = options.maxTokens;
 
-  throw new Error('callLLM 尚未实现');
+  const res = await postChatCompletions(cfg, body);
+  return res;
 }
 
 /** 保存会话记录，便于后续分析与审计 */

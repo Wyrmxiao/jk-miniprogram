@@ -165,3 +165,8 @@
 .sheet .btn {
   margin-top: var(--space-md);
 }
+
+/* 页面弹层要盖过 AI 悬浮球（全局 .mask z-index:100 < 悬浮球 900），仅本页生效 */
+.mask {
+  z-index: 1200;
+}
