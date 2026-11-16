@@ -9,10 +9,10 @@
     <view class="hero__title">我的班级</view>
     <view class="hero__sub">老师只看自己班的学习汇报，学生可加入多个班</view>
     <view class="hero__btns">
-      <view class="btn btn-sm pressable" hover-class="pressing" bindtap="toggleCreate">
+      <view wx:if="{{isTeacherMode}}" class="btn btn-sm pressable" hover-class="pressing" bindtap="toggleCreate">
         {{showCreate ? '收起' : '＋ 创建班级'}}
       </view>
-      <view class="btn-ghost btn-sm pressable" hover-class="pressing" bindtap="goJoin">加入班级</view>
+      <view class="btn btn-sm pressable" hover-class="pressing" bindtap="goJoin">加入班级</view>
     </view>
   </view>
 
