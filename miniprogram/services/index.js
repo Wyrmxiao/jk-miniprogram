@@ -24,8 +24,17 @@ const user = {
   // 完善个人资料：教师/管理员填姓名即通过；学生走学号认证
   completeProfile: (data) => request(DOMAIN.USER, 'completeProfile', data, { loading: '保存中' }),
   list: (params) => request(DOMAIN.USER, 'list', params, { silent: true }),
-  setRole: (data) => request(DOMAIN.USER, 'setRole', data, { loading: '处理中' })
+  setRole: (data) => request(DOMAIN.USER, 'setRole', data, { loading: '处理中' }),
+  // 意见反馈：用户提交 → 教师/管理员回复
+  submitFeedback: (data) => request(DOMAIN.USER, 'submitFeedback', data, { loading: '提交中' }),
+  myFeedbacks: (params) => request(DOMAIN.USER, 'myFeedbacks', params, { silent: true }),
+  feedbackList: (params) => request(DOMAIN.USER, 'feedbackList', params, { silent: true }),
+  replyFeedback: (data) => request(DOMAIN.USER, 'replyFeedback', data, { loading: '提交中' }),
+  // 红点计数：教师=待处理数 / 学生=未读回复数；标记回复已读
+  feedbackBadge: () => request(DOMAIN.USER, 'feedbackBadge', {}, { silent: true }),
+  markFeedbacksRead: () => request(DOMAIN.USER, 'markFeedbacksRead', {}, { silent: true })
 };
+
 
 // ============ 学习路线与成长记录 ============
 const learn = {
@@ -181,16 +190,33 @@ const classroom = {
 /**
  * 后续接入大模型 API 时，只需后端 agent 云函数对接，
  * 前端这几个方法保持不变
+ *
+ * LLM 调用耗时较长（几秒到几十秒），真正的超时上限在云函数侧：
+ * agent 的 config.json 执行超时已放宽到 60 秒，前端会等到函数返回。
+ * 注：wx.cloud.callFunction 当前不支持 timeout 参数，这里传入是无害冗余，
+ * SDK 未来支持后可防止前端提前断开。
  */
+const AGENT_TIMEOUT = 60000;
+
 const agent = {
   /** 通用对话 */
-  chat: (data) => request(DOMAIN.AGENT, 'chat', data, { loading: '思考中' }),
+  chat: (data) => request(DOMAIN.AGENT, 'chat', data, { loading: '思考中', timeout: AGENT_TIMEOUT }),
   /** AI 生成学习路线建议 */
-  suggestRoadmap: (data) => request(DOMAIN.AGENT, 'suggestRoadmap', data, { loading: '生成中' }),
+  suggestRoadmap: (data) => request(DOMAIN.AGENT, 'suggestRoadmap', data, { loading: '生成中', timeout: AGENT_TIMEOUT }),
   /** AI 竞赛指导建议 */
-  contestAdvice: (data) => request(DOMAIN.AGENT, 'contestAdvice', data, { loading: '分析中' }),
+  contestAdvice: (data) => request(DOMAIN.AGENT, 'contestAdvice', data, { loading: '分析中', timeout: AGENT_TIMEOUT }),
   /** AI 点评学习记录 */
-  reviewLog: (data) => request(DOMAIN.AGENT, 'reviewLog', data, { loading: '点评中' }),
+  reviewLog: (data) => request(DOMAIN.AGENT, 'reviewLog', data, { loading: '点评中', timeout: AGENT_TIMEOUT }),
+  /**
+   * 算法训练悬浮球助手：找题意图返回 {action:'goto',tag,band,...}，
+   * 答疑返回 {action:'answer',text}；错误由组件自己展示（silent）
+   */
+  algoAssistant: (data) => request(DOMAIN.AGENT, 'algoAssistant', data, { silent: true, timeout: AGENT_TIMEOUT }),
+  /**
+   * 学习问答悬浮球答疑助手：恒返回 {action:'answer',text}，纯文本不跳转；
+   * 错误由组件自己展示（silent）
+   */
+  qaAssistant: (data) => request(DOMAIN.AGENT, 'qaAssistant', data, { silent: true, timeout: AGENT_TIMEOUT }),
   /** 会话历史 */
   history: (params) => request(DOMAIN.AGENT, 'history', params, { silent: true })
 };

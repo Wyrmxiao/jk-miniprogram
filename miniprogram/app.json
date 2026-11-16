@@ -52,9 +52,11 @@
         "task/publish",
         "log/edit",
         "project/edit",
+        "admin/users/users",
+        "feedback/submit",
+        "feedback/manage",
         "report/list",
-        "report/detail",
-        "admin/users/users"
+        "report/detail"
       ]
     }
   ],

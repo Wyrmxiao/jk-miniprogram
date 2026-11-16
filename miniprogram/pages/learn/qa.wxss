@@ -166,18 +166,14 @@
 .more { padding: var(--space-md) 0; text-align: center; font-size: var(--font-caption); color: var(--color-primary); }
 .more--end { color: var(--text-tertiary); }
 
-/* ===== 右下角提问按钮 ===== */
-.fab {
-  position: fixed; right: var(--space-lg); bottom: calc(var(--space-xl) + env(safe-area-inset-bottom));
-  width: 112rpx; height: 112rpx; border-radius: 50%;
-  background: var(--color-primary); color: #fff;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  box-shadow: var(--shadow-float);
-  transition: transform var(--duration-press) var(--ease-spring), opacity var(--duration-press) ease;
-  z-index: 20;
+/* ===== 提问按钮（问题卡片上方，与卡片等宽） ===== */
+.ask-top {
+  width: 100%;
+  margin-top: var(--space-sm);
 }
-.fab__plus { font-size: 44rpx; line-height: 1; font-weight: 300; }
-.fab__text { margin-top: 2rpx; font-size: var(--font-micro); }
+
+/* 提问弹层要盖过 AI 悬浮球（全局 .mask z-index:100 < 悬浮球 900） */
+.mask--ask { z-index: 1200; }
 
 /* ===== 提问弹层：表单可滚，发布条固定在底部 ===== */
 .form-label { margin-top: var(--space-md); font-size: var(--font-caption); color: var(--text-secondary); font-weight: 500; }

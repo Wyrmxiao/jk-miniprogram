@@ -204,4 +204,7 @@
       <view class="safe-bottom"></view>
     </view>
   </view>
+
+  <!-- AI 悬浮球助手 -->
+  <ai-float />
 </view>

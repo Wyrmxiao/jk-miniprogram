@@ -1,0 +1,54 @@
+/* pkgWork/feedback/manage.wxss —— 教师/管理员：反馈管理 */
+.page {
+  min-height: 100vh;
+  padding-bottom: var(--space-xl);
+  background: var(--bg-page);
+}
+
+.list { padding: 0 var(--space-lg); }
+
+/* ===== 状态 ===== */
+.state { padding: var(--space-xl) 0; text-align: center; font-size: var(--font-caption); color: var(--text-secondary); }
+.state--end { padding: var(--space-lg) 0; color: var(--text-tertiary); font-size: var(--font-micro); }
+
+/* ===== 反馈卡片 ===== */
+.fbcard {
+  margin-bottom: var(--space-md);
+  padding: var(--space-lg);
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+.fbcard__name { font-size: var(--font-body); font-weight: 600; color: var(--text-primary); }
+.fbcard__time { margin-top: 4rpx; font-size: var(--font-micro); color: var(--text-tertiary); }
+.fbcard__content { margin-top: var(--space-sm); font-size: var(--font-body); color: var(--text-primary); line-height: 1.6; word-break: break-all; }
+.fbcard__contact { margin-top: 6rpx; font-size: var(--font-micro); color: var(--text-tertiary); }
+.fbcard__reply { margin-top: var(--space-md); padding: var(--space-sm) var(--space-md); border-radius: var(--radius-sm); background: var(--color-success-light); }
+.fbcard__reply-meta { font-size: var(--font-micro); color: var(--color-student-deep); }
+.fbcard__reply-body { margin-top: 6rpx; font-size: var(--font-caption); color: var(--text-primary); line-height: 1.6; word-break: break-all; }
+.fbcard__ops { margin-top: var(--space-md); flex-direction: row; justify-content: flex-end; }
+.fbcard__btn {
+  padding: 10rpx 36rpx;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+  color: #fff;
+  font-size: var(--font-caption);
+  font-weight: 500;
+}
+
+/* ===== 回复弹层 ===== */
+.fb-origin {
+  margin: var(--space-sm) 0 var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  background: var(--bg-block);
+  font-size: var(--font-caption);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-height: 160rpx;
+  overflow-y: auto;
+}
+.counter { margin-top: var(--space-sm); text-align: right; font-size: var(--font-micro); color: var(--text-tertiary); }
+.sheet__btns { display: flex; margin-top: var(--space-lg); }
+.sheet__btns .btn { flex: 1; }
+.sheet__btns .btn + .btn { margin-left: var(--space-md); }

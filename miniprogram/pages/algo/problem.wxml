@@ -180,4 +180,7 @@
     <view>题目不存在</view>
   </view>
   <view class="safe-bottom"></view>
+
+  <!-- AI 悬浮球助手（带当前题目上下文） -->
+  <ai-float problem="{{problem}}" />
 </view>
