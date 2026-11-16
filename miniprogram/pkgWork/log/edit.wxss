@@ -1,6 +1,11 @@
 /* pkgWork/log/edit.wxss —— 学生端：成长绿主题 */
 .page { min-height: 100vh; background: var(--bg-page); padding: 0 var(--space-lg) 160rpx; }
 
+/* 角色条：主标题 + 副说明两行 */
+.rolebar__body { flex: 1; min-width: 0; }
+.rolebar__label { font-size: var(--font-body); font-weight: 600; line-height: 1.35; }
+.rolebar__desc { margin-top: 2rpx; font-size: var(--font-micro); opacity: 0.85; line-height: 1.4; }
+
 .block {
   margin-top: var(--space-md);
   padding: var(--space-lg);

@@ -1,4 +1,6 @@
 {
   "navigationBarTitleText": "算法训练",
-  "usingComponents": {}
+  "usingComponents": {
+    "ai-float": "/components/ai-float/ai-float"
+  }
 }

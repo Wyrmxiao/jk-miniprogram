@@ -1,0 +1,244 @@
+/* AI 悬浮球助手 —— 沿用 Liquid Glass 设计令牌（page 上的 CSS 变量可继承进组件） */
+
+/* ===== 悬浮球 ===== */
+.ai-ball {
+  position: fixed;
+  right: 30rpx;
+  bottom: calc(210rpx + env(safe-area-inset-bottom)); /* 避开自定义 tab bar */
+  width: 104rpx;
+  height: 104rpx;
+  border-radius: 50%;
+  background: var(--color-accent-grad);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 14rpx 40rpx rgba(59, 91, 255, 0.36);
+  z-index: 900;
+}
+.ai-ball__icon {
+  color: #fff;
+  font-size: 30rpx;
+  font-weight: 700;
+  letter-spacing: 2rpx;
+}
+/* 呼吸光环：提示可点，动画尊重减弱动效设置 */
+.ai-ball__pulse {
+  position: absolute;
+  top: -8rpx;
+  right: -8rpx;
+  bottom: -8rpx;
+  left: -8rpx;
+  border-radius: 50%;
+  border: 2rpx solid rgba(124, 92, 255, 0.45);
+  animation: ai-pulse 2.4s var(--ease-spring) infinite;
+}
+@keyframes ai-pulse {
+  0% { transform: scale(0.96); opacity: 0.9; }
+  70% { transform: scale(1.12); opacity: 0; }
+  100% { transform: scale(1.12); opacity: 0; }
+}
+
+/* ===== 遮罩 ===== */
+.ai-mask {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(10, 12, 30, 0.42);
+  z-index: 1000;
+}
+
+/* ===== 底部聊天面板 ===== */
+.ai-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  height: 76vh;
+  background: var(--bg-elevated);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  backdrop-filter: blur(40px) saturate(180%);
+  border-radius: var(--radius-sheet, 44rpx) var(--radius-sheet, 44rpx) 0 0;
+  padding: 0 var(--space-lg) 0;
+}
+.ai-panel__grip {
+  width: 72rpx;
+  height: 8rpx;
+  margin: 16rpx auto 0;
+  border-radius: 8rpx;
+  background: rgba(0, 0, 0, 0.14);
+  flex: none;
+}
+.ai-panel__head {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 0 8rpx;
+}
+.ai-panel__title {
+  font-size: 34rpx;
+  font-weight: 640;
+  color: var(--text-primary);
+}
+.ai-panel__close {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--text-secondary);
+  font-size: 28rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===== 消息列表 ===== */
+.ai-panel__list {
+  flex: 1;
+  min-height: 0; /* flex 子项内 scroll-view 必须给 min-height:0 才能滚动 */
+  padding: 8rpx 0;
+}
+.ai-list__tail { height: 8rpx; }
+.ai-welcome {
+  padding: 40rpx 12rpx 20rpx;
+}
+.ai-welcome__title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 12rpx;
+}
+.ai-welcome__desc {
+  font-size: 26rpx;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.ai-row {
+  display: flex;
+  margin-top: 20rpx;
+  padding: 0 4rpx;
+}
+.ai-row--user { justify-content: flex-end; }
+.ai-row--ai { justify-content: flex-start; }
+
+.ai-bubble {
+  max-width: 86%;
+  border-radius: 28rpx;
+  padding: 18rpx 24rpx;
+  font-size: 28rpx;
+  line-height: 1.65;
+}
+.ai-bubble--user {
+  background: var(--color-primary);
+  color: #fff;
+  border-bottom-right-radius: 10rpx;
+}
+.ai-bubble--ai {
+  background: var(--bg-card-strong);
+  border: 1rpx solid var(--glass-border);
+  color: var(--text-primary);
+  border-bottom-left-radius: 10rpx;
+}
+.ai-bubble__text { word-break: break-all; }
+
+/* 思考中三点 */
+.ai-dots {
+  display: flex;
+  align-items: center;
+  height: 40rpx;
+}
+.ai-dots__d {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background: var(--text-tertiary);
+  margin-right: 10rpx;
+  animation: ai-blink 1.2s ease-in-out infinite;
+}
+.ai-dots__d--2 { animation-delay: 0.15s; }
+.ai-dots__d--3 { animation-delay: 0.3s; margin-right: 0; }
+@keyframes ai-blink {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 1; }
+}
+
+/* 「去刷题」跳转按钮 */
+.ai-goto {
+  margin-top: 16rpx;
+  display: inline-flex;
+  align-items: center;
+  padding: 14rpx 24rpx;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent-grad);
+  color: #fff;
+  font-size: 26rpx;
+  font-weight: 600;
+  box-shadow: 0 8rpx 24rpx rgba(59, 91, 255, 0.28);
+}
+
+/* ===== 快捷指令 ===== */
+.ai-chips {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 8rpx 0 16rpx;
+}
+.ai-chip {
+  margin: 0 12rpx 12rpx 0;
+  padding: 12rpx 22rpx;
+  border-radius: var(--radius-pill);
+  background: var(--bg-card);
+  border: 1rpx solid var(--glass-border);
+  color: var(--text-secondary);
+  font-size: 24rpx;
+}
+
+/* ===== 输入行 ===== */
+.ai-input-row {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 12rpx 0 4rpx;
+}
+.ai-input {
+  flex: 1;
+  height: 84rpx;
+  line-height: 84rpx;
+  padding: 0 28rpx;
+  border-radius: var(--radius-pill);
+  background: var(--bg-card);
+  border: 1rpx solid var(--glass-border);
+  font-size: 28rpx;
+  color: var(--text-primary);
+}
+.ai-input__ph { color: var(--text-tertiary); }
+.ai-send {
+  flex: none;
+  padding: 0 34rpx;
+  height: 84rpx;
+  line-height: 84rpx;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent-grad);
+  color: #fff;
+  font-size: 28rpx;
+  font-weight: 600;
+}
+.ai-send--off { opacity: 0.45; }
+
+/* 底部安全区 */
+.ai-safe {
+  flex: none;
+  height: env(safe-area-inset-bottom);
+}
+
+/* 系统开启"减弱动态效果"时停掉装饰动画 */
+@media (prefers-reduced-motion: reduce) {
+  .ai-ball__pulse,
+  .ai-dots__d { animation: none; }
+}

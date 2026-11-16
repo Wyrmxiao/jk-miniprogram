@@ -313,7 +313,9 @@
 /* ===== 表单控件 ===== */
 .field {
   margin-top: var(--space-md);
-  padding: 20rpx var(--space-md);
+  height: 88rpx;                 /* 显式给高度，不再靠 padding 撑 */
+  line-height: 88rpx;            /* 让文字垂直居中 */
+  padding: 0 var(--space-md);    /* 上下内边距归零，左右保留 */
   border-radius: var(--radius-md);
   background: var(--bg-card);
   -webkit-backdrop-filter: blur(20px);
@@ -322,8 +324,14 @@
   font-size: var(--font-body);
   color: var(--text-primary);
 }
-input.field { height: 96rpx; padding: 0 var(--space-md); }
-.field--area { min-height: 160rpx; width: auto; }
+input.field { height: 96rpx; line-height: 96rpx; padding: 0 var(--space-md); }
+.field--area {
+  height: auto;                  /* 多行输入要放回自动高度 */
+  min-height: 160rpx;
+  line-height: 1.6;              /* 行距恢复正常 */
+  padding: 20rpx var(--space-md);/* 多行的上下内边距要留 */
+  width: auto;
+}
 .row { display: flex; align-items: center; margin-top: var(--space-lg); }
 .row__label { flex-shrink: 0; font-size: var(--font-body); color: var(--text-secondary); margin-right: var(--space-md); font-weight: 520; letter-spacing: var(--tracking-normal); }
 .opts { display: flex; flex-wrap: wrap; }
@@ -361,6 +369,23 @@ input.field { height: 96rpx; padding: 0 var(--space-md); }
   backdrop-filter: blur(20px);
   border: 1rpx solid var(--glass-border);
   font-size: var(--font-caption);
+}
+/* picker / input 嵌套在 .field 容器内时（如算法页弹层）：
+   去掉自身框线与高度，撑满外层 field，避免双重描边和溢出压行 */
+.field .picker {
+  min-height: 0;
+  height: 100%;
+  padding: 0;
+  background: transparent;
+  border: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  font-size: var(--font-body);
+  color: var(--text-primary);
+}
+.field input {
+  height: 100%;
+  line-height: 88rpx;
 }
 .switch-row {
   display: flex;

@@ -10,5 +10,7 @@ module.exports = {
   contestAdvice: agent.contestAdvice,
   reviewLog: agent.reviewLog,
   algoCoach: agent.algoCoach,
+  algoAssistant: agent.algoAssistant,
+  qaAssistant: agent.qaAssistant,
   history: agent.history
 };

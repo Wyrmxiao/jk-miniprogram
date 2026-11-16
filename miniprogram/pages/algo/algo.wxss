@@ -160,3 +160,13 @@
 .sheet .opts {
   padding: var(--space-sm) var(--space-md) 0;
 }
+
+/* 弹层内按钮与上一个输入框的间距，与输入框之间的间距保持一致（28rpx） */
+.sheet .btn {
+  margin-top: var(--space-md);
+}
+
+/* 页面弹层要盖过 AI 悬浮球（全局 .mask z-index:100 < 悬浮球 900），仅本页生效 */
+.mask {
+  z-index: 1200;
+}
