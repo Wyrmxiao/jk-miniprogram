@@ -1,0 +1,148 @@
+<view class="page">
+  <view class="blobs">
+    <view class="blob blob--1"></view>
+    <view class="blob blob--2"></view>
+    <view class="blob blob--3"></view>
+  </view>
+
+  <view class="hero">
+    <view class="hero__title">每周学习汇报</view>
+    <view class="hero__sub">{{weekRangeText ? weekLabel + ' · ' + weekRangeText : '正在加载…'}}</view>
+  </view>
+
+  <!-- 本周状态 -->
+  <view class="block block--status">
+    <view class="status">
+      <view class="status__left">
+        <view class="status__title">{{submitted ? '本周已提交' : '本周还没提交'}}</view>
+        <view class="status__desc">
+          {{submitted ? '更新于 ' + updatedText : '今天是' + weekdayText + '，周日 23:59 前都可以提交'}}
+        </view>
+      </view>
+      <view class="status__badge {{submitted ? 'status__badge--done' : 'status__badge--todo'}}">
+        {{submitted ? '已提交' : '待提交'}}
+      </view>
+    </view>
+    <view wx:if="{{submitted}}" class="status__tip">截止前可以反复修改，后提交的内容会覆盖本周记录。</view>
+  </view>
+
+  <!-- 投递给哪些班级 -->
+  <view class="block">
+    <view class="block__title">提交给谁 <text class="block__hint">老师只看得到本班汇报</text></view>
+    <view wx:if="{{classes.length === 0}}" class="noclass" bindtap="goClasses">
+      <view class="noclass__title">你还没有加入任何班级</view>
+      <view class="noclass__desc">点这里输入邀请码或扫码加入，加入后才能提交汇报 ›</view>
+    </view>
+    <view wx:else class="chips">
+      <view
+        wx:for="{{classes}}"
+        wx:key="_id"
+        class="chip pressable {{item.checked ? 'chip--on' : ''}}"
+        hover-class="pressing"
+        data-id="{{item._id}}"
+        bindtap="toggleClass"
+      >
+        <text class="chip__tick" wx:if="{{item.checked}}">✓</text>{{item.name}}
+      </view>
+    </view>
+    <view wx:if="{{classes.length > 0}}" class="block__foot">
+      <text class="link" bindtap="goClasses">管理我的班级 ›</text>
+    </view>
+  </view>
+
+  <!-- 知识点 -->
+  <view class="block">
+    <view class="block__title">本周学习的知识点 <text class="block__hint">越具体越好</text></view>
+    <textarea
+      class="field field--area"
+      placeholder="如：动态规划的状态设计、背包问题、最长上升子序列…"
+      maxlength="2000"
+      value="{{form.knowledge}}"
+      data-field="knowledge"
+      bindinput="onField"
+      auto-height
+      cursor-spacing="200"
+    />
+    <view class="counter">{{form.knowledge.length}}/2000</view>
+  </view>
+
+  <!-- 重难点 -->
+  <view class="block">
+    <view class="block__title">重难点 <text class="block__hint">卡住你的地方</text></view>
+    <textarea
+      class="field field--area"
+      placeholder="如：状态压缩 DP 的空间优化、滚动数组边界…"
+      maxlength="2000"
+      value="{{form.difficulty}}"
+      data-field="difficulty"
+      bindinput="onField"
+      auto-height
+      cursor-spacing="200"
+    />
+    <view class="counter">{{form.difficulty.length}}/2000</view>
+  </view>
+
+  <!-- 不理解的地方 -->
+  <view class="block">
+    <view class="block__title">不理解的地方 <text class="block__hint">老师会重点看这里</text></view>
+    <textarea
+      class="field field--area"
+      placeholder="如：区间 DP 为什么必须按区间长度从小到大循环？"
+      maxlength="2000"
+      value="{{form.questions}}"
+      data-field="questions"
+      bindinput="onField"
+      auto-height
+      cursor-spacing="200"
+    />
+    <view class="counter">{{form.questions.length}}/2000</view>
+  </view>
+
+  <!-- 博客链接 -->
+  <view class="block">
+    <view class="block__title">博客链接 <text class="block__hint">可选</text></view>
+    <input
+      class="field"
+      placeholder="https://… 你的博客 / 笔记地址"
+      value="{{form.blogUrl}}"
+      data-field="blogUrl"
+      bindinput="onField"
+      cursor-spacing="120"
+    />
+    <view class="block__foot">
+      <text class="link" bindtap="fillExample">填入示例内容</text>
+    </view>
+  </view>
+
+  <!-- 历史记录 -->
+  <view class="block">
+    <view class="block__title">我的历史汇报</view>
+    <view wx:if="{{history.length === 0}}" class="empty empty--inline">还没有历史记录，提交本周后就会出现在这里</view>
+    <view
+      wx:for="{{history}}"
+      wx:key="_id"
+      class="hitem pressable"
+      hover-class="pressing"
+      data-id="{{item._id}}"
+      bindtap="openHistory"
+    >
+      <view class="hitem__head">
+        <text class="hitem__week">{{item.weekKey}}</text>
+        <text wx:if="{{item.hasBlog}}" class="tag tag-primary">含博客</text>
+        <text class="hitem__time">{{item.updatedText}}</text>
+      </view>
+      <view class="hitem__range">{{item.rangeText}}</view>
+      <view class="hitem__summary">{{item.summary}}</view>
+    </view>
+  </view>
+
+  <view class="footer" wx:if="{{!keyboard}}">
+    <view
+      class="submit pressable {{submitting || !editable ? 'submit--disabled' : ''}}"
+      hover-class="pressing"
+      bindtap="submit"
+    >
+      {{submitting ? '保存中…' : (submitted ? '更新本周汇报' : '提交本周汇报')}}
+    </view>
+  </view>
+</view>

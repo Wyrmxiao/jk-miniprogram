@@ -79,6 +79,11 @@ Page({
     wx.navigateTo({ url: '/pkgContest/manage/manage' });
   },
 
+  /** 比赛统计：全员可见的参赛与获奖汇总 */
+  goStats() {
+    wx.navigateTo({ url: '/pkgContest/stats/stats' });
+  },
+
   /** 点击赛事卡片进入详情 */
   goDetail(e) {
     const id = e.currentTarget.dataset.id;

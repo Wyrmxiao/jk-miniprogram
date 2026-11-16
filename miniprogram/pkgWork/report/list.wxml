@@ -1,0 +1,68 @@
+<view class="page">
+  <view class="blobs">
+    <view class="blob blob--1"></view>
+    <view class="blob blob--2"></view>
+    <view class="blob blob--3"></view>
+  </view>
+
+  <view class="hero">
+    <view class="hero__title">每周学习汇报</view>
+    <view class="hero__sub">{{className ? className + ' · ' + totalStudents + ' 人' : '按班级收集 · 按自然周归档'}}</view>
+  </view>
+
+  <!-- 班级切换 -->
+  <scroll-view wx:if="{{classes.length > 0}}" class="cls-bar" scroll-x enable-flex>
+    <view
+      wx:for="{{classes}}"
+      wx:key="_id"
+      class="cls-tab pressable {{item._id === classId ? 'cls-tab--on' : ''}}"
+      hover-class="pressing"
+      data-id="{{item._id}}"
+      bindtap="switchClass"
+    >{{item.name}}</view>
+    <view class="cls-tab cls-tab--add pressable" hover-class="pressing" bindtap="goClasses">＋ 班级</view>
+  </scroll-view>
+
+  <!-- 没有班级 -->
+  <view wx:if="{{!loading && classes.length === 0}}" class="state-box">
+    <view class="state-box__title">你还没有创建或加入班级</view>
+    <view class="state-box__desc">汇报是按班级收集的：先建一个班，把邀请码或二维码发给学生，学生加入后提交的汇报才会出现在这里。</view>
+    <view class="btn pressable" hover-class="pressing" bindtap="goClasses">去创建班级</view>
+  </view>
+
+  <block wx:else>
+    <view class="actions">
+      <view class="quick pressable" hover-class="pressing" bindtap="exportCurrent">
+        <text class="quick__icon">⇩</text>
+        <view class="quick__body">
+          <view class="quick__title">导出本周 Excel</view>
+          <view class="quick__desc">{{currentWeekKey}} · {{className}} · 含未提交名单</view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{loading && weeks.length === 0}}" class="state">正在加载…</view>
+
+    <view wx:else class="list">
+      <view
+        wx:for="{{weeks}}"
+        wx:key="weekKey"
+        class="witem pressable"
+        hover-class="pressing"
+        data-week="{{item.weekKey}}"
+        bindtap="openWeek"
+      >
+        <view class="witem__head">
+          <text class="witem__week">{{item.weekKey}}</text>
+          <text wx:if="{{item.isCurrent}}" class="tag tag-primary">本周</text>
+          <text wx:if="{{item.done}}" class="tag tag-success">已交齐</text>
+          <text class="witem__count">{{item.submitted}}/{{item.total}}</text>
+        </view>
+        <view class="witem__range">{{item.rangeText}}</view>
+        <view class="bar">
+          <view class="bar__fill" style="width: {{item.percent}}%"></view>
+        </view>
+      </view>
+    </view>
+  </block>
+</view>

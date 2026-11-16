@@ -6,8 +6,8 @@
     <view class="blob blob--3"></view>
   </view>
   <view class="hero"><view class="hero__title">我的</view></view>
-  <!-- 个人信息卡 -->
-  <view class="profile">
+  <!-- 个人信息卡：点击进入个人主页（可分享） -->
+  <view class="profile pressable" hover-class="pressing" bindtap="goProfile">
     <view class="profile__avatar">{{profile && profile.realName ? profile.realName[0] : (profile ? '同' : '客')}}</view>
     <view wx:if="{{profile}}" class="profile__info">
       <view class="profile__name">{{profile.realName || profile.nickname || '未填写姓名'}}</view>
@@ -17,10 +17,11 @@
       </view>
       <view wx:if="{{profile.studentId}}" class="profile__id">学号 {{profile.studentId}}</view>
     </view>
-    <view wx:else class="profile__info pressable" bindtap="goLogin" hover-class="pressing">
+    <view wx:else class="profile__info">
       <view class="profile__name">未登录</view>
       <view class="profile__meta">点击使用微信登录</view>
     </view>
+    <text class="cell__chevron">›</text>
   </view>
 
   <!-- 资料完善引导（学生认证 / 教师完善资料） -->
@@ -59,6 +60,35 @@
     </view>
   </view>
 
+  <!-- 赛事统计：点击进入详情页（个人主页） -->
+  <view wx:if="{{isLogin}}" class="group">
+    <view class="cell pressable" hover-class="pressing" bindtap="goMyStats">
+      <view class="cell__body">
+        <view class="cell__title">赛事统计</view>
+        <view class="cell__desc">正在准备的比赛 · 参加过的比赛</view>
+      </view>
+      <text class="cell__chevron">›</text>
+    </view>
+  </view>
+
+  <!-- 学生学习入口 -->
+  <view wx:if="{{isLogin && !isTeacher}}" class="group">
+    <view class="cell pressable" hover-class="pressing" bindtap="goWeeklyReport">
+      <view class="cell__body">
+        <view class="cell__title">每周学习汇报</view>
+        <view class="cell__desc">记录知识点、重难点与疑问，可附博客链接</view>
+      </view>
+      <text class="cell__chevron">›</text>
+    </view>
+    <view class="cell pressable" hover-class="pressing" bindtap="goClasses">
+      <view class="cell__body">
+        <view class="cell__title">我的班级</view>
+        <view class="cell__desc">加入班级后可向本班提交汇报</view>
+      </view>
+      <text class="cell__chevron">›</text>
+    </view>
+  </view>
+
   <!-- 教师工作台 -->
   <view wx:if="{{isTeacher}}" class="group">
     <view class="group__title">教师工作台</view>
@@ -71,6 +101,20 @@
     <view class="cell pressable" hover-class="pressing" bindtap="goPublishTask">
       <view class="cell__body">
         <view class="cell__title">布置任务</view>
+      </view>
+      <text class="cell__chevron">›</text>
+    </view>
+    <view class="cell pressable" hover-class="pressing" bindtap="goClasses">
+      <view class="cell__body">
+        <view class="cell__title">我的班级</view>
+        <view class="cell__desc">创建班级 · 生成邀请码 / 二维码</view>
+      </view>
+      <text class="cell__chevron">›</text>
+    </view>
+    <view class="cell pressable" hover-class="pressing" bindtap="goReportCollect">
+      <view class="cell__body">
+        <view class="cell__title">每周汇报收集</view>
+        <view class="cell__desc">按班级 + 周次查看提交情况 · 导出 Excel</view>
       </view>
       <text class="cell__chevron">›</text>
     </view>

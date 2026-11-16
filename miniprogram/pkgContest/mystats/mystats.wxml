@@ -1,0 +1,40 @@
+<view class="page">
+  <view class="blobs">
+    <view class="blob blob--1"></view>
+    <view class="blob blob--2"></view>
+    <view class="blob blob--3"></view>
+  </view>
+
+  <view class="hero">
+    <view class="hero__title">赛事统计</view>
+    <view class="hero__sub">{{isSelf ? '我的比赛记录一览' : 'TA 的比赛记录一览'}}</view>
+  </view>
+
+  <view wx:if="{{loading}}" class="state">正在加载…</view>
+
+  <block wx:else>
+    <view class="stat-cards">
+      <!-- 正在准备的比赛 -->
+      <view class="stat-card pressable" hover-class="pressing" data-type="preparing" bindtap="goList">
+        <view class="stat-card__info">
+          <view class="stat-card__title">正在准备的比赛</view>
+          <view class="stat-card__desc">报名与备赛中的赛事</view>
+        </view>
+        <view class="stat-card__count">{{counts.preparing}}</view>
+        <text class="stat-card__chevron">›</text>
+      </view>
+
+      <!-- 参加过的比赛 -->
+      <view class="stat-card pressable" hover-class="pressing" data-type="joined" bindtap="goList">
+        <view class="stat-card__info">
+          <view class="stat-card__title">参加过的比赛</view>
+          <view class="stat-card__desc">参赛记录与获奖情况</view>
+        </view>
+        <view class="stat-card__count">{{counts.joined}}</view>
+        <text class="stat-card__chevron">›</text>
+      </view>
+    </view>
+
+    <view wx:if="{{isSelf}}" class="page-foot">在赛事详情页可登记参赛与获奖情况，随时可改</view>
+  </block>
+</view>

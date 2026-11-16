@@ -1,0 +1,103 @@
+/* pkgWork/report/detail.wxss —— 教师端：某周明细 */
+.page { min-height: 100vh; background: var(--bg-page); padding-bottom: 200rpx; }
+
+.state { text-align: center; color: var(--text-secondary); font-size: var(--font-caption); padding: 60rpx 0; }
+
+/* 汇总卡 */
+.summary {
+  display: flex;
+  align-items: center;
+  margin: var(--space-md) var(--space-lg) 0;
+  padding: var(--space-md) 0;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+.summary__cell { flex: 1; text-align: center; }
+.summary__num { font-size: var(--font-headline); font-weight: 560; color: var(--text-primary); }
+.summary__num--warn { color: var(--color-warning); }
+.summary__label { margin-top: 6rpx; font-size: var(--font-micro); color: var(--text-tertiary); }
+.summary__divider { width: 1rpx; height: 56rpx; background: var(--border-color); }
+
+/* 搜索 */
+.search { margin: var(--space-md) var(--space-lg) 0; }
+.search__input {
+  height: 80rpx;
+  padding: 0 var(--space-md);
+  border-radius: var(--radius-md);
+  background: var(--bg-block);
+  font-size: var(--font-caption);
+  color: var(--text-primary);
+}
+
+/* 明细卡片 */
+.list { margin: var(--space-md) var(--space-lg) 0; }
+.card {
+  padding: var(--space-lg);
+  margin-bottom: var(--space-md);
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+.card__head { display: flex; align-items: baseline; justify-content: space-between; }
+.card__who { display: flex; align-items: baseline; }
+.card__name { font-size: var(--font-body); font-weight: 560; color: var(--text-primary); }
+.card__sid { margin-left: 12rpx; font-size: var(--font-micro); color: var(--text-tertiary); }
+.card__time { font-size: var(--font-micro); color: var(--text-tertiary); }
+
+.sec { margin-top: var(--space-md); }
+.sec__label {
+  font-size: var(--font-micro);
+  color: var(--text-tertiary);
+  margin-bottom: 8rpx;
+  letter-spacing: var(--tracking-normal);
+}
+.sec__label--warn { color: var(--color-warning); }
+.sec__text {
+  font-size: var(--font-caption);
+  color: var(--text-secondary);
+  line-height: 1.7;
+  word-break: break-all;
+}
+.sec__text--link { color: var(--color-primary); }
+
+/* 未提交名单 */
+.block {
+  margin: var(--space-md) var(--space-lg) 0;
+  padding: var(--space-lg);
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+.block__title { font-size: var(--font-caption); font-weight: 560; color: var(--text-primary); margin-bottom: var(--space-md); }
+.chips { display: flex; flex-wrap: wrap; }
+.chip {
+  padding: 8rpx 22rpx;
+  margin: 0 12rpx 12rpx 0;
+  border-radius: var(--radius-pill);
+  background: var(--color-warning-light);
+  color: var(--color-warning);
+  font-size: var(--font-micro);
+}
+
+/* 底部导出条 */
+.footer {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  padding: var(--space-md) var(--space-lg) calc(var(--space-md) + env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(24rpx) saturate(180%);
+  -webkit-backdrop-filter: blur(24rpx) saturate(180%);
+  box-shadow: 0 -4rpx 20rpx rgba(90, 82, 70, 0.06);
+}
+.submit {
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: #fff;
+  font-size: var(--font-body);
+  font-weight: 560;
+}
+.submit--disabled { opacity: 0.6; }

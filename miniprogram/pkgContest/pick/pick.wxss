@@ -1,0 +1,83 @@
+/* pkgContest/pick/pick.wxss —— 赛事选择页 */
+@import '../../styles/variables.wxss';
+@import '../../styles/mixins.wxss';
+
+.pick-state {
+  padding: 120rpx 0;
+  text-align: center;
+  font-size: var(--font-caption);
+  color: var(--text-secondary);
+}
+.pick-state__emoji {
+  display: block;
+  font-size: 64rpx;
+  margin-bottom: var(--space-sm);
+}
+
+.pick-note {
+  margin-left: var(--space-sm);
+  font-size: var(--font-caption);
+  font-weight: 400;
+  color: var(--text-tertiary);
+}
+
+.pick-row {
+  display: flex;
+  align-items: center;
+  padding: var(--space-md) var(--space-lg);
+}
+.pick-row + .pick-row {
+  border-top: 1rpx solid var(--border-light);
+}
+.pick-row__body {
+  flex: 1;
+  min-width: 0;
+}
+.pick-row__meta {
+  margin-top: 6rpx;
+  font-size: var(--font-micro);
+  color: var(--text-tertiary);
+}
+.my-race__top {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.my-race__name {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--font-body);
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.5;
+  margin-right: var(--space-sm);
+}
+.my-race__top .level { flex-shrink: 0; }
+
+.pick-btn {
+  flex-shrink: 0;
+  margin-left: var(--space-md);
+  min-height: 64rpx;
+  line-height: 64rpx;
+  padding: 0 26rpx;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-size: var(--font-caption);
+  font-weight: 560;
+  text-align: center;
+}
+.pick-btn--on {
+  background: var(--bg-block);
+  color: var(--text-tertiary);
+  font-weight: 400;
+}
+
+.pick-end {
+  padding: var(--space-md) 0 var(--space-lg);
+  text-align: center;
+  font-size: var(--font-micro);
+  color: var(--text-tertiary);
+}

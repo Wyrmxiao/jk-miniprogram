@@ -90,12 +90,20 @@ App({
       .then((res) => {
         this.globalData.systemStatus = res;
         // 刚被提升为管理员时刷新身份，否则导入竞赛会因权限不足失败
-        return res && res.justInitialized ? refreshLogin() : null;
+        const afterLogin = res && res.justInitialized ? refreshLogin() : Promise.resolve(null);
+        // 只有管理员才需要导入竞赛种子数据；普通用户跳过，避免每次启动报"没有操作权限"
+        const isAdmin = !!(res && (res.role === 'admin' || res.justInitialized));
+        return afterLogin.then(() =>
+          isAdmin
+            ? request(DOMAIN.CONTEST, 'importSeed', {}, { silent: true, retry: false })
+            : null
+        );
       })
-      .then(() => request(DOMAIN.CONTEST, 'importSeed', {}, { silent: true, retry: false }))
       .then((res) => {
-        this.globalData.seedResult = res;
-        console.log('[系统初始化] 竞赛库导入结果', res);
+        if (res) {
+          this.globalData.seedResult = res;
+          console.log('[系统初始化] 竞赛库导入结果', res);
+        }
         wx.setStorageSync(STORAGE_KEY.DB_INITED, true);
         // 首次导入给个可见反馈，便于在模拟器/真机确认结果
         if (res && res.imported > 0) {

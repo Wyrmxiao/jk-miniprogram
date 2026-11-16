@@ -4,6 +4,7 @@
  */
 const cloud = require('wx-server-sdk');
 const { badRequest, forbidden, notFound } = require('../utils/response');
+const { buildStats, AWARD_TEXT } = require('../utils/stats');
 const seed = require('../data/competitions.seed.json');
 
 const db = () => cloud.database();
@@ -112,15 +113,20 @@ async function detail(params, ctx) {
   const res = await db().collection('competitions').doc(id).get();
   if (!res.data) throw notFound('竞赛不存在');
 
-  // 是否已关注
+  // 是否已关注 / 已登记参赛（只要拿到 openid 就查，未实名用户也能回读自己的登记）
   let mine = null;
-  if (ctx.user) {
-    const mineRes = await db()
-      .collection('my_contests')
-      .where({ openid: ctx.openid, competitionId: id })
-      .limit(1)
-      .get();
-    mine = mineRes.data[0] || null;
+  if (ctx.openid) {
+    try {
+      const mineRes = await db()
+        .collection('my_contests')
+        .where({ openid: ctx.openid, competitionId: id })
+        .limit(1)
+        .get();
+      mine = mineRes.data[0] || null;
+    } catch (e) {
+      // 集合尚未创建时按未关注处理，不影响赛事详情展示
+      mine = null;
+    }
   }
 
   // 关联公告
@@ -211,18 +217,29 @@ async function follow(params, ctx) {
   const col = db().collection('my_contests');
   const exist = await col.where({ openid: ctx.openid, competitionId }).limit(1).get();
 
+  // 取消关注只清空关注标记，不删除记录：
+  // 同一条记录还承载「已参赛 / 获奖等次」，删掉会丢失学生的登记数据
   if (!follow) {
-    if (exist.data.length) await col.doc(exist.data[0]._id).remove();
+    if (exist.data.length) {
+      await col.doc(exist.data[0]._id).update({ data: { status: '', updatedAt: now() } });
+    }
     return { following: false };
   }
 
-  if (exist.data.length) return { following: true, id: exist.data[0]._id };
+  if (exist.data.length) {
+    if (exist.data[0].status !== 'watch') {
+      await col.doc(exist.data[0]._id).update({ data: { status: 'watch', updatedAt: now() } });
+    }
+    return { following: true, id: exist.data[0]._id };
+  }
 
   const res = await col.add({
     data: {
       openid: ctx.openid,
       competitionId,
       status: 'watch',
+      joined: false,
+      award: '',
       progress: '',
       result: '',
       createdAt: now(),
@@ -230,6 +247,231 @@ async function follow(params, ctx) {
     }
   });
   return { following: true, id: res._id };
+}
+
+/**
+ * 登记/更新我的赛事档案（学生自主登记，可反复修改）
+ * 未传的字段保持原值，便于"我的赛事统计"与详情页共用一个接口
+ * @param {string} competitionId 赛事 ID
+ * @param {boolean} [joined] 是否参加过
+ * @param {boolean} [preparing] 是否正在准备
+ * @param {string} [award] 获奖等次（枚举，统计积分用）
+ * @param {string} [awardNote] 获奖情况自由文本（可填"无"，展示优先于等次）
+ */
+async function register(params, ctx) {
+  ctx.requireLogin();
+  const { competitionId } = params || {};
+  if (!competitionId) throw badRequest('缺少竞赛 ID');
+
+  let comp = null;
+  try {
+    const compRes = await db().collection('competitions').doc(competitionId).get();
+    comp = (compRes && compRes.data) || null;
+  } catch (e) {
+    comp = null;
+  }
+  if (!comp || comp.deleted) throw notFound('赛事不存在或已下架');
+
+  const col = db().collection('my_contests');
+  const exist = await col.where({ openid: ctx.openid, competitionId }).limit(1).get();
+  const cur = (exist.data && exist.data[0]) || {};
+
+  const joined = params.joined === undefined ? !!cur.joined : !!params.joined;
+  const preparing = params.preparing === undefined ? !!cur.preparing : !!params.preparing;
+
+  let award = params.award === undefined ? cur.award || '' : String(params.award || '');
+  if (award && !AWARD_TEXT[award]) throw badRequest('获奖等次不合法');
+
+  let awardNote =
+    params.awardNote === undefined
+      ? cur.awardNote || ''
+      : String(params.awardNote || '').trim().slice(0, 100);
+
+  // 未参赛就不保留获奖信息
+  if (!joined) {
+    award = '';
+    awardNote = '';
+  }
+
+  const data = {
+    status: cur.status === 'watch' ? 'watch' : cur.status || '',
+    joined,
+    preparing,
+    award,
+    awardNote,
+    updatedAt: now()
+  };
+  if (joined) data.joinedAt = now();
+
+  if (exist.data.length) {
+    await col.doc(exist.data[0]._id).update({ data });
+    return { id: exist.data[0]._id, joined, preparing, award, awardNote };
+  }
+
+  const res = await col.add({
+    data: Object.assign(
+      {
+        openid: ctx.openid,
+        competitionId,
+        progress: '',
+        result: '',
+        createdAt: now()
+      },
+      data
+    )
+  });
+  return { id: res._id, joined, preparing, award, awardNote };
+}
+
+/**
+ * 个人赛事档案：本人或他人（公开可查）
+ * @param {string} [openid] 目标用户；不传查自己
+ */
+async function myProfile(params, ctx) {
+  const targetOpenid = (params && params.openid) || ctx.openid;
+  const base = {
+    user: null,
+    isSelf: false,
+    preparing: [],
+    joined: [],
+    counts: { preparing: 0, joined: 0 }
+  };
+  if (!targetOpenid) return base;
+
+  const isSelf = !!ctx.openid && targetOpenid === ctx.openid;
+
+  // 用户公开信息（不含学号、手机等敏感字段）
+  let user = null;
+  try {
+    const uRes = await db().collection('users').where({ openid: targetOpenid }).limit(1).get();
+    const u = (uRes.data && uRes.data[0]) || null;
+    user = u
+      ? {
+          name: u.realName || u.nickName || '同学',
+          major: u.major || '',
+          grade: u.grade || '',
+          role: u.role || 'student'
+        }
+      : null;
+  } catch (e) {
+    user = null;
+  }
+
+  let records = [];
+  try {
+    const res = await db().collection('my_contests').where({ openid: targetOpenid }).limit(200).get();
+    records = res.data || [];
+  } catch (e) {
+    records = [];
+  }
+
+  // 关联赛事信息（in 分批查询）
+  const compMap = {};
+  const ids = Array.from(new Set(records.map((r) => r.competitionId).filter(Boolean)));
+  for (let i = 0; i < ids.length; i += 50) {
+    const chunk = ids.slice(i, i + 50);
+    try {
+      const res = await db()
+        .collection('competitions')
+        .where({ _id: _().in(chunk) })
+        .limit(100)
+        .get();
+      (res.data || []).forEach((c) => {
+        compMap[c._id] = c;
+      });
+    } catch (e) {
+      /* 忽略，赛事信息缺失时降级展示 */
+    }
+  }
+
+  const toRow = (r) => {
+    const c = compMap[r.competitionId] || {};
+    return {
+      recordId: r._id,
+      competitionId: r.competitionId,
+      name: c.name || '赛事已下架',
+      level: c.level || '',
+      category: c.category || '',
+      host: c.host || '',
+      officialUrl: c.officialUrl || '',
+      officialName: c.officialName || '',
+      regStart: c.regStart || '',
+      regEnd: c.regEnd || '',
+      contestDate: c.contestDate || '',
+      typicalMonths: Array.isArray(c.typicalMonths) ? c.typicalMonths : [],
+      intro: c.intro || '',
+      award: AWARD_TEXT[r.award] ? r.award : '',
+      awardText: AWARD_TEXT[r.award] || '',
+      awardNote: r.awardNote || ''
+    };
+  };
+
+  /** 即将比赛的优先：与赛事库列表同口径（报名截止 → 开赛 → 往期惯例） */
+  const timeOf = (row) => {
+    if (row.regEnd) {
+      const d = new Date(row.regEnd);
+      if (!isNaN(d.getTime())) return d;
+    }
+    if (row.contestDate) {
+      const d = new Date(row.contestDate);
+      if (!isNaN(d.getTime())) return d;
+    }
+    const ms = Array.isArray(row.typicalMonths) ? row.typicalMonths : [];
+    if (ms.length) {
+      const m = nowDate.getMonth() + 1;
+      const sorted = [...ms].sort((a, b) => a - b);
+      const next = sorted.find((x) => x >= m) || sorted[0];
+      const year = next >= m ? nowDate.getFullYear() : nowDate.getFullYear() + 1;
+      return new Date(year, next - 1, 1);
+    }
+    return null;
+  };
+
+  const inShelf = (r) => r.competitionId && compMap[r.competitionId] && !compMap[r.competitionId].deleted;
+
+  const preparing = records
+    .filter((r) => r.preparing && !r.joined && inShelf(r))
+    .map(toRow)
+    .sort((a, b) => {
+      const ta = timeOf(a);
+      const tb = timeOf(b);
+      if (ta && tb) return ta - tb;
+      if (ta) return -1;
+      if (tb) return 1;
+      return 0;
+    });
+
+  const joined = records
+    .filter((r) => r.joined && inShelf(r))
+    .map(toRow)
+    .sort((a, b) => {
+      const da = a.contestDate ? new Date(a.contestDate).getTime() || 0 : 0;
+      const dbb = b.contestDate ? new Date(b.contestDate).getTime() || 0 : 0;
+      return dbb - da;
+    });
+
+  const out = {
+    user,
+    isSelf,
+    preparing,
+    joined,
+    counts: { preparing: preparing.length, joined: joined.length }
+  };
+
+  // 本人视角附带关注 id，前端同步星标缓存
+  if (isSelf) {
+    out.followedIds = records
+      .filter((r) => r.status === 'watch' || r.status === 'following')
+      .map((r) => r.competitionId)
+      .filter(Boolean);
+  }
+
+  return out;
+}
+
+/** 比赛统计：概览 + 学生榜 + 热门赛事 + 我的战绩（全员可见） */
+async function stats(params, ctx) {
+  return buildStats(db(), ctx.openid);
 }
 
 /** 更新我的竞赛进度 */
@@ -413,6 +655,9 @@ module.exports = {
   categories,
   myList,
   follow,
+  register,
+  stats,
+  myProfile,
   updateProgress,
   create,
   update,

@@ -10,6 +10,7 @@
     <view class="hero__row">
       <view class="hero__title">赛事库</view>
       <view class="hero__btns">
+        <view class="hero__manage pressable" hover-class="pressing" bindtap="goStats">比赛统计</view>
         <view wx:if="{{isTeacher}}" class="hero__manage pressable" hover-class="pressing" bindtap="goManage">赛事维护</view>
       </view>
     </view>
