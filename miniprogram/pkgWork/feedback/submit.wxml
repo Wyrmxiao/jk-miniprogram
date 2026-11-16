@@ -1,0 +1,50 @@
+<!--pkgWork/feedback/submit.wxml-->
+<view class="page">
+  <!-- 提交表单 -->
+  <view class="block">
+    <view class="block__title">说说你遇到的问题或建议</view>
+    <textarea
+      class="field field--area"
+      placeholder="哪些功能不好用？遇到了什么问题？或者希望增加什么功能，都可以告诉我们"
+      maxlength="500"
+      value="{{content}}"
+      bindinput="onContent"
+      auto-height
+      cursor-spacing="240"
+    />
+    <view class="counter">{{content.length}}/500</view>
+    <input
+      class="field field--input"
+      placeholder="联系方式（选填，如手机号 / QQ）"
+      maxlength="20"
+      value="{{contact}}"
+      bindinput="onContact"
+      cursor-spacing="120"
+    />
+
+  </view>
+
+  <view class="footer">
+    <view class="submit pressable {{submitting ? 'submit--disabled' : ''}}" hover-class="pressing" bindtap="submit">
+      {{submitting ? '提交中…' : '提交反馈'}}
+    </view>
+  </view>
+
+  <!-- 我的反馈历史 -->
+  <view class="block">
+    <view class="block__title">我的反馈（{{list.length}}）</view>
+    <view wx:if="{{list.length === 0}}" class="fb-empty">还没有提交过反馈</view>
+    <view wx:for="{{list}}" wx:key="_id" class="fb">
+      <view class="fb__head flex-between">
+        <text class="tag {{item.statusClass}}">{{item.statusText}}</text>
+        <text class="fb__time">{{item.createdText}}</text>
+      </view>
+      <view class="fb__content">{{item.content}}</view>
+      <view wx:if="{{item.contact}}" class="fb__contact">联系方式：{{item.contact}}</view>
+      <view wx:if="{{item.status === 'replied'}}" class="fb__reply">
+        <view class="fb__reply-head">{{item.replyBy}} 回复于 {{item.replyText}}</view>
+        <view class="fb__reply-body">{{item.reply}}</view>
+      </view>
+    </view>
+  </view>
+</view>
