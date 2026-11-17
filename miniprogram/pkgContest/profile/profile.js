@@ -113,11 +113,8 @@ Page({
         return;
       }
 
-      const urlRes = await wx.cloud.getTempFileURL({ fileList: [res.fileID] });
-      const file = (urlRes.fileList && urlRes.fileList[0]) || {};
-      if (!file.tempFileURL) throw new Error('no url');
-
-      const dl = await wx.downloadFile({ url: file.tempFileURL });
+      // 用 cloud.downloadFile 直接按 fileID 下载，不走域名白名单，开发/正式版都免配置
+      const dl = await wx.cloud.downloadFile({ fileID: res.fileID });
       wx.hideLoading();
       if (!dl.tempFilePath) throw new Error('no file');
 
@@ -128,7 +125,8 @@ Page({
       }
     } catch (e) {
       wx.hideLoading();
-      wx.showToast({ title: '小程序码生成失败', icon: 'none' });
+      console.error('[useQr] 失败:', e);
+      wx.showToast({ title: '小程序码处理失败: ' + (e.errMsg || e.message || ''), icon: 'none' });
     }
   },
 
