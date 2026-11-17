@@ -1,4 +1,4 @@
-// pkgContest/profile/profile.js —— 个人主页：头像信息 + 赛事统计入口（可分享）
+// pkgContest/profile/profile.js —— 个人主页：头像信息 + 赛事统计入口（支持链接分享）
 const { contest } = require('../../services/index');
 const { getProfile, isLogin } = require('../../utils/auth');
 
@@ -8,13 +8,24 @@ Page({
     openid: '',
     isSelf: false,
     user: null,
-    isLogin: false
+    isLogin: false,
+    copying: false
   },
 
   onLoad(options) {
     const profile = getProfile();
     const selfOpenid = (profile && profile.openid) || '';
-    const target = (options && options.openid) || '';
+
+    // 三种进入方式：直接进入（自己）/ ?openid=xxx（分享链接）/ ?scene=xxx（小程序码）
+    let target = (options && options.openid) || '';
+    if (!target && options && options.scene) {
+      try {
+        target = decodeURIComponent(options.scene);
+      } catch (e) {
+        target = options.scene;
+      }
+    }
+
     this.setData({
       openid: target || selfOpenid,
       isSelf: !target || target === selfOpenid
@@ -44,13 +55,81 @@ Page({
     }
   },
 
-  /** 转发：带 openid，别人打开就是这份档案 */
+  /** 转发（右上角「···」）：带 openid，别人打开就是这份档案 */
   onShareAppMessage() {
     const name = (this.data.user && this.data.user.name) || '我';
     return {
       title: name + ' 的个人主页',
       path: '/pkgContest/profile/profile?openid=' + this.data.openid
     };
+  },
+
+  // ===== 链接分享 =====
+
+  /** 复制主页链接：对方点开即可看到这份主页 */
+  async copyLink() {
+    if (this.data.copying) return;
+    this.setData({ copying: true });
+    wx.showLoading({ title: '生成链接', mask: true });
+
+    try {
+      const res = await contest.profileLink({});
+      wx.hideLoading();
+      if (res && res.link) {
+        wx.setClipboardData({ data: res.link });
+        wx.showModal({
+          title: '链接已复制',
+          content: '粘贴发送给微信好友，对方点开即可查看你的主页',
+          showCancel: false,
+          confirmText: '知道了'
+        });
+        return;
+      }
+      // 小程序未发布正式版时无法生成外链，降级为小程序码
+      this.useQr();
+    } catch (e) {
+      wx.hideLoading();
+      this.useQr();
+    } finally {
+      this.setData({ copying: false });
+    }
+  },
+
+  /** 降级方案：生成主页小程序码，发图片让对方扫码 */
+  async useQr() {
+    wx.showLoading({ title: '生成小程序码', mask: true });
+    try {
+      const res = await contest.profileQr({});
+      if (!res || !res.fileID) {
+        wx.hideLoading();
+        const errs = (res && res.errors) || [];
+        wx.showModal({
+          title: '暂时无法分享',
+          content: errs.length
+            ? '小程序码生成失败：' + errs.join('；')
+            : '可以点右上角「···」直接转发给好友',
+          showCancel: false
+        });
+        return;
+      }
+
+      const urlRes = await wx.cloud.getTempFileURL({ fileList: [res.fileID] });
+      const file = (urlRes.fileList && urlRes.fileList[0]) || {};
+      if (!file.tempFileURL) throw new Error('no url');
+
+      const dl = await wx.downloadFile({ url: file.tempFileURL });
+      wx.hideLoading();
+      if (!dl.tempFilePath) throw new Error('no file');
+
+      try {
+        await wx.showShareImageMenu({ path: dl.tempFilePath });
+      } catch (e) {
+        wx.previewImage({ urls: [dl.tempFilePath] });
+      }
+    } catch (e) {
+      wx.hideLoading();
+      wx.showToast({ title: '小程序码生成失败', icon: 'none' });
+    }
   },
 
   /** 赛事统计 → 总览页（两个板块） */

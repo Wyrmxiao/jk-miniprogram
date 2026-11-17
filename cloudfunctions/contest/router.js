@@ -13,6 +13,8 @@ module.exports = {
   register: contest.register,
   stats: contest.stats,
   myProfile: contest.myProfile,
+  profileLink: contest.profileLink,
+  profileQr: contest.profileQr,
   updateProgress: contest.updateProgress,
   create: contest.create,
   update: contest.update,

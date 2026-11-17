@@ -649,6 +649,91 @@ async function addGuide(params, ctx) {
   return { id: res._id };
 }
 
+/**
+ * 生成个人主页分享链接
+ * 优先 URL Link（https://wxaurl.cn/... 可直接点击），
+ * 其次 URL Scheme（weixin://dl/business/...），都不可用时返回空由前端降级为小程序码
+ */
+async function profileLink(params, ctx) {
+  ctx.requireLogin();
+  const target = String((params && params.openid) || ctx.openid || '');
+  if (!target) throw badRequest('缺少用户标识');
+
+  const path = 'pkgContest/profile/profile';
+  const query = 'openid=' + target;
+
+  // 1) URL Link：微信内/外都能点开
+  try {
+    const r = await cloud.openapi.urllink.generate({
+      path,
+      query,
+      isExpire: false
+    });
+    if (r && r.urlLink) return { type: 'link', link: r.urlLink };
+  } catch (e) {
+    /* 未发布正式版等原因不可用，继续尝试 URL Scheme */
+  }
+
+  // 2) URL Scheme：微信内点击可直接唤起小程序
+  try {
+    const r = await cloud.openapi.urlscheme.generate({
+      jumpWxa: { path, query },
+      isExpire: false
+    });
+    const link = r && (r.openlink || r.openLink);
+    if (link) return { type: 'scheme', link };
+  } catch (e) {
+    /* 同样不可用 */
+  }
+
+  return { type: '', link: '', reason: '当前小程序暂不支持生成外部链接' };
+}
+
+/** 生成个人主页小程序码（链接不可用时的降级方案，体验版同样可用） */
+async function profileQr(params, ctx) {
+  ctx.requireLogin();
+  const target = String((params && params.openid) || ctx.openid || '');
+  if (!target) throw badRequest('缺少用户标识');
+
+  // scene 最长 32 字符，openid 一般 28 位，直接放进去
+  const scene = target.slice(0, 32);
+  let buffer = null;
+  const errors = [];
+
+  for (const envVersion of ['release', 'trial', 'develop']) {
+    if (buffer) break;
+    try {
+      const res = await cloud.openapi.wxacode.getUnlimited({
+        scene,
+        page: 'pkgContest/profile/profile',
+        checkPath: false,
+        envVersion,
+        width: 430
+      });
+      buffer = res.buffer;
+    } catch (e) {
+      errors.push(envVersion + ': ' + (e.errMsg || e.message || String(e)));
+      buffer = null;
+    }
+  }
+
+  console.log('[profileQr] 生成结果:', buffer ? '成功' : '失败', errors.join(' | '));
+
+  if (!buffer) {
+    return {
+      fileID: '',
+      reason: '小程序码生成失败',
+      errors: errors.slice(0, 3)
+    };
+  }
+
+  const upload = await cloud.uploadFile({
+    cloudPath: `profile-qr/${target}_${Date.now()}.png`,
+    fileContent: buffer
+  });
+  return { fileID: upload.fileID };
+}
+
 module.exports = {
   list,
   detail,
@@ -658,6 +743,8 @@ module.exports = {
   register,
   stats,
   myProfile,
+  profileLink,
+  profileQr,
   updateProgress,
   create,
   update,
