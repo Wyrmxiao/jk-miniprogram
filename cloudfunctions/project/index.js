@@ -28,6 +28,10 @@ exports.main = async (event = {}) => {
       return fail(err.message || '请求失败', err.code || 400);
     }
     console.error(`[project:${action}] 执行失败`, err);
+    // 数据库集合不存在（-502005）：给用户能看懂的提示，而不是服务异常
+    if (err && err.errCode === -502005) {
+      return fail('数据集合不存在，请稍后重试或联系管理员建表', 500);
+    }
     // __debug=true 时返回真实错误，便于联机排障
     const detail = event.__debug ? String((err && err.message) || err) : '服务异常，请稍后重试';
     return fail(detail, 500);
