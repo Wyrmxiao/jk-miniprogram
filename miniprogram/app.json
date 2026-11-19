@@ -4,6 +4,7 @@
     "pages/learn/learn",
     "pages/learn/qa",
     "pages/learn/qaDetail",
+    "pages/learn/answer/answer",
     "pages/contest/contest",
     "pages/contest/detail/detail",
     "pages/project/project",

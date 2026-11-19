@@ -1,0 +1,90 @@
+/* pages/learn/answer/answer.wxss —— 写回答独立页面 */
+.page {
+  min-height: 100vh;
+  padding: 0 var(--space-lg) calc(var(--space-xl) + env(safe-area-inset-bottom));
+  background: var(--bg-page);
+}
+
+/* ===== 顶部操作条：发布按钮固定在顶部，键盘弹出也不会被遮挡 ===== */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) 0;
+  background: var(--bg-page);
+}
+.topbar__title {
+  font-size: var(--font-headline);
+  font-weight: 560;
+  color: var(--text-primary);
+}
+.topbar__btn {
+  flex-shrink: 0;
+  min-height: 68rpx;
+  padding: 0 34rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+  color: #fff;
+  font-size: var(--font-caption);
+  font-weight: 560;
+}
+.topbar__btn--off {
+  opacity: 0.45;
+}
+
+/* ===== 回答对象提示 ===== */
+.qref {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  background: var(--bg-block);
+}
+.qref__label {
+  flex-shrink: 0;
+  margin-right: var(--space-sm);
+  font-size: var(--font-caption);
+  color: var(--text-tertiary);
+}
+.qref__title {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--font-caption);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ===== 输入区 ===== */
+.form {
+  margin-top: var(--space-md);
+}
+.answer-area {
+  min-height: 480rpx;
+  margin-top: 0;
+  font-size: var(--font-body);
+  line-height: 1.7;
+}
+.answer-ph {
+  color: var(--text-tertiary);
+}
+
+.counter {
+  margin-top: 12rpx;
+  text-align: right;
+  font-size: var(--font-micro);
+  color: var(--text-tertiary);
+}
+.tip {
+  margin-top: var(--space-sm);
+  font-size: var(--font-micro);
+  color: var(--text-tertiary);
+  line-height: 1.6;
+}

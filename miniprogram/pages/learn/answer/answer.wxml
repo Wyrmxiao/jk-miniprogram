@@ -1,0 +1,32 @@
+<!-- pages/learn/answer/answer.wxml —— 写回答（独立页面，输入框在正常流里，避免弹层键盘问题） -->
+<view class="page">
+  <view class="topbar">
+    <view class="topbar__title">写下你的解答</view>
+    <view
+      class="topbar__btn {{canSend ? '' : 'topbar__btn--off'}} pressable"
+      hover-class="pressing"
+      bindtap="submit"
+    >{{sending ? '发送中…' : '发布'}}</view>
+  </view>
+
+  <view wx:if="{{qtitle}}" class="qref">
+    <text class="qref__label">回答</text>
+    <text class="qref__title">{{qtitle}}</text>
+  </view>
+
+  <view class="form">
+    <textarea
+      class="field field--area answer-area"
+      value="{{draft}}"
+      placeholder="先说结论，再说为什么，最后给出代码或步骤"
+      placeholder-class="answer-ph"
+      maxlength="2000"
+      bindinput="onInput"
+      auto-height
+      cursor-spacing="24"
+      show-confirm-bar="{{true}}"
+    />
+    <view class="counter">{{draft.length}}/2000</view>
+    <view class="tip">讲清楚思路，比只给一个答案更有帮助{{hint ? ' · ' + hint : ''}}</view>
+  </view>
+</view>
