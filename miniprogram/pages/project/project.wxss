@@ -61,4 +61,4 @@
 
 .list__end { padding: var(--space-md) 0; text-align: center; font-size: var(--font-micro); color: var(--text-quaternary); }
 
-.fab { transition: transform var(--duration-press) var(--ease-spring), opacity var(--duration-press) ease; position: fixed; right: var(--space-lg); bottom: calc(var(--space-lg) + env(safe-area-inset-bottom)); display: flex; align-items: center; justify-content: center; min-width: 176rpx; height: 96rpx; padding: 0 var(--space-md); border-radius: var(--radius-pill); background: var(--color-primary); color: var(--text-inverse); font-size: var(--font-body); font-weight: 560; box-shadow: var(--shadow-float); z-index: 20; }
+.fab { transition: transform var(--duration-press) var(--ease-spring), opacity var(--duration-press) ease; position: fixed; right: var(--space-lg); bottom: calc(200rpx + env(safe-area-inset-bottom)); display: flex; align-items: center; justify-content: center; min-width: 176rpx; height: 96rpx; padding: 0 var(--space-md); border-radius: var(--radius-pill); background: var(--color-primary); color: var(--text-inverse); font-size: var(--font-body); font-weight: 560; box-shadow: var(--shadow-float); z-index: 210; }
