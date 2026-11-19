@@ -33,7 +33,9 @@ Page({
     codeNotes: [],
     knowledgeItems: [],
     metaText: '',
-    solutionTypeText: ''
+    solutionTypeText: '',
+    /** 题面里是否含示例图（有则显示“可左右滑动”提示） */
+    stmtHasImg: false
   },
 
   onLoad(options) {
@@ -77,7 +79,8 @@ Page({
         solutionSteps: this.decorateSteps(c.solution),
         codeNotes: this.decorateNotes(c.solution),
         knowledgeItems: this.decorateKnowledge(c.knowledge),
-        metaText: this.buildMeta(c)
+        metaText: this.buildMeta(c),
+        stmtHasImg: /<img[\s>]/i.test(String(c.statementHtml || ''))
       });
     } catch (e) {
       this.setData({ contentLoading: false, contentErr: '内容加载失败，下拉重试或稍后再看。' });
