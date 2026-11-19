@@ -91,6 +91,9 @@ const contest = {
   stats: () => request(DOMAIN.CONTEST, 'stats', {}, { silent: true }),
   // 个人赛事档案（本人或他人，公开可查）
   myProfile: (params) => request(DOMAIN.CONTEST, 'myProfile', params || {}, { silent: true }),
+  // 个人主页分享：链接（URL Link/Scheme）与小程序码降级
+  profileLink: (params) => request(DOMAIN.CONTEST, 'profileLink', params || {}, { silent: true }),
+  profileQr: (params) => request(DOMAIN.CONTEST, 'profileQr', params || {}, { silent: true }),
   updateProgress: (data) => request(DOMAIN.CONTEST, 'updateProgress', data, { loading: '保存中' }),
   // 教师/管理员维护（含赛事时间编辑）
   create: (data) => request(DOMAIN.CONTEST, 'create', data, { loading: '保存中' }),
