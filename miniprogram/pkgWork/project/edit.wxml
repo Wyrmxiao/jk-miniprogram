@@ -15,6 +15,7 @@
       value="{{form.name}}"
       data-field="name"
       bindinput="onField"
+      bindkeyboardheightchange="onKeyboardHeightChange"
       cursor-spacing="120"
     />
     <textarea
@@ -24,6 +25,7 @@
       value="{{form.summary}}"
       data-field="summary"
       bindinput="onField"
+      bindkeyboardheightchange="onKeyboardHeightChange"
       auto-height
       cursor-spacing="240"
     />
@@ -60,6 +62,7 @@
       value="{{form.outcome}}"
       data-field="outcome"
       bindinput="onField"
+      bindkeyboardheightchange="onKeyboardHeightChange"
       auto-height
       cursor-spacing="240"
     />
@@ -70,6 +73,7 @@
       value="{{form.members}}"
       data-field="members"
       bindinput="onField"
+      bindkeyboardheightchange="onKeyboardHeightChange"
       cursor-spacing="120"
     />
 

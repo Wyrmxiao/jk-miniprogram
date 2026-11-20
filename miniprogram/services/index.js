@@ -84,7 +84,7 @@ const contest = {
   categories: () => request(DOMAIN.CONTEST, 'categories', {}, { silent: true }),
   // 我的竞赛
   myList: (params) => request(DOMAIN.CONTEST, 'myList', params, { silent: true }),
-  follow: (data) => request(DOMAIN.CONTEST, 'follow', data, { loading: '处理中' }),
+  follow: (data) => request(DOMAIN.CONTEST, 'follow', data, { silent: true }),
   // 学生自主登记参赛 / 获奖等次
   register: (data) => request(DOMAIN.CONTEST, 'register', data, { loading: '保存中' }),
   // 比赛统计（概览 + 学生榜 + 热门赛事 + 我的战绩）

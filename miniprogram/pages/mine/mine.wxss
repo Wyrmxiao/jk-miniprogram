@@ -63,6 +63,54 @@
 .my-race__top { display: flex; flex-direction: row; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; }
 .my-race__name { flex: 1; min-width: 0; font-size: var(--font-body); font-weight: 500; color: var(--text-primary); line-height: 1.5; margin-right: var(--space-sm); }
 .my-race__top .level { flex-shrink: 0; }
+
+/* ===== 关注赛事叠放卡（折叠态） ===== */
+.race-stack-wrap { margin: var(--space-sm) var(--space-lg) 0; }
+.race-stack {
+  position: relative;
+  padding-top: 30rpx; /* 给露出的背后卡片留出空间 */
+}
+.race-stack__layer {
+  position: absolute;
+  left: 14rpx;
+  right: 14rpx;
+  top: 12rpx;
+  bottom: 10rpx;
+  border-radius: 24rpx;
+  background: var(--bg-elevated);
+  border: 2rpx solid var(--border-light);
+  box-shadow: 0 4rpx 14rpx rgba(0, 0, 0, 0.04);
+  z-index: 0;
+}
+.race-stack__layer--2 { opacity: 0.75; }
+.race-stack__layer--3 { top: 2rpx; left: 26rpx; right: 26rpx; opacity: 0.45; }
+.race-stack__top {
+  position: relative;
+  z-index: 1;
+  padding: var(--space-md);
+  border-radius: 24rpx;
+  background: var(--bg-elevated);
+  border: 2rpx solid var(--border-light);
+  box-shadow: 0 6rpx 18rpx rgba(0, 0, 0, 0.06);
+}
+.race-stack__hint {
+  margin-top: 14rpx;
+  text-align: center;
+  font-size: var(--font-micro);
+  color: var(--text-tertiary);
+  letter-spacing: var(--tracking-normal);
+}
+.race-stack__collapse {
+  margin: var(--space-sm) var(--space-lg) 0;
+  padding: 20rpx;
+  text-align: center;
+  font-size: var(--font-caption);
+  color: var(--text-secondary);
+  background: var(--bg-elevated);
+  border: 2rpx dashed var(--border-light);
+  border-radius: 24rpx;
+}
+
 .cell__desc .tag { margin-right: var(--space-sm); }
 
 /* ===== 赛事统计 ===== */

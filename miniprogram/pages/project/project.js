@@ -111,5 +111,12 @@ Page({
       return;
     }
     wx.navigateTo({ url: '/pkgWork/project/edit' });
+  },
+
+
+  /** 点击涟漪：把触点交给 tap-ripple 组件播放 */
+  onTapFx(e) {
+    const fx = this.selectComponent('#tapFx');
+    if (fx) fx.show(e);
   }
 });

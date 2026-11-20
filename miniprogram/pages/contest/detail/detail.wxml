@@ -174,5 +174,6 @@
       hover-class="pressing"
       bindtap="toggleFollow"
     >{{following ? '已关注' : '关注赛事'}}</view>
+    <view wx:if="{{preparingMine}}" class="btn btn-block btn-remove pressable" hover-class="pressing" bindtap="removePreparing">移除该赛事</view>
   </view>
 </view>

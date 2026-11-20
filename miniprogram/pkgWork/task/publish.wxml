@@ -8,13 +8,15 @@
 
   <view class="block">
     <view class="block__title">任务内容</view>
-    <input class="field" placeholder="任务标题" value="{{form.title}}" data-field="title" bindinput="onField" cursor-spacing="120" />
+    <input class="field" placeholder="任务标题" value="{{form.title}}" data-field="title" bindinput="onField"
+      bindkeyboardheightchange="onKeyboardHeightChange" cursor-spacing="120" />
     <textarea
       class="field field--area"
       placeholder="任务要求与验收标准（可选）"
       value="{{form.content}}"
       data-field="content"
       bindinput="onField"
+      bindkeyboardheightchange="onKeyboardHeightChange"
       auto-height
       cursor-spacing="240"
     />

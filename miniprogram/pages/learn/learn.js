@@ -237,5 +237,12 @@ Page({
   },
 
   /** 弹层占位：catchtap 阻止事件冒泡到遮罩 */
-  noop() {}
+  noop() {},
+
+
+  /** 点击涟漪：把触点交给 tap-ripple 组件播放 */
+  onTapFx(e) {
+    const fx = this.selectComponent('#tapFx');
+    if (fx) fx.show(e);
+  }
 });

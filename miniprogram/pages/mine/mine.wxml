@@ -1,4 +1,4 @@
-<view class="page">
+<view class="page" bindtap="onTapFx">
   <!-- 方向 A 光斑背景 -->
   <view class="blobs">
     <view class="blob blob--1"></view>
@@ -34,7 +34,7 @@
     </view>
   </view>
 
-  <!-- 我关注的赛事（登录即可查看） -->
+  <!-- 我关注的赛事（登录即可查看）：不点时前三个叠放，点击展开全部 -->
   <view wx:if="{{isLogin}}" class="group">
     <view class="group__title">我关注的赛事</view>
     <view wx:if="{{myContests.length === 0}}" class="cell pressable" hover-class="pressing" bindtap="goContest">
@@ -44,20 +44,44 @@
       </view>
       <text class="cell__chevron">›</text>
     </view>
-    <view wx:for="{{myContests}}" wx:key="_id" class="cell pressable" hover-class="pressing"
-      data-id="{{item.competitionId}}" bindtap="goContestDetail">
-      <view class="cell__body">
-        <view class="my-race__top">
-          <text class="my-race__name text-2lines">{{item.name}}</text>
-          <text class="level level--{{item.level}}">{{item.level}}类</text>
-        </view>
-        <view class="cell__desc">
-          <text class="tag {{item.statusClass}}">{{item.statusText}}</text>
-          <text>{{item.timeText}}</text>
+
+    <!-- 折叠态：最上面一张完整展示，后面两张露出边缘形成叠放 -->
+    <view wx:elif="{{!contestsExpanded}}" class="race-stack-wrap" bindtap="toggleContests">
+      <view class="race-stack pressable" hover-class="pressing">
+        <view wx:if="{{myContests.length > 2}}" class="race-stack__layer race-stack__layer--3"></view>
+        <view wx:if="{{myContests.length > 1}}" class="race-stack__layer race-stack__layer--2"></view>
+        <view class="race-stack__top">
+          <view class="my-race__top">
+            <text class="my-race__name text-2lines">{{myContests[0].name}}</text>
+            <text class="level level--{{myContests[0].level}}">{{myContests[0].level}}类</text>
+          </view>
+          <view class="cell__desc">
+            <text class="tag {{myContests[0].statusClass}}">{{myContests[0].statusText}}</text>
+            <text>{{myContests[0].timeText}}</text>
+          </view>
         </view>
       </view>
-      <text class="cell__chevron">›</text>
+      <view class="race-stack__hint">共 {{myContests.length}} 项关注 · 点按展开 ▾</view>
     </view>
+
+    <!-- 展开态：全部赛事 + 收起 -->
+    <block wx:else>
+      <view wx:for="{{myContests}}" wx:key="_id" class="cell pressable" hover-class="pressing"
+        data-id="{{item.competitionId}}" bindtap="goContestDetail">
+        <view class="cell__body">
+          <view class="my-race__top">
+            <text class="my-race__name text-2lines">{{item.name}}</text>
+            <text class="level level--{{item.level}}">{{item.level}}类</text>
+          </view>
+          <view class="cell__desc">
+            <text class="tag {{item.statusClass}}">{{item.statusText}}</text>
+            <text>{{item.timeText}}</text>
+          </view>
+        </view>
+        <text class="cell__chevron">›</text>
+      </view>
+      <view class="race-stack__collapse pressable" hover-class="pressing" bindtap="toggleContests">收起</view>
+    </block>
   </view>
 
   <!-- 赛事统计：点击进入详情页（个人主页） -->
@@ -218,4 +242,5 @@
       </scroll-view>
     </view>
   </view>
+  <tap-ripple id="tapFx" />
 </view>

@@ -1,4 +1,4 @@
-<view class="page index-page">
+<view class="page index-page" bindtap="onTapFx">
   <!-- 方向 A 光斑背景 -->
   <view class="blobs">
     <view class="blob blob--1"></view>
@@ -114,4 +114,5 @@
 
   <view class="gap-md"></view>
 
+  <tap-ripple id="tapFx" />
 </view>

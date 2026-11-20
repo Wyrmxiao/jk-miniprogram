@@ -1,0 +1,70 @@
+/* pages/learn/ask/ask.wxss —— 提问独立页面 */
+.page {
+  min-height: 100vh;
+  padding: 0 var(--space-lg) calc(var(--space-xl) + env(safe-area-inset-bottom));
+  background: var(--bg-page);
+}
+
+/* ===== 顶部操作条：发布按钮固定在顶部，键盘弹出也不会被遮挡 ===== */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) 0;
+  background: var(--bg-page);
+}
+.topbar__title {
+  font-size: var(--font-headline);
+  font-weight: 560;
+  color: var(--text-primary);
+}
+.topbar__btn {
+  flex-shrink: 0;
+  min-height: 68rpx;
+  padding: 0 34rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+  color: #fff;
+  font-size: var(--font-caption);
+  font-weight: 560;
+}
+.topbar__btn--off {
+  opacity: 0.45;
+}
+
+/* ===== 表单 ===== */
+.form {
+  margin-top: var(--space-md);
+}
+.form-label {
+  margin-top: var(--space-md);
+  font-size: var(--font-caption);
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+.ask-area {
+  min-height: 320rpx;
+  line-height: 1.7;
+}
+.ask-ph {
+  color: var(--text-tertiary);
+}
+.counter {
+  margin-top: 8rpx;
+  text-align: right;
+  font-size: var(--font-micro);
+  color: var(--text-tertiary);
+}
+.tip {
+  margin-top: var(--space-md);
+  font-size: var(--font-micro);
+  color: var(--text-tertiary);
+  line-height: 1.6;
+}

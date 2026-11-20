@@ -75,6 +75,7 @@
   font-weight: 400;
 }
 
+
 .pick-end {
   padding: var(--space-md) 0 var(--space-lg);
   text-align: center;

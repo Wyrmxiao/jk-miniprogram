@@ -1,4 +1,4 @@
-<view class="page">
+<view class="page" bindtap="onTapFx">
   <!-- 方向 A 光斑背景 -->
   <view class="blobs">
     <view class="blob blob--1"></view>
@@ -187,4 +187,5 @@
       <view class="btn btn-block btn-plain pressable" hover-class="pressing" bindtap="closeActiveTask">关闭该任务</view>
     </view>
   </view>
+  <tap-ripple id="tapFx" />
 </view>

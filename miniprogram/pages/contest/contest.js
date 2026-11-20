@@ -61,7 +61,9 @@ Page({
     loadingMore: false,
     noMore: false,
     isTeacher: false,
-    isLogin: false
+    isLogin: false,
+    // 碎光动画：正在播放爆光的赛事 id
+    burstId: ''
   },
 
   onLoad() {
@@ -148,7 +150,7 @@ Page({
     this.setData({ focusOnly: !this.data.focusOnly }, () => this.loadList(true));
   },
 
-  /** 关注/取消关注：先写本地星标（即时反馈），已认证用户再静默同步云端 */
+  /** 关注/取消关注：先写本地星标（即时反馈），已认证用户再静默同步云端；关注成功星星蹦碎光 */
   async toggleFollow(e) {
     const id = e.currentTarget.dataset.id;
     if (!id) return;
@@ -156,11 +158,19 @@ Page({
     this.setData({
       list: this.data.list.map((c) =>
         c._id === id ? Object.assign({}, c, { followed }) : c
-      )
+      ),
+      // 关注成功：重放碎光动画（先清 class 再下一拍加回，保证连续点击也会重播）
+      burstId: ''
     }, () => {
       this.setData({ displayList: this.filterDisplay(this.data.list) });
+      if (followed) {
+        if (this._burstTimer) clearTimeout(this._burstTimer);
+        this.setData({ burstId: id });
+        this._burstTimer = setTimeout(() => this.setData({ burstId: '' }), 700);
+      } else {
+        wx.showToast({ title: '已取消关注', icon: 'none', duration: 800 });
+      }
     });
-    wx.showToast({ title: followed ? '已关注' : '已取消关注', icon: 'none', duration: 800 });
 
     // 已登录用户同步云端（云端是最终真相，失败则回滚本地）
     if (this.data.isLogin) {
@@ -189,5 +199,12 @@ Page({
 
   onSearch(e) {
     this.setData({ keyword: e.detail.value }, () => this.loadList(true));
+  },
+
+
+  /** 点击涟漪：把触点交给 tap-ripple 组件播放 */
+  onTapFx(e) {
+    const fx = this.selectComponent('#tapFx');
+    if (fx) fx.show(e);
   }
 });

@@ -60,6 +60,7 @@
       value="{{form.knowledge}}"
       data-field="knowledge"
       bindinput="onField"
+      bindkeyboardheightchange="onKeyboardHeightChange"
       auto-height
       cursor-spacing="200"
     />
@@ -76,6 +77,7 @@
       value="{{form.difficulty}}"
       data-field="difficulty"
       bindinput="onField"
+      bindkeyboardheightchange="onKeyboardHeightChange"
       auto-height
       cursor-spacing="200"
     />
@@ -92,6 +94,7 @@
       value="{{form.questions}}"
       data-field="questions"
       bindinput="onField"
+      bindkeyboardheightchange="onKeyboardHeightChange"
       auto-height
       cursor-spacing="200"
     />
@@ -107,6 +110,7 @@
       value="{{form.blogUrl}}"
       data-field="blogUrl"
       bindinput="onField"
+      bindkeyboardheightchange="onKeyboardHeightChange"
       cursor-spacing="120"
     />
     <view class="block__foot">

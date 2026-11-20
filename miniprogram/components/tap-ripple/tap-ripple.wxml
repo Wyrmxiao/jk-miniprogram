@@ -1,0 +1,8 @@
+<view class="ripple-layer">
+  <view
+    wx:for="{{ripples}}"
+    wx:key="id"
+    class="ripple"
+    style="left:{{item.x}}px;top:{{item.y}}px;"
+  ></view>
+</view>
