@@ -11,7 +11,8 @@
 
   <view class="block">
     <view class="block__title">今天学了什么</view>
-    <input class="field" placeholder="记录标题" value="{{form.title}}" data-field="title" bindinput="onField" cursor-spacing="120" />
+    <input class="field" placeholder="记录标题" value="{{form.title}}" data-field="title" bindinput="onField"
+      bindkeyboardheightchange="onKeyboardHeightChange" cursor-spacing="120" />
     <textarea
       class="field field--area"
       placeholder="记录学习内容、遇到的问题与下一步计划"
@@ -19,6 +20,7 @@
       value="{{form.content}}"
       data-field="content"
       bindinput="onField"
+      bindkeyboardheightchange="onKeyboardHeightChange"
       auto-height
       cursor-spacing="240"
     />

@@ -1,0 +1,61 @@
+<!-- pages/learn/ask/ask.wxml —— 提问独立页面：输入在正常文档流里，无弹层，键盘行为可控 -->
+<view class="page">
+  <view class="topbar">
+    <view class="topbar__title">提出你的问题</view>
+    <view
+      class="topbar__btn {{canAsk ? '' : 'topbar__btn--off'}} pressable"
+      hover-class="pressing"
+      bindtap="submit"
+    >{{asking ? '发布中…' : '发布'}}</view>
+  </view>
+
+  <view class="form">
+    <view class="form-label">问题分类</view>
+    <view class="opts">
+      <text
+        wx:for="{{cats}}"
+        wx:key="key"
+        class="opt {{item.on ? 'opt--on' : ''}}"
+        data-key="{{item.key}}"
+        bindtap="pickCategory"
+      >{{item.name}}</text>
+    </view>
+
+    <view class="form-label">标题</view>
+    <input
+      class="field"
+      value="{{title}}"
+      placeholder="用一句话描述问题"
+      maxlength="80"
+      bindinput="onTitle"
+      cursor-spacing="120"
+    />
+    <view class="counter">{{title.length}}/80</view>
+
+    <view class="form-label">详细描述</view>
+    <textarea
+      class="field field--area ask-area"
+      value="{{content}}"
+      placeholder="描述问题、已尝试的思路和卡住的位置"
+      placeholder-class="ask-ph"
+      maxlength="3000"
+      bindinput="onContent"
+      auto-height
+      cursor-spacing="120"
+      show-confirm-bar="{{true}}"
+    />
+    <view class="counter">{{content.length}}/3000</view>
+
+    <view class="form-label">相关题目（选填）</view>
+    <input
+      class="field"
+      value="{{problemTitle}}"
+      placeholder="如：两数之和 / cf:4:A"
+      maxlength="80"
+      bindinput="onProblem"
+      cursor-spacing="120"
+    />
+
+    <view wx:if="{{hint}}" class="tip">{{hint}}</view>
+  </view>
+</view>

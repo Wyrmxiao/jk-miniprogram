@@ -5,6 +5,7 @@
 const cloud = require('wx-server-sdk');
 const { badRequest, forbidden, notFound } = require('../utils/response');
 const { buildStats, AWARD_TEXT } = require('../utils/stats');
+const { ensure } = require('../utils/ensure');
 const seed = require('../data/competitions.seed.json');
 
 const db = () => cloud.database();
@@ -213,6 +214,7 @@ async function follow(params, ctx) {
   ctx.requireLogin();
   const { competitionId, follow = true } = params || {};
   if (!competitionId) throw badRequest('缺少竞赛 ID');
+  await ensure('my_contests');
 
   const col = db().collection('my_contests');
   const exist = await col.where({ openid: ctx.openid, competitionId }).limit(1).get();
@@ -262,6 +264,7 @@ async function register(params, ctx) {
   ctx.requireLogin();
   const { competitionId } = params || {};
   if (!competitionId) throw badRequest('缺少竞赛 ID');
+  await ensure('my_contests');
 
   let comp = null;
   try {
@@ -407,6 +410,7 @@ async function myProfile(params, ctx) {
   };
 
   /** 即将比赛的优先：与赛事库列表同口径（报名截止 → 开赛 → 往期惯例） */
+  const nowDate = new Date(); // 排序「往期惯例下一次月份」用（原为跨函数引用，运行时 ReferenceError 导致 myProfile 整体失败）
   const timeOf = (row) => {
     if (row.regEnd) {
       const d = new Date(row.regEnd);
@@ -430,7 +434,7 @@ async function myProfile(params, ctx) {
   const inShelf = (r) => r.competitionId && compMap[r.competitionId] && !compMap[r.competitionId].deleted;
 
   const preparing = records
-    .filter((r) => r.preparing && !r.joined && inShelf(r))
+    .filter((r) => r.preparing && inShelf(r))
     .map(toRow)
     .sort((a, b) => {
       const ta = timeOf(a);
@@ -479,6 +483,7 @@ async function updateProgress(params, ctx) {
   ctx.requireLogin();
   const { id, status, progress = '', result = '' } = params || {};
   if (!id) throw badRequest('缺少记录 ID');
+  await ensure('my_contests');
 
   const col = db().collection('my_contests');
   const res = await col.doc(id).get();

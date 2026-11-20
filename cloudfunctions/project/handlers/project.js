@@ -12,7 +12,8 @@ const { badRequest, notFound, forbidden } = require('../utils/response');
 const { ensure } = require('../utils/ensure');
 
 const db = () => cloud.database();
-const _ = db().command;
+// 注意：不能在模块顶层直接 cloud.database()（此时 index.js 里的 cloud.init 还没执行）
+const _ = () => db().command;
 const now = () => db().serverDate();
 
 const STAGES = ['idea', 'doing', 'done', 'awarded'];
@@ -31,6 +32,7 @@ function displayName(user) {
 /** 取项目（存在且未删除），否则抛 404 */
 async function getProject(id) {
   if (!id) throw badRequest('缺少项目 ID');
+  await ensure('projects');
   const res = await db()
     .collection('projects')
     .doc(id)
@@ -65,6 +67,8 @@ async function list(params, ctx) {
     where.ownerOpenid = ctx.openid;
   }
 
+  // 列表查询前确保集合存在（列表页是大多数用户的第一入口）
+  await ensure('projects');
   const col = db().collection('projects');
   const countRes = await col.where(where).count();
   const listRes = await col
@@ -89,8 +93,12 @@ async function detail(params, ctx) {
   db()
     .collection('projects')
     .doc(id)
-    .update({ data: { viewCount: _.inc(1) } })
+    .update({ data: { viewCount: _().inc(1) } })
     .catch(() => {});
+
+  // 进展/留言集合同样自愈（详情页是只读入口，不会触发 create 里的 ensure）
+  await ensure('project_updates');
+  await ensure('project_comments');
 
   const [updates, comments] = await Promise.all([
     db()
@@ -115,6 +123,7 @@ async function comments(params, ctx) {
   const { projectId, page = 1, size = 50 } = params || {};
   if (!projectId) throw badRequest('缺少项目 ID');
   const where = { projectId, status: 'active' };
+  await ensure('project_comments');
   const col = db().collection('project_comments');
   const countRes = await col.where(where).count();
   const listRes = await col
@@ -235,7 +244,7 @@ async function addUpdate(params, ctx) {
   await db()
     .collection('projects')
     .doc(projectId)
-    .update({ data: { updateCount: _.inc(1), updatedAt: now() } });
+    .update({ data: { updateCount: _().inc(1), updatedAt: now() } });
   return { ok: true };
 }
 
@@ -261,7 +270,7 @@ async function removeUpdate(params, ctx) {
   await db()
     .collection('projects')
     .doc(res.data.projectId)
-    .update({ data: { updateCount: _.inc(-1) } })
+    .update({ data: { updateCount: _().inc(-1) } })
     .catch(() => {});
   return { id };
 }
@@ -293,7 +302,7 @@ async function addComment(params, ctx) {
   await db()
     .collection('projects')
     .doc(projectId)
-    .update({ data: { commentCount: _.inc(1) } });
+    .update({ data: { commentCount: _().inc(1) } });
   return { ok: true };
 }
 
@@ -319,7 +328,7 @@ async function removeComment(params, ctx) {
   await db()
     .collection('projects')
     .doc(res.data.projectId)
-    .update({ data: { commentCount: _.inc(-1) } })
+    .update({ data: { commentCount: _().inc(-1) } })
     .catch(() => {});
   return { id };
 }

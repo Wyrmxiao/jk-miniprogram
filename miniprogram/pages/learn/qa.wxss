@@ -172,32 +172,3 @@
   margin-top: var(--space-sm);
 }
 
-/* 提问弹层要盖过 AI 悬浮球（全局 .mask z-index:100 < 悬浮球 900） */
-.mask--ask { z-index: 1200; }
-
-/* ===== 提问弹层：表单可滚，发布条固定在底部 ===== */
-.form-label { margin-top: var(--space-md); font-size: var(--font-caption); color: var(--text-secondary); font-weight: 500; }
-.counter { margin-top: 8rpx; text-align: right; font-size: var(--font-micro); color: var(--text-tertiary); }
-.form-tail { height: 16rpx; }
-
-.sheet--ask {
-  display: flex;
-  flex-direction: column;
-  max-height: 88vh;
-  overflow: hidden;
-  padding-bottom: 0;
-}
-.sheet__body { flex: 1; min-height: 0; overflow-y: auto; }
-.sheet__actions {
-  flex-shrink: 0;
-  padding: var(--space-md) 0 calc(var(--space-md) + env(safe-area-inset-bottom));
-  background: var(--bg-elevated);
-  border-top: 2rpx solid var(--border-light);
-}
-.sheet__actions .btn { margin-top: 0; }
-.ask-hint {
-  margin-bottom: 12rpx;
-  text-align: center;
-  font-size: var(--font-micro);
-  color: var(--color-warning);
-}

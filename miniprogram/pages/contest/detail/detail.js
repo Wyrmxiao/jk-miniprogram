@@ -44,6 +44,7 @@ Page({
     isTeacher: false,
     isLogin: false,
     following: false,
+    preparingMine: false,
     /** 我的参赛登记 */
     joined: false,
     award: '',
@@ -75,6 +76,8 @@ Page({
       // 云端用 status='watch' 标记关注；旧数据里可能存在 'following'，两者都认
       const cloudFollowed = !!(mine && (mine.status === 'watch' || mine.status === 'following'));
       const joined = !!(mine && mine.joined);
+      // 正在准备中（与 myProfile「正在准备的比赛」同口径：标记了 preparing 即可）
+      const preparingMine = !!(mine && mine.preparing);
       const award = (mine && mine.award) || '';
       const awardNote = (mine && mine.awardNote) || '';
       this.setData({
@@ -86,6 +89,7 @@ Page({
         // 云端状态优先，本地缓存兜底（未认证用户/云端未同步时）
         following: cloudFollowed || favorite.has(this.data.id),
         joined,
+        preparingMine,
         award,
         awardNote,
         awardShow: joined ? awardNote || awardText(award) || '暂无登记' : '',
@@ -94,6 +98,30 @@ Page({
       });
     } catch (e) {
       this.setData({ loading: false });
+    }
+  },
+
+  /** 从「正在准备的比赛」移除该赛事（不影响关注与参赛登记） */
+  async removePreparing() {
+    if (this.removing) return;
+    const ok = await new Promise((resolve) => {
+      wx.showModal({
+        title: '移除赛事',
+        content: '不再将它列为「正在准备的比赛」？关注与参赛登记不受影响。',
+        success: (r) => resolve(!!r.confirm),
+        fail: () => resolve(false)
+      });
+    });
+    if (!ok) return;
+    this.removing = true;
+    try {
+      await contest.register({ competitionId: this.data.id, preparing: false });
+      this.setData({ preparingMine: false });
+      wx.showToast({ title: '已移除', icon: 'none' });
+    } catch (err) {
+      /* 错误已在 request 层提示 */
+    } finally {
+      this.removing = false;
     }
   },
 

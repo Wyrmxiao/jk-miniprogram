@@ -152,5 +152,12 @@ Page({
       title: '计科创新中心 · 计算机能力个性化培养平台',
       path: '/pages/index/index'
     };
+  },
+
+
+  /** 点击涟漪：把触点交给 tap-ripple 组件播放 */
+  onTapFx(e) {
+    const fx = this.selectComponent('#tapFx');
+    if (fx) fx.show(e);
   }
 });

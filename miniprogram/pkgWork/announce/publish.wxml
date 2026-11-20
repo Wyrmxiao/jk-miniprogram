@@ -16,7 +16,8 @@
 
   <view class="block">
     <view class="block__title">公告内容</view>
-    <input class="field" placeholder="标题，如：蓝桥杯校赛报名通知" value="{{form.title}}" data-field="title" bindinput="onField" cursor-spacing="120" />
+    <input class="field" placeholder="标题，如：蓝桥杯校赛报名通知" value="{{form.title}}" data-field="title" bindinput="onField"
+      bindkeyboardheightchange="onKeyboardHeightChange" cursor-spacing="120" />
     <textarea
       class="field field--area"
       placeholder="写清楚时间、地点、参与对象与要求"
@@ -24,6 +25,7 @@
       value="{{form.content}}"
       data-field="content"
       bindinput="onField"
+      bindkeyboardheightchange="onKeyboardHeightChange"
       auto-height
       cursor-spacing="240"
     />

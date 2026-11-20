@@ -4,6 +4,8 @@
     "pages/learn/learn",
     "pages/learn/qa",
     "pages/learn/qaDetail",
+    "pages/learn/answer/answer",
+    "pages/learn/ask/ask",
     "pages/contest/contest",
     "pages/contest/detail/detail",
     "pages/project/project",
@@ -134,7 +136,9 @@
       }
     ]
   },
-  "usingComponents": {},
+  "usingComponents": {
+    "tap-ripple": "/components/tap-ripple/tap-ripple"
+  },
   "sitemapLocation": "sitemap.json",
   "lazyCodeLoading": "requiredComponents",
   "style": "v2"

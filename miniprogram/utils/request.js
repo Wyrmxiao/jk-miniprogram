@@ -58,10 +58,15 @@ function request(domain, action, params = {}, options = {}) {
       return Promise.reject(Object.assign(new Error(msg || '请求失败'), { code, data }));
     })
     .catch((err) => {
-      // 云函数本身执行失败（未捕获异常 / 网络问题）
+      // 云函数本身执行失败（未部署 / 超时 / 抛异常 / 网络问题）：此时没有业务 code
       if (err && err.code === undefined) {
-        if (!silent) toastError('网络异常，请稍后重试');
-        console.error(`[request] ${domain}.${action} 调用失败`, err);
+        const errCode = err && err.errCode;
+        const errMsg = (err && (err.errMsg || err.message)) || '';
+        console.error(`[request] ${domain}.${action} 调用失败`, errCode || '', errMsg, err);
+        if (!silent) {
+          // 带上错误码，便于区分「函数未部署」(-501000)、「执行超时」(-504003) 等
+          toastError(errCode ? `网络异常(${errCode})` : '网络异常，请稍后重试');
+        }
       }
       return Promise.reject(err);
     })

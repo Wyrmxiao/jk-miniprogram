@@ -74,6 +74,7 @@
 
 /* ===== 本地收藏星标 ===== */
 .fav {
+  position: relative;
   flex-shrink: 0;
   margin-right: var(--space-sm);
   width: 88rpx;
@@ -84,5 +85,58 @@
   color: var(--text-tertiary);
 }
 .fav--on { color: var(--color-warning); }
+
+/* 关注成功：星星弹一下 */
+.fav--burst .fav__star { animation: fav-pop 0.4s ease-out; }
+@keyframes fav-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.5); }
+  100% { transform: scale(1); }
+}
+
+/* 碎光：6 个小光点从星星四周蹦出后消散 */
+.fav__spark {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 10rpx;
+  height: 10rpx;
+  margin: -5rpx 0 0 -5rpx;
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+}
+.fav__spark--1 { background: #ffb300; }
+.fav__spark--2 { background: #ffd666; }
+.fav__spark--3 { background: #ff9a3c; }
+.fav__spark--4 { background: #ffe7a3; }
+.fav__spark--5 { background: #ffb300; }
+.fav__spark--6 { background: #ff7a45; }
+
+.fav--burst .fav__spark { animation: fav-spark 0.55s ease-out forwards; }
+.fav--burst .fav__spark--1 { animation-delay: 0.02s; }
+.fav--burst .fav__spark--2 { animation-delay: 0.06s; }
+.fav--burst .fav__spark--3 { animation-delay: 0.1s; }
+.fav--burst .fav__spark--4 { animation-delay: 0.08s; }
+.fav--burst .fav__spark--5 { animation-delay: 0.12s; }
+.fav--burst .fav__spark--6 { animation-delay: 0.04s; }
+
+@keyframes fav-spark {
+  0% { opacity: 1; transform: translate(0, 0) scale(1); }
+  100% { opacity: 0; transform: translate(0, -44rpx) scale(0.3); }
+}
+.fav--burst .fav__spark--1 { animation-name: fav-spark-1; }
+.fav--burst .fav__spark--2 { animation-name: fav-spark-2; }
+.fav--burst .fav__spark--3 { animation-name: fav-spark-3; }
+.fav--burst .fav__spark--4 { animation-name: fav-spark-4; }
+.fav--burst .fav__spark--5 { animation-name: fav-spark-5; }
+.fav--burst .fav__spark--6 { animation-name: fav-spark-6; }
+
+@keyframes fav-spark-1 { 0% { opacity: 1; transform: translate(0, 0) scale(1); } 100% { opacity: 0; transform: translate(-36rpx, -44rpx) scale(0.3); } }
+@keyframes fav-spark-2 { 0% { opacity: 1; transform: translate(0, 0) scale(1); } 100% { opacity: 0; transform: translate(0, -52rpx) scale(0.4); } }
+@keyframes fav-spark-3 { 0% { opacity: 1; transform: translate(0, 0) scale(1); } 100% { opacity: 0; transform: translate(40rpx, -38rpx) scale(0.3); } }
+@keyframes fav-spark-4 { 0% { opacity: 1; transform: translate(0, 0) scale(1); } 100% { opacity: 0; transform: translate(-50rpx, 8rpx) scale(0.35); } }
+@keyframes fav-spark-5 { 0% { opacity: 1; transform: translate(0, 0) scale(1); } 100% { opacity: 0; transform: translate(50rpx, 6rpx) scale(0.35); } }
+@keyframes fav-spark-6 { 0% { opacity: 1; transform: translate(0, 0) scale(1); } 100% { opacity: 0; transform: translate(0, 46rpx) scale(0.3); } }
 
 

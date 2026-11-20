@@ -23,7 +23,9 @@ Page({
     list: [],
     total: 0,
     page: 1,
-    noMore: false
+    noMore: false,
+    /** 加载失败提示（为空表示正常），用于区分「真的没有项目」和「接口挂了」 */
+    loadError: ''
   },
 
   onShow() {
@@ -81,11 +83,22 @@ Page({
         total: res.total || 0,
         page,
         noMore: rows.length < 20,
-        loading: false
+        loading: false,
+        loadError: ''
       });
     } catch (e) {
-      this.setData({ loading: false, noMore: true });
+      const errCode = e && e.errCode;
+      this.setData({
+        loading: false,
+        noMore: true,
+        loadError: errCode ? `加载失败（${errCode}）` : '加载失败，请检查网络'
+      });
     }
+  },
+
+  retryLoad() {
+    this.setData({ loadError: '' });
+    this.load(true);
   },
 
   goDetail(e) {
@@ -98,5 +111,12 @@ Page({
       return;
     }
     wx.navigateTo({ url: '/pkgWork/project/edit' });
+  },
+
+
+  /** 点击涟漪：把触点交给 tap-ripple 组件播放 */
+  onTapFx(e) {
+    const fx = this.selectComponent('#tapFx');
+    if (fx) fx.show(e);
   }
 });

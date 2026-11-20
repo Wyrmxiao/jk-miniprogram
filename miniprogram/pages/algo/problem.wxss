@@ -71,6 +71,21 @@
   line-height: 1.75;
   word-break: break-word;
 }
+/* 题面横向滑动：宽的示例图保持原始尺寸，左右滑动看完整内容 */
+.stmt-scroll {
+  width: 100%;
+}
+.stmt-scroll__inner {
+  display: inline-block;
+  min-width: 100%;
+  vertical-align: top;
+}
+.stmt-hint {
+  padding: 0 var(--space-md) var(--space-md);
+  text-align: center;
+  font-size: var(--font-caption);
+  color: var(--text-quaternary);
+}
 
 /* ===== 解题过程 ===== */
 .insight {

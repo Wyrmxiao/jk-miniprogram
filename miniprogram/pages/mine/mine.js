@@ -27,8 +27,9 @@ Page({
     // 教师：我发布的公告
     myAnnouncements: [],
     showMyAnnounce: false,
-    // 学生/教师：我关注的赛事
+    // 学生/教师：我关注的赛事（叠放卡，点击展开/收起）
     myContests: [],
+    contestsExpanded: false,
     // 意见反馈红点：教师=有待处理反馈；学生=有未读回复
     fbManageDot: false,
     fbSubmitDot: false
@@ -78,10 +79,10 @@ Page({
     }
   },
 
-  /** 我关注的赛事（报名时间/开赛时间/往期惯例） */
+  /** 我关注的赛事（只取关注标记的记录；备赛/参赛登记不混入） */
   async loadMyContests() {
     try {
-      const res = await contest.myList({ page: 1, size: 50 });
+      const res = await contest.myList({ status: 'watch', page: 1, size: 50 });
       const list = (res.list || []).map((m) => {
         const c = m.competition || {};
         return {
@@ -231,6 +232,11 @@ Page({
     wx.switchTab({ url: '/pages/contest/contest' });
   },
 
+  /** 关注赛事叠放卡：展开 / 收起 */
+  toggleContests() {
+    this.setData({ contestsExpanded: !this.data.contestsExpanded });
+  },
+
   /** 赛事统计条目 → 赛事详情（可登记参赛/获奖） */
   goContestDetail(e) {
     const id = e.currentTarget.dataset.id;
@@ -269,5 +275,12 @@ Page({
     } catch (e) {
       /* 错误已在 request 层提示 */
     }
+  },
+
+
+  /** 点击涟漪：把触点交给 tap-ripple 组件播放 */
+  onTapFx(e) {
+    const fx = this.selectComponent('#tapFx');
+    if (fx) fx.show(e);
   }
 });

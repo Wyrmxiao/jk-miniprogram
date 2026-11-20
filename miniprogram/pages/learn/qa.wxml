@@ -70,10 +70,9 @@
     </scroll-view>
 
     <view
-      wx:if="{{!showAsk}}"
       class="btn pressable ask-top"
       hover-class="pressing"
-      bindtap="openAsk"
+      bindtap="goAsk"
     >＋ 提问</view>
 
     <view wx:if="{{loading}}" class="state">加载中…</view>
@@ -110,70 +109,6 @@
     </block>
   </block>
 
-  <!-- ===== 弹层：提出新问题（表单滚动，发布条固定可见） ===== -->
-  <view wx:if="{{showAsk}}" class="mask mask--ask" bindtap="closeAsk">
-    <view class="sheet sheet--ask" style="{{sheetPad}}" catchtap="noop">
-      <view class="sheet__grip"></view>
-      <scroll-view class="sheet__body" scroll-y>
-        <view class="sheet__title">提出一个问题</view>
-
-        <view class="form-label">问题分类</view>
-        <view class="opts">
-          <text
-            wx:for="{{askCats}}"
-            wx:key="key"
-            class="opt {{item.on ? 'opt--on' : ''}}"
-            data-key="{{item.key}}"
-            bindtap="onAskCategory"
-          >{{item.name}}</text>
-        </view>
-
-        <view class="form-label">标题</view>
-        <input
-          class="field"
-          value="{{askForm.title}}"
-          placeholder="用一句话描述问题"
-          maxlength="80"
-          bindinput="onAskTitle"
-          bindkeyboardheightchange="onKeyboardHeightChange"
-          cursor-spacing="120"
-        />
-
-        <view class="form-label">详细描述</view>
-        <textarea
-          class="field field--area"
-          value="{{askForm.content}}"
-          placeholder="描述问题、已尝试的思路和卡住的位置"
-          maxlength="3000"
-          bindinput="onAskContent"
-          bindkeyboardheightchange="onKeyboardHeightChange"
-          auto-height
-          cursor-spacing="240"
-        />
-        <view class="counter">{{askForm.content.length}}/3000</view>
-
-        <view class="form-label">相关题目（选填）</view>
-        <input
-          class="field"
-          value="{{askForm.problemTitle}}"
-          placeholder="如：两数之和 / cf:4:A"
-          maxlength="80"
-          bindinput="onAskProblem"
-          bindkeyboardheightchange="onKeyboardHeightChange"
-          cursor-spacing="120"
-        />
-        <view class="form-tail"></view>
-      </scroll-view>
-
-      <view class="sheet__actions">
-        <view wx:if="{{askHint}}" class="ask-hint">{{askHint}}</view>
-        <view class="btn btn-block btn-primary pressable {{canAsk ? '' : 'btn-disabled'}}" hover-class="pressing" bindtap="submitAsk">
-          {{asking ? '发布中…' : '发布问题'}}
-        </view>
-      </view>
-    </view>
-  </view>
-
-  <!-- AI 答疑悬浮球（实名认证后可用；提问弹层打开时隐藏，避免层级冲突） -->
-  <ai-float wx:if="{{isVerified && !showAsk}}" scene="qa" />
+  <!-- AI 答疑悬浮球（实名认证后可用） -->
+  <ai-float wx:if="{{isVerified}}" scene="qa" />
 </view>

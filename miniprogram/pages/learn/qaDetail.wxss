@@ -173,29 +173,3 @@
   font-size: var(--font-caption); font-weight: 500;
   flex-shrink: 0;
 }
-
-.counter { margin-top: 8rpx; text-align: right; font-size: var(--font-micro); color: var(--text-tertiary); }
-.form-tail { height: 16rpx; }
-
-/* 回答弹层：输入区可滚，发布条固定在底部 */
-.sheet--ask {
-  display: flex;
-  flex-direction: column;
-  max-height: 88vh;
-  overflow: hidden;
-  padding-bottom: 0;
-}
-.sheet__body { flex: 1; min-height: 0; overflow-y: auto; }
-.sheet__actions {
-  flex-shrink: 0;
-  padding: var(--space-md) 0 calc(var(--space-md) + env(safe-area-inset-bottom));
-  background: var(--bg-elevated);
-  border-top: 2rpx solid var(--border-light);
-}
-.sheet__actions .btn { margin-top: 0; }
-.ask-hint {
-  margin-bottom: 12rpx;
-  text-align: center;
-  font-size: var(--font-micro);
-  color: var(--color-warning);
-}

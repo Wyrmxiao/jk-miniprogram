@@ -47,7 +47,12 @@
             <view class="group__title">题目</view>
             <view wx:if="{{metaText}}" class="stmt-meta">{{metaText}}</view>
             <view class="stmt">
-              <rich-text nodes="{{content.statementHtml}}"></rich-text>
+              <scroll-view scroll-x enhanced show-scrollbar="{{false}}" class="stmt-scroll">
+                <view class="stmt-scroll__inner">
+                  <rich-text nodes="{{content.statementHtml}}"></rich-text>
+                </view>
+              </scroll-view>
+              <view wx:if="{{stmtHasImg}}" class="stmt-hint">示例图较宽时可左右滑动查看完整内容</view>
             </view>
           </view>
           <view class="group">
