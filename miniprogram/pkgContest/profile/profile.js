@@ -1,5 +1,5 @@
-// pkgContest/profile/profile.js —— 个人主页：头像信息 + 赛事统计入口（支持链接分享）
-const { contest } = require('../../services/index');
+// pkgContest/profile/profile.js —— 个人主页：头像信息 + 赛事统计入口 + 已完成项目（支持链接分享）
+const { contest, project } = require('../../services/index');
 const { getProfile, isLogin } = require('../../utils/auth');
 
 Page({
@@ -9,7 +9,10 @@ Page({
     isSelf: false,
     user: null,
     isLogin: false,
-    copying: false
+    copying: false,
+    // 已完成项目（只展示名称与简介；详情需项目主人通过访问申请）
+    projects: [],
+    projAccess: 'none' // self | approved | pending | rejected | none
   },
 
   onLoad(options) {
@@ -48,10 +51,27 @@ Page({
       const params = this.data.isSelf ? {} : { openid: this.data.openid };
       const res = await contest.myProfile(params);
       this.setData({ loading: false, user: res.user });
+      // 已完成项目并行加载，不阻塞主页展示
+      this.loadProjects();
     } catch (e) {
       this.setData({ loading: false });
     } finally {
       if (fromPull) wx.stopPullDownRefresh();
+    }
+  },
+
+  /** 已完成项目（本人也展示，点卡片直接看详情；他人点卡片走申请流程） */
+  async loadProjects() {
+    const params = this.data.isSelf ? {} : { ownerOpenid: this.data.openid };
+    try {
+      const res = await project.ownerProjects(params);
+      this.setData({
+        projects: res.list || [],
+        projAccess: res.access || 'none'
+      });
+    } catch (e) {
+      /* 静默：项目加载失败不影响主页 */
+      this.setData({ projects: [], projAccess: 'none' });
     }
   },
 
@@ -135,5 +155,48 @@ Page({
     let url = '/pkgContest/mystats/mystats';
     if (!this.data.isSelf && this.data.openid) url += '?openid=' + this.data.openid;
     wx.navigateTo({ url });
+  },
+
+  /** ============ 已完成项目 ============ */
+
+  /** 点项目卡片：可看直接进详情；否则引导申请 */
+  goProject(e) {
+    const id = e.currentTarget.dataset.id;
+    const open = String(e.currentTarget.dataset.open) === '1';
+    if (!id) return;
+
+    if (open) {
+      wx.navigateTo({ url: '/pages/project/detail?id=' + id });
+      return;
+    }
+    if (!this.data.isLogin) {
+      wx.showToast({ title: '请先登录后申请查看', icon: 'none' });
+      return;
+    }
+    if (this.data.projAccess === 'pending') {
+      wx.showToast({ title: '申请已提交，等对方在「信息」里通过', icon: 'none' });
+      return;
+    }
+    wx.showModal({
+      title: '查看项目详情',
+      content: '需要向 TA 发起申请，对方通过后即可查看 TA 的项目详情',
+      confirmText: '申请查看',
+      success: (r) => {
+        if (!r.confirm) return;
+        this.applyView();
+      }
+    });
+  },
+
+  /** 发起查看申请（云端按 ownerOpenid 去重：已通过/待审核会直接返回现状） */
+  async applyView() {
+    if (this.data.projAccess === 'pending') return;
+    try {
+      await project.accessApply({ ownerOpenid: this.data.openid });
+      this.setData({ projAccess: 'pending' });
+      wx.showToast({ title: '申请已发送', icon: 'none' });
+    } catch (e) {
+      /* 错误已在 request 层提示 */
+    }
   }
 });

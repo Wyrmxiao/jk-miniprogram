@@ -32,6 +32,34 @@
       </view>
     </view>
 
+    <!-- 已完成项目：只展示名称与项目介绍，详情需申请 -->
+    <view class="group proj-group">
+      <view class="proj-head">
+        <view class="cell__title">已完成项目</view>
+        <text wx:if="{{projects.length}}" class="proj-count">{{projects.length}}</text>
+      </view>
+
+      <block wx:if="{{projects.length}}">
+        <view
+          wx:for="{{projects}}"
+          wx:key="_id"
+          class="proj-cell pressable"
+          hover-class="pressing"
+          data-id="{{item._id}}"
+          data-open="{{item.open ? 1 : 0}}"
+          bindtap="goProject"
+        >
+          <view class="proj-cell__name">{{item.name}}</view>
+          <view wx:if="{{item.summary}}" class="proj-cell__summary">{{item.summary}}</view>
+          <view class="proj-cell__hint">{{item.open ? '点击查看详情' : '申请通过后可查看详情'}}</view>
+        </view>
+        <view wx:if="{{!isSelf}}" class="proj-tip">项目介绍对外可见，查看详情需 TA 在「项目 · 信息」里通过你的申请</view>
+      </block>
+      <view wx:else class="proj-empty">
+        {{isSelf ? '还没有已完成的项目，在「项目」里把项目阶段改为「已完成」后会展示在这里' : 'TA 还没有展示已完成的项目'}}
+      </view>
+    </view>
+
     <view wx:if="{{isSelf}}" class="profile-foot">复制链接发给微信好友，对方点开即可查看你的主页</view>
   </block>
 </view>
