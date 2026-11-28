@@ -3,6 +3,7 @@ const { announce, contest, auth, user } = require('../../services/index');
 const { getProfile, isLogin, isTeacher, isVerified } = require('../../utils/auth');
 const favorite = require('../../utils/favorite');
 const { raceTimeText } = require('../../utils/contest');
+const { formatDateTime } = require('../../utils/util');
 const { ROLE_TEXT, AUTH_STATUS_TEXT, MY_CONTEST_STATUS_TEXT } = require('../../constants/index');
 
 /** 关注状态 → 标签配色 */
@@ -40,6 +41,12 @@ Page({
     if (tabBar) tabBar.setData({ active: 4 });
     this.applyIdentity();
     this.loadFeedbackDot();
+  },
+
+  onHide() {
+    // 弹层开着时切走页面，兜底恢复 tabBar，避免下次进来 dock 消失
+    const tabBar = this.getTabBar && this.getTabBar();
+    if (tabBar) tabBar.setData({ hidden: false });
   },
 
   /** 从本地登录态计算身份并渲染（激活/完善资料后调用） */
@@ -247,13 +254,24 @@ Page({
   async goMyAnnouncements() {
     try {
       const res = await announce.myList({ page: 1, size: 50 });
-      this.setData({ myAnnouncements: res.list || [], showMyAnnounce: true });
+      const tabBar = this.getTabBar && this.getTabBar();
+      if (tabBar) tabBar.setData({ hidden: true });
+      // 后端 myList 未按 status 过滤，删除(软删除 status=removed)的记录仍在，
+      // 这里与首页 list 对齐：只显示 published，避免删除后"我的"里还留着
+      const list = (res.list || [])
+        .filter((item) => item.status === 'published')
+        .map((item) =>
+          Object.assign({}, item, { createdAtText: formatDateTime(item.createdAt) })
+        );
+      this.setData({ myAnnouncements: list, showMyAnnounce: true });
     } catch (e) {
       /* 静默 */
     }
   },
 
   closeMyAnnounce() {
+    const tabBar = this.getTabBar && this.getTabBar();
+    if (tabBar) tabBar.setData({ hidden: false });
     this.setData({ showMyAnnounce: false });
   },
 

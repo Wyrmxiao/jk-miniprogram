@@ -222,25 +222,26 @@
     </view>
   </view>
 
-  <!-- ===== 我的公告弹层 ===== -->
-  <view wx:if="{{showMyAnnounce}}" class="mask" bindtap="closeMyAnnounce">
-    <view class="sheet" catchtap="noop">
-      <view class="sheet__grip"></view>
-      <view class="sheet__title">我发布的公告</view>
-      <scroll-view scroll-y class="sheet__list">
-        <view wx:for="{{myAnnouncements}}" wx:key="_id" class="anno-row">
-          <view class="anno-row__info">
-            <view class="anno-row__title">
-              <text class="tag tag-primary">{{item.type === 'contest' ? '赛事' : '通知'}}</text>
-              {{item.title}}
-            </view>
-            <view class="anno-row__meta">{{item.createdAtText || item.createdAt}}</view>
-          </view>
-          <text class="anno-row__del" data-id="{{item._id}}" bindtap="removeAnnounce">删除</text>
-        </view>
-        <view wx:if="{{!myAnnouncements.length}}" class="empty">还没有发布过公告</view>
-      </scroll-view>
+  <!-- ===== 我的公告（全屏页） ===== -->
+  <view wx:if="{{showMyAnnounce}}" class="anno-page">
+    <view class="anno-page__header">
+      <text class="anno-page__back" bindtap="closeMyAnnounce">‹ 返回</text>
+      <text class="anno-page__title">我发布的公告</text>
+      <text class="anno-page__count">{{myAnnouncements.length}} 条</text>
     </view>
+    <scroll-view scroll-y class="anno-page__body">
+      <view wx:for="{{myAnnouncements}}" wx:key="_id" class="anno-page__card">
+        <view class="anno-page__card-top">
+          <text class="tag tag-primary">{{item.type === 'contest' ? '赛事' : '通知'}}</text>
+          <text class="anno-page__time">{{item.createdAtText || item.createdAt}}</text>
+        </view>
+        <view class="anno-page__card-title">{{item.title}}</view>
+        <view class="anno-page__card-foot">
+          <text class="anno-page__del" data-id="{{item._id}}" bindtap="removeAnnounce">删除</text>
+        </view>
+      </view>
+      <view wx:if="{{!myAnnouncements.length}}" class="empty">还没有发布过公告</view>
+    </scroll-view>
   </view>
   <tap-ripple id="tapFx" />
 </view>

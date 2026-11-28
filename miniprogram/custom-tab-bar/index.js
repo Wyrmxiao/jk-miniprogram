@@ -1,6 +1,7 @@
 Component({
   data: {
     active: 0,
+    hidden: false, // 页面弹层打开时置 true 隐藏 dock（自定义 tabBar 独立于页面层，页面内 z-index 盖不住）
     list: [
       { pagePath: '/pages/index/index', text: '首页', icon: '/assets/icons/home.png', activeIcon: '/assets/icons/home-active.png' },
       { pagePath: '/pages/learn/learn', text: '学习', icon: '/assets/icons/learn.png', activeIcon: '/assets/icons/learn-active.png' },

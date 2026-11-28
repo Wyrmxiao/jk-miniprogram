@@ -1,6 +1,51 @@
 /* pages/mine/mine.wxss —— Apple 风格「我的」 */
 .page { background: transparent; padding-bottom: calc(200rpx + env(safe-area-inset-bottom)); }
 
+/* ===== 我发布的公告 · 全屏页 ===== */
+.anno-page {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  z-index: 1300; /* 高于 tabBar(200)、AI 悬浮球(1000)、tap-ripple(999) */
+  background: var(--bg-page-grad);
+  display: flex;
+  flex-direction: column;
+}
+.anno-page__header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding: calc(var(--space-lg) + env(safe-area-inset-top)) var(--space-lg) var(--space-md);
+  background: var(--bg-elevated);
+  border-bottom: 1rpx solid var(--border-light);
+}
+.anno-page__back { width: 120rpx; font-size: var(--font-body); color: var(--color-primary); }
+.anno-page__title { flex: 1; text-align: center; font-size: var(--font-headline); font-weight: 620; color: var(--text-primary); }
+.anno-page__count { width: 120rpx; text-align: right; font-size: var(--font-caption); color: var(--text-tertiary); }
+.anno-page__body {
+  flex: 1;
+  min-height: 0;
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--space-md) var(--space-lg) calc(var(--space-lg) + env(safe-area-inset-bottom));
+}
+.anno-page__card {
+  box-sizing: border-box;
+  width: 100%;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  margin-bottom: var(--space-md);
+  box-shadow: 0 8rpx 32rpx rgba(30, 42, 90, 0.06);
+}
+.anno-page__card-top { display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); min-width: 0; }
+.anno-page__time { flex-shrink: 0; font-size: var(--font-caption); color: var(--text-tertiary); white-space: nowrap; }
+.anno-page__card-title { margin-top: var(--space-sm); font-size: var(--font-body); color: var(--text-primary); line-height: 1.5; word-break: break-all; }
+.anno-page__card-foot { margin-top: var(--space-sm); text-align: right; }
+.anno-page__del { font-size: var(--font-caption); color: var(--color-danger); padding: var(--space-sm); }
+
 /* ===== 意见反馈红点（cell 右上角小圆点） ===== */
 .cell--dot { position: relative; }
 .fb-dot {
