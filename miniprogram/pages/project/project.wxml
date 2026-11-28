@@ -5,61 +5,136 @@
     <view class="blob blob--2"></view>
     <view class="blob blob--3"></view>
   </view>
-  <!-- 头部 -->
+
+  <!-- 头部：项目 / 信息 两个标签 -->
   <view class="hero">
-    <view class="hero__title">项目</view>
+    <view class="hero__tabs">
+      <view
+        class="hero__tab {{tab === 'list' ? 'hero__tab--on' : ''}}"
+        data-tab="list"
+        bindtap="switchTab"
+      >项目</view>
+      <view
+        class="hero__tab {{tab === 'inbox' ? 'hero__tab--on' : ''}}"
+        data-tab="inbox"
+        bindtap="switchTab"
+      >
+        信息
+        <!-- 有新的访问申请时亮红点，点进「信息」后消失 -->
+        <view wx:if="{{badgeCount > 0}}" class="hero__dot"></view>
+      </view>
+    </view>
   </view>
 
-  <!-- 阶段筛选 -->
-  <scroll-view scroll-x class="chips" enhanced show-scrollbar="{{false}}">
-    <view
-      wx:for="{{stages}}"
-      wx:key="key"
-      class="chip {{activeStage === item.key ? 'chip--on' : ''}} pressable"
-      data-key="{{item.key}}"
-      bindtap="switchStage"
-     hover-class="pressing">{{item.name}}</view>
-    <view class="chip {{onlyMine ? 'chip--mine' : ''}} pressable" bindtap="toggleMine" hover-class="pressing">我的项目</view>
-  </scroll-view>
+  <!-- ==================== 项目 ==================== -->
+  <block wx:if="{{tab === 'list'}}">
+    <!-- 阶段筛选 -->
+    <scroll-view scroll-x class="chips" enhanced show-scrollbar="{{false}}">
+      <view
+        wx:for="{{stages}}"
+        wx:key="key"
+        class="chip {{activeStage === item.key ? 'chip--on' : ''}} pressable"
+        data-key="{{item.key}}"
+        bindtap="switchStage"
+       hover-class="pressing">{{item.name}}</view>
+      <view class="chip {{onlyMine ? 'chip--mine' : ''}} pressable" bindtap="toggleMine" hover-class="pressing">我的项目</view>
+    </scroll-view>
 
-  <!-- 项目卡片流 -->
-  <view wx:if="{{!loading}}" class="list">
-    <view
-      wx:for="{{list}}"
-      wx:key="_id"
-      class="card pressable"
-      hover-class="pressing"
-      data-id="{{item._id}}"
-      bindtap="goDetail"
-    >
-      <view wx:if="{{item.featured}}" class="card__star">教师推荐</view>
-      <view class="card__head">
-        <view class="card__avatar">{{item.ownerName[0] || '项'}}</view>
-        <view class="card__who">
-          <view class="card__name">{{item.name}}</view>
-          <view class="card__owner">{{item.ownerName}} · {{item.timeText}}</view>
+    <!-- 项目卡片流 -->
+    <view wx:if="{{!loading}}" class="list">
+      <view
+        wx:for="{{list}}"
+        wx:key="_id"
+        class="card pressable"
+        hover-class="pressing"
+        data-id="{{item._id}}"
+        bindtap="goDetail"
+      >
+        <view wx:if="{{item.featured}}" class="card__star">教师推荐</view>
+        <view class="card__head">
+          <view class="card__avatar">{{item.ownerName[0] || '项'}}</view>
+          <view class="card__who">
+            <view class="card__name">{{item.name}}</view>
+            <view class="card__owner">{{item.ownerName}} · {{item.timeText}}</view>
+          </view>
         </view>
+        <view wx:if="{{item.summary}}" class="card__summary">{{item.summary}}</view>
+        <view class="card__tags">
+          <text class="tag tag--stage-{{item.stage}}">{{item.stageText}}</text>
+          <text class="tag">{{item.directionText}}</text>
+        </view>
+        <view class="card__meta">{{item.updateCount || 0}} 条进展 · {{item.commentCount || 0}} 条留言</view>
       </view>
-      <view wx:if="{{item.summary}}" class="card__summary">{{item.summary}}</view>
-      <view class="card__tags">
-        <text class="tag tag--stage-{{item.stage}}">{{item.stageText}}</text>
-        <text class="tag">{{item.directionText}}</text>
-      </view>
-      <view class="card__meta">{{item.updateCount || 0}} 条进展 · {{item.commentCount || 0}} 条留言</view>
-    </view>
 
-    <view wx:if="{{noMore && list.length}}" class="list__end">— 没有更多了 —</view>
-    <view wx:if="{{loadError}}" class="empty" bindtap="retryLoad">
-      <view class="empty__emoji">⚠️</view>
-      <view class="empty__text">{{loadError}}，点此重试</view>
+      <view wx:if="{{noMore && list.length}}" class="list__end">— 没有更多了 —</view>
+      <view wx:if="{{loadError}}" class="empty" bindtap="retryLoad">
+        <view class="empty__emoji">⚠️</view>
+        <view class="empty__text">{{loadError}}，点此重试</view>
+      </view>
+      <view wx:if="{{!list.length && !loadError}}" class="empty">
+        <view class="empty__emoji">🚀</view>
+        <view class="empty__text">{{emptyText}}</view>
+      </view>
     </view>
-    <view wx:if="{{!list.length && !loadError}}" class="empty">
-      <view class="empty__emoji">🚀</view>
-      <view class="empty__text">{{onlyMine ? '你还没有创建项目' : '还没有项目，来创建第一个吧'}}</view>
+  </block>
+
+  <!-- ==================== 信息（访问申请 + 留言通知） ==================== -->
+  <block wx:else>
+    <view class="inbox">
+      <!-- 留言通知：他人在我的项目里留言 -->
+      <view class="inbox__title">留言通知</view>
+      <view wx:if="{{!notices.length}}" class="inbox__empty">
+        <view class="empty__emoji">💬</view>
+        <view class="empty__text">还没有人在你的项目里留言</view>
+      </view>
+      <view
+        wx:for="{{notices}}"
+        wx:key="id"
+        class="apply-row apply-row--card pressable"
+        hover-class="pressing"
+        data-id="{{item.projectId}}"
+        bindtap="goNoticeProject"
+      >
+        <view class="apply-row__body">
+          <view class="apply-row__name">{{item.name}} 留言了你的项目</view>
+          <view class="apply-row__meta">《{{item.projectName}}》{{item.excerpt ? ' · ' + item.excerpt : ''}} · {{item.timeText}}</view>
+        </view>
+        <text class="apply-row__chevron">›</text>
+      </view>
+
+      <view class="inbox__title inbox__title--sub">收到的申请</view>
+      <view wx:if="{{!received.length}}" class="inbox__empty">
+        <view class="empty__emoji">📭</view>
+        <view class="empty__text">还没有人申请查看你的项目</view>
+      </view>
+      <view wx:for="{{received}}" wx:key="id" class="apply-row apply-row--card">
+        <view class="apply-row__body">
+          <view class="apply-row__name">{{item.name}}</view>
+          <view class="apply-row__meta">申请查看你的项目 · {{item.timeText}}</view>
+        </view>
+        <block wx:if="{{item.status === 'pending'}}">
+          <view class="mini-btn mini-btn--ok pressable" hover-class="pressing" data-id="{{item.id}}" data-approve="1" catchtap="respond">同意</view>
+          <view class="mini-btn pressable" hover-class="pressing" data-id="{{item.id}}" data-approve="0" catchtap="respond">拒绝</view>
+        </block>
+        <view wx:else class="apply-row__status apply-row__status--{{item.status}}">{{item.statusText}}</view>
+      </view>
+
+      <block wx:if="{{sent.length}}">
+        <view class="inbox__title inbox__title--sub">我发出的申请</view>
+        <view wx:for="{{sent}}" wx:key="id" class="apply-row apply-row--card">
+          <view class="apply-row__body">
+            <view class="apply-row__name">{{item.name}}</view>
+            <view class="apply-row__meta">{{item.timeText}}</view>
+          </view>
+          <view class="apply-row__status apply-row__status--{{item.status}}">{{item.statusText}}</view>
+        </view>
+      </block>
+
+      <view class="apply-tip apply-tip--foot">通过后，对方即可查看你的全部项目；拒绝不影响你已有的项目</view>
     </view>
-  </view>
+  </block>
 
   <!-- 创建入口 -->
-  <view class="fab pressable" hover-class="pressing" bindtap="goCreate">＋ 新建</view>
+  <view wx:if="{{tab === 'list'}}" class="fab pressable" hover-class="pressing" bindtap="goCreate">＋ 新建</view>
   <tap-ripple id="tapFx" />
 </view>

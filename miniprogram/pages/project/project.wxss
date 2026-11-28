@@ -62,3 +62,92 @@
 .list__end { padding: var(--space-md) 0; text-align: center; font-size: var(--font-micro); color: var(--text-quaternary); }
 
 .fab { transition: transform var(--duration-press) var(--ease-spring), opacity var(--duration-press) ease; position: fixed; right: var(--space-lg); bottom: calc(200rpx + env(safe-area-inset-bottom)); display: flex; align-items: center; justify-content: center; min-width: 176rpx; height: 96rpx; padding: 0 var(--space-md); border-radius: var(--radius-pill); background: var(--color-primary); color: var(--text-inverse); font-size: var(--font-body); font-weight: 560; box-shadow: var(--shadow-float); z-index: 210; }
+
+/* ===== 顶部「项目 / 信息」标签 ===== */
+.hero__tabs { display: flex; align-items: flex-end; gap: var(--space-lg); }
+.hero__tab {
+  position: relative;
+  padding-bottom: 10rpx;
+  font-size: var(--font-large);
+  font-weight: 600;
+  color: var(--text-tertiary);
+  transition: color 0.2s ease;
+}
+.hero__tab--on { color: var(--text-primary); font-weight: 760; }
+.hero__tab--on::after {
+  content: '';
+  position: absolute;
+  left: 50%; bottom: 0;
+  width: 44rpx; height: 8rpx;
+  margin-left: -22rpx;
+  border-radius: 999rpx;
+  background: var(--color-primary);
+}
+/* 新申请红点 */
+.hero__dot {
+  position: absolute;
+  top: 2rpx; right: -18rpx;
+  width: 16rpx; height: 16rpx;
+  border-radius: 50%;
+  background: var(--color-danger, #e5484d);
+  box-shadow: 0 0 0 4rpx var(--bg-page, rgba(255,255,255,0.9));
+  animation: dotPulse 1.6s ease-in-out infinite;
+}
+@keyframes dotPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.25); opacity: 0.75; }
+}
+
+/* ===== 访问申请行（信息页用） ===== */
+.apply-row {
+  display: flex; align-items: center;
+  padding: var(--space-sm) 0;
+  border-top: 2rpx solid var(--border-light);
+}
+.apply-row--card {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin-bottom: var(--space-sm);
+  border-top: none;
+  box-shadow: var(--shadow-card);
+}
+.apply-row__body { flex: 1; min-width: 0; }
+.apply-row__name { font-size: var(--font-body); color: var(--text-primary); font-weight: 500; }
+.apply-row__meta { margin-top: 4rpx; font-size: var(--font-micro); color: var(--text-tertiary); }
+.apply-row__status { font-size: var(--font-caption); color: var(--text-tertiary); flex-shrink: 0; }
+.apply-row__status--approved { color: var(--color-success); }
+.apply-row__status--rejected { color: var(--text-tertiary); }
+.apply-row__status--pending { color: var(--color-warning); }
+
+.mini-btn {
+  flex-shrink: 0;
+  margin-left: var(--space-sm);
+  padding: 0 28rpx;
+  height: 64rpx; line-height: 64rpx;
+  border-radius: 999rpx;
+  background: var(--bg-block);
+  color: var(--text-secondary);
+  font-size: var(--font-caption);
+}
+.mini-btn--ok { background: var(--color-primary); color: #fff; font-weight: 500; }
+
+.apply-tip {
+  margin-top: var(--space-sm);
+  font-size: var(--font-micro);
+  color: var(--text-tertiary);
+  line-height: 1.6;
+}
+.apply-tip--foot { margin: var(--space-md) 0 0; text-align: center; }
+
+/* ===== 信息页 ===== */
+.inbox { padding: var(--space-md) var(--space-lg) 0; }
+.inbox__title { font-size: var(--font-body); font-weight: 560; color: var(--text-primary); margin-bottom: var(--space-sm); }
+.inbox__title--sub { margin-top: var(--space-lg); }
+.apply-row__chevron { flex-shrink: 0; margin-left: var(--space-sm); color: var(--text-tertiary); font-size: var(--font-body); }
+.inbox__empty {
+  padding: var(--space-xl) 0;
+  text-align: center;
+}
+.inbox__empty .empty__emoji { font-size: 64rpx; }
+.inbox__empty .empty__text { margin-top: var(--space-sm); font-size: var(--font-caption); color: var(--text-tertiary); }

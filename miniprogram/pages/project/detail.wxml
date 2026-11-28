@@ -1,3 +1,11 @@
+<view wx:if="{{denied}}" class="page">
+  <view class="empty">
+    <view class="empty__emoji">🔒</view>
+    <view class="empty__text">该项目仅本人、项目伙伴与老师可见</view>
+    <view class="empty__text">想查看可进入 TA 的个人主页，在「已完成项目」里向 TA 申请</view>
+  </view>
+</view>
+
 <view class="page" wx:if="{{project}}">
   <view class="blobs">
     <view class="blob blob--1"></view>

@@ -133,7 +133,14 @@ const project = {
   addComment: (data) => request(DOMAIN.PROJECT, 'addComment', data, { loading: '发送中' }),
   removeComment: (data) => request(DOMAIN.PROJECT, 'removeComment', data, { loading: '删除中' }),
   // 教师推荐
-  feature: (data) => request(DOMAIN.PROJECT, 'feature', data, { loading: '处理中' })
+  feature: (data) => request(DOMAIN.PROJECT, 'feature', data, { loading: '处理中' }),
+  // 项目访问申请（他人申请查看我的项目 → 我在「信息」里审批）
+  accessApply: (data) => request(DOMAIN.PROJECT, 'accessApply', data, { loading: '发送中' }),
+  accessInbox: (params) => request(DOMAIN.PROJECT, 'accessInbox', params, { silent: true }),
+  accessBadge: () => request(DOMAIN.PROJECT, 'accessBadge', {}, { silent: true }),
+  accessRespond: (data) => request(DOMAIN.PROJECT, 'accessRespond', data, { loading: '处理中' }),
+  // 个人主页：某人的已完成项目（公开名称+简介，详情需申请）
+  ownerProjects: (params) => request(DOMAIN.PROJECT, 'ownerProjects', params || {}, { silent: true })
 };
 
 // ============ 学习问答（学生提问 → 教师同学解答） ============

@@ -13,6 +13,8 @@ Page({
     comments: [],
     isTeacher: false,
     isOwner: false,
+    /** 没有查看权限（项目仅对本人/伙伴/老师/已授权的人开放） */
+    denied: false,
     // 进展草稿（仅项目主人）
     draft: '',
     canSend: false,
@@ -69,7 +71,12 @@ Page({
       });
       wx.setNavigationBarTitle({ title: p.name || '项目详情' });
     } catch (e) {
-      this.setData({ loading: false });
+      // 无权限（403）时给明确说明，而不是空白页
+      const denied = !!(e && (e.code === 403 || e.statusCode === 403));
+      this.setData({ loading: false, denied });
+      if (denied) {
+        wx.showToast({ title: '该项目未对你开放', icon: 'none' });
+      }
     }
   },
 

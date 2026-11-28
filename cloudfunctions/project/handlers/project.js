@@ -10,6 +10,7 @@
 const cloud = require('wx-server-sdk');
 const { badRequest, notFound, forbidden } = require('../utils/response');
 const { ensure } = require('../utils/ensure');
+const access = require('./access');
 
 const db = () => cloud.database();
 // 注意：不能在模块顶层直接 cloud.database()（此时 index.js 里的 cloud.init 还没执行）
@@ -44,6 +45,27 @@ async function getProject(id) {
   return res.data;
 }
 
+/** 是否项目伙伴：团队成员里出现了本人的姓名 */
+function isPartner(project, ctx) {
+  const name = (ctx.user && (ctx.user.realName || ctx.user.nickname)) || '';
+  if (!name) return false;
+  const members = String((project && project.members) || '');
+  if (!members) return false;
+  return members.toLowerCase().indexOf(String(name).toLowerCase()) > -1;
+}
+
+/**
+ * 项目可见性：老师/管理员看全部；本人、项目伙伴、已被授权的人可见
+ * 其余人需要主人同意申请后才能查看
+ */
+async function canView(project, ctx) {
+  if (ctx.isTeacher) return true;
+  if (!ctx.openid) return false;
+  if (project.ownerOpenid === ctx.openid) return true;
+  if (isPartner(project, ctx)) return true;
+  return access.hasAccess(ctx.openid, project.ownerOpenid);
+}
+
 /** ============ 查询 ============ */
 
 /**
@@ -62,17 +84,34 @@ async function list(params, ctx) {
   if (keyword) {
     where.name = db().RegExp({ regexp: escapeReg(String(keyword).trim()), options: 'i' });
   }
-  if (onlyMine) {
-    ctx.requireLogin();
-    where.ownerOpenid = ctx.openid;
-  }
 
   // 列表查询前确保集合存在（列表页是大多数用户的第一入口）
   await ensure('projects');
+
+  let query = where;
+
+  if (onlyMine) {
+    ctx.requireLogin();
+    query = Object.assign({}, where, { ownerOpenid: ctx.openid });
+  } else if (!ctx.isTeacher) {
+    // 学生视角：只看本人 + 项目伙伴（members 里带自己名字）+ 已授权的项目主人
+    if (!ctx.openid) return { total: 0, list: [], page, size, needLogin: true };
+    const owners = await access.approvedOwners(ctx.openid);
+    const name = (ctx.user && (ctx.user.realName || ctx.user.nickname)) || '';
+    const ors = [{ ownerOpenid: ctx.openid }];
+    if (name) {
+      ors.push({ members: db().RegExp({ regexp: escapeReg(name), options: 'i' }) });
+    }
+    if (owners.length) {
+      ors.push({ ownerOpenid: _().in(owners) });
+    }
+    query = _().and([where, _().or(ors)]);
+  }
+
   const col = db().collection('projects');
-  const countRes = await col.where(where).count();
+  const countRes = await col.where(query).count();
   const listRes = await col
-    .where(where)
+    .where(query)
     .orderBy('featured', 'desc')
     .orderBy('updatedAt', 'desc')
     .skip((page - 1) * size)
@@ -88,6 +127,10 @@ async function list(params, ctx) {
 async function detail(params, ctx) {
   const { id } = params || {};
   const project = await getProject(id);
+
+  if (!(await canView(project, ctx))) {
+    throw forbidden('该项目仅本人、项目伙伴与老师可见，可向项目主人申请查看');
+  }
 
   // 浏览量 +1（尽力而为，失败不影响主流程）
   db()
@@ -283,7 +326,8 @@ async function addComment(params, ctx) {
   const { projectId, content } = params || {};
   if (!projectId) throw badRequest('缺少项目 ID');
   if (!content || !String(content).trim()) throw badRequest('请填写留言内容');
-  await getProject(projectId);
+  const project = await getProject(projectId);
+  if (!(await canView(project, ctx))) throw forbidden('没有权限查看该项目');
 
   await ensure('project_comments');
   await db()
@@ -303,6 +347,27 @@ async function addComment(params, ctx) {
     .collection('projects')
     .doc(projectId)
     .update({ data: { commentCount: _().inc(1) } });
+
+  // 留言提醒：通知项目主人（自己给自己留言不提醒；提醒失败不影响留言）
+  if (project.ownerOpenid !== ctx.openid) {
+    await ensure('project_notices');
+    await db()
+      .collection('project_notices')
+      .add({
+        data: {
+          type: 'comment',
+          ownerOpenid: project.ownerOpenid,
+          fromOpenid: ctx.openid,
+          fromName: displayName(ctx.user),
+          projectId,
+          projectName: project.name || '',
+          excerpt: String(content).trim().slice(0, 60),
+          readAt: null,
+          createdAt: now()
+        }
+      })
+      .catch(() => {});
+  }
   return { ok: true };
 }
 
