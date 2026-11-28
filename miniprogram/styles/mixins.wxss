@@ -274,7 +274,7 @@
 .mask {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  z-index: 100;
+  z-index: 1200; /* 盖过 tabBar(200)、tap-ripple(999) 与 AI 悬浮球(1000) */
   background: rgba(14, 14, 18, 0.32);
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
@@ -308,7 +308,7 @@
   font-size: 36rpx;
   color: var(--text-tertiary);
 }
-.sheet__list { max-height: 60vh; }
+.sheet__list { max-height: 60vh; min-height: 200rpx; } /* 给 scroll-view 基础高度，避免空内容时塌缩 */
 
 /* ===== 表单控件 ===== */
 .field {

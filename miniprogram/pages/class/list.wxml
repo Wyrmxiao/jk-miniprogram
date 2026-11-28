@@ -39,7 +39,7 @@
       cursor-spacing="200"
     />
     <view class="form-actions">
-      <view class="btn-ghost btn-sm pressable" hover-class="pressing" bindtap="toggleCreate">取消</view>
+      <view class="btn btn-sm pressable" hover-class="pressing" bindtap="toggleCreate">取消</view>
       <view class="btn btn-sm pressable {{creating ? 'btn-disabled' : ''}}" hover-class="pressing" bindtap="create">
         {{creating ? '创建中…' : '创建'}}
       </view>
